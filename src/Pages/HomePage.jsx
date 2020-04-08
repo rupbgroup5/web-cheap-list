@@ -14,6 +14,9 @@ import swal from 'sweetalert';
 import FormDialog from '../Components/FormDialog';
 import '../Styles/HomeStyle.css';
 
+import { withRouter } from 'react-router-dom';
+
+
 const useStyles = makeStyles(theme => ({
     root: {
       width: '100%',
@@ -31,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   
   }));
 
-export default function HomePage() {
+const HomePage = () => {
     const classes = useStyles();
     const [teams, AddTeam] = useState([]);
     const [,SetData] = useState();
@@ -125,4 +128,6 @@ export default function HomePage() {
     );
 
 }
+
+export default withRouter(HomePage)
 
