@@ -1,13 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 const Navbar = () => {
     return (
-        <div>
+        <nav>
             <Link to='/'>הקבוצות שלי</Link> |
-            <Link to='/tempPage'>דף זמני</Link> |
-        </div>
+            <Link to='/TempPage/:dataFromNativeApp'>דף זמני</Link> |
+        </nav>
     );
 }
 
-export default Navbar;
+export default withRouter(Navbar);
