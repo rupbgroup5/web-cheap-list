@@ -1,16 +1,20 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, useParams } from 'react-router-dom';
 
 
 
-const tempPage = (props) => {
+
+const TempPage = () => {
+
+    let { id } = useParams();
+
     return (
         <div>
             <h1>temp page</h1>
-    נתונים שנשלחו מהניטיב: <h3>{props.match.params.dataFromNativeApp}</h3>
-
+            <h1>look at this id</h1>
+            <h2>{id}</h2>
         </div>
     );
 }
 
-export default withRouter(tempPage);
+export default withRouter(TempPage);

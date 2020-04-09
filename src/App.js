@@ -12,18 +12,13 @@ import HomePage from './Pages/HomePage';
 import TempPage from './Pages/TempPage';
 
 function App() {
-
-
   return (
     <div className="App">
       <Navbar />
       <Switch>
-        <Route exact path='/'>
-          <HomePage />
-        </Route>
-        <Route path='/tempPage'>
-          <TempPage />
-        </Route>
+        <Route exact path='/:id' component={HomePage} />
+        <Route path="/TempPage/:id" component={TempPage} />
+
       </Switch>
     </div>
   );
