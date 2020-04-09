@@ -13,8 +13,9 @@ import ItemContent from '../Components/ItemContent';
 import swal from 'sweetalert';
 import FormDialog from '../Components/FormDialog';
 import '../Styles/HomeStyle.css';
+import MyGroup from '../Pages/MyGroup';
 
-import { withRouter, useParams } from 'react-router-dom';
+import { withRouter, useParams, useHistory, Link} from 'react-router-dom';
 
 
 const useStyles = makeStyles(theme => ({
@@ -50,6 +51,7 @@ const HomePage = () => {
   const [, SetData] = useState();
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
+  const history = useHistory();
 
   const GetTheNewTeam = (n) => {
     AddTeam([...teams, {
@@ -95,6 +97,15 @@ const HomePage = () => {
       triggerComplexItemAction(Delete(index))
   });
 
+  const handleClickSL = (name) =>{
+    console.log('clicked ' + name);
+    history.push(`/MyGroup`,{params:name});
+
+    
+     
+    
+    
+  }
 
 
 
@@ -105,35 +116,42 @@ const HomePage = () => {
       <div className="header">
         <h1>הקבוצות שלי</h1>
       </div>
-      <div className="Maincontent">
+      <div className="Maincontent"  >
+        
         {
-          teams.map((team, index) =>
-            <SwipeableList key={index} className={classes.root} threshold={0.25} >
-              <SwipeableListItem
+          teams.map((team, index) => 
+          <span key={index}  onClick={() => handleClickSL(team.name)}>
+            <SwipeableList key={index} className={classes.root} threshold={0.25} handleClickSL  >
+              <SwipeableListItem 
                 swipeRight={swipeRightDataComplex(index)}
                 onSwipeProgress={handleSwipeProgress}
               >
-                <ListItemAvatar style={{ marginRight: '5px' }}>
+                <ListItemAvatar style={{ marginRight: '5px' }} >
                   <Badge badgeContent={10} color="secondary"  >
                     <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                   </Badge>
                 </ListItemAvatar>
-                <ListItem
+                <ListItem 
                   name={team.name}
                   description="שמות הקבוצה יופיעו פה"
+                  
                 >
+                  
                 </ListItem>
-
               </SwipeableListItem>
             </SwipeableList>
-
+            </span>
+          
           )
         }
+        
+        
 
       </div>
       <div className="footer">
         <FormDialog getData={GetTheNewTeam} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
+     
 
     </div>
   );

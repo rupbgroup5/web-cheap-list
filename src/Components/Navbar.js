@@ -15,6 +15,7 @@ const Navbar = () => {
         <nav>
             <Link to={`/${id}`}>הקבוצות שלי</Link> |
             <Link to={`/TempPage/${id}`}>דף זמני</Link> |
+            <Link to={`/MyGroup/${id}`}>ds</Link>
         </nav>
     );
 }

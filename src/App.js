@@ -10,16 +10,21 @@ import Navbar from './Components/Navbar';
 //pages: 
 import HomePage from './Pages/HomePage';
 import TempPage from './Pages/TempPage';
+import MyGroup from './Pages/MyGroup';
 
 function App() {
   return (
     <div className="App">
       <Navbar />
       <Switch>
-        <Route exact path='/:id' component={HomePage} />
+        <Route exact path='/' component={HomePage} />
+        <Route path='/MyGroup' component={MyGroup} />
         <Route path="/TempPage/:id" component={TempPage} />
-
       </Switch>
+
+      
+
+     
     </div>
   );
 }
