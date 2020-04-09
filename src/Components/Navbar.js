@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, useParams } from 'react-router-dom';
 
 // let query = useQuery();
 
@@ -8,10 +8,13 @@ import { Link, withRouter } from 'react-router-dom';
 //     return new URLSearchParams(useLocation().search);
 // }
 const Navbar = () => {
+    let { id } = useParams();
+
+
     return (
         <nav>
-            <Link to='/11'>הקבוצות שלי</Link> |
-            <Link to='/TempPage/1'>דף זמני</Link> |
+            <Link to={`/${id}`}>הקבוצות שלי</Link> |
+            <Link to={`/TempPage/${id}`}>דף זמני</Link> |
         </nav>
     );
 }
