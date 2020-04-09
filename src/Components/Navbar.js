@@ -1,19 +1,14 @@
 import React from 'react';
-import { Link, withRouter, useParams } from 'react-router-dom';
-
-// let query = useQuery();
+import { Link, withRouter } from 'react-router-dom';
 
 
-// function useQuery() {
-//     return new URLSearchParams(useLocation().search);
-// }
-const Navbar = () => {
-    let { id } = useParams();
+const Navbar = ({ id }) => {
 
 
     return (
         <nav>
-            <Link to={`/${id}`}>הקבוצות שלי</Link> |
+            <Link to='/'>ראשי</Link> |
+            <Link to={`/MyGroups/${id}`}>הקבוצות שלי</Link> |
             <Link to={`/TempPage/${id}`}>דף זמני</Link> |
             <Link to={`/MyGroup/${id}`}>ds</Link>
         </nav>
