@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { DeleteIcon } from '../Images/icons';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { Avatar, Badge } from '@material-ui/core';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -7,15 +9,23 @@ import {
   SwipeableListItem
 } from '@sandstreamdev/react-swipeable-list';
 import '@sandstreamdev/react-swipeable-list/dist/styles.css';
-import { DeleteIcon } from '../Images/icons';
+import swal from 'sweetalert';
+import { withRouter, useParams, useHistory} from 'react-router-dom';
+
+//Styles
+import '../Styles/HomeStyle.css';
+
+//Our Components
 import ListItem from '../Components/ListItem';
 import ItemContent from '../Components/ItemContent';
-import swal from 'sweetalert';
 import FormDialog from '../Components/FormDialog';
-import '../Styles/HomeStyle.css';
-import MyGroup from '../Pages/MyGroup';
 
-import { withRouter, useParams, useHistory, Link} from 'react-router-dom';
+
+//Pages
+
+
+
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -99,7 +109,7 @@ const HomePage = () => {
 
   const handleClickSL = (name) =>{
     console.log('clicked ' + name);
-    history.push(`/MyGroup`,{params:name});
+    history.push(`/OnGroup`,{params:name});
 
     
      
