@@ -8,7 +8,7 @@ const Navbar = ({ id }) => {
     return (
         <nav>
             <Link to='/'>ראשי</Link> |
-            <Link to={`/MyGroups/${id}`}>הקבוצות שלי</Link> |
+            <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> |
             <Link to={`/TempPage/${id}`}>דף זמני</Link> |
             <Link to={`/MyGroup/${id}`}>ds</Link>
         </nav>
