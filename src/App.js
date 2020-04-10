@@ -21,9 +21,9 @@ function App() {
       <Navbar id={PrimeId} />
       <Switch>
         <Route exact path='/' component={Temp} />
-        <Route path='/HomePage' component={HomePage} />
-        <Route path="/TempPage" component={TempPage} />
-        <Route path="/OnGroup" component={OnGroup} />
+        <Route exact path='/HomePage/:id' component={HomePage} />
+        <Route exact path="/TempPage/:id" component={TempPage} />
+        {/* <Route path="/OnGroup/:id" component={OnGroup} /> */}
       </Switch>
     </div>
   );
