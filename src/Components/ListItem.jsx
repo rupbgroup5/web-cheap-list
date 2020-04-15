@@ -2,16 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import  '../Styles/ListItemStyle.css';
 
-const ListItem = ({ description, icon, name}) => (
-  <div className="listItemComponent" >
+
+  const ListItem = ({ description, icon, name}) => (
+
+    <div className="listItemComponent" >
     <div className="label" >
       {icon}
       <span className="name">{name}</span>
     </div>
     {description && <div className="desciption">{description}</div>}
   </div>
-  
 );
+
+
+
+
+  
+
 
 ListItem.propTypes = {
   description: PropTypes.string,
@@ -19,4 +26,4 @@ ListItem.propTypes = {
   name: PropTypes.string,
 };
 
-export default ListItem;
+export default ListItem

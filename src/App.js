@@ -1,5 +1,6 @@
 import React from 'react';
-import { Switch, Route, withRouter, useParams } from 'react-router-dom';
+import { Switch, Route, withRouter,useHistory } from 'react-router-dom';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 //styles:
 import './App.css';
@@ -9,22 +10,25 @@ import Navbar from './Components/Navbar';
 
 //pages: 
 import HomePage from './Pages/HomePage';
-import OnGroup from './Pages/OnGroup';
+import AGroup from './Pages/AGroup';
 import TempPage from './Pages/TempPage';
-import Temp from './Pages/Temp2';
+
 
 function App() {
-  let { PrimeId } = useParams();
+  // let { PrimeId } = useParams();
+  const history = useHistory();
 
   return (
     <div className="App">
-      <Navbar id={PrimeId} />
+      
+      {/* <Navbar  />   */}
+      <ArrowForwardIosIcon onClick={()=> history.goBack() } style={{fontSize:'1.5em',paddingLeft:'20px', float:'right'}}/>
       <Switch>
-        <Route exact path='/' component={Temp} />
-        <Route exact path='/HomePage/:id' component={HomePage} />
-        <Route exact path="/TempPage/:id" component={TempPage} />
-        {/* <Route path="/OnGroup/:id" component={OnGroup} /> */}
+        <Route exact path="/" component={HomePage} />
+        <Route path="/TempPage" component={TempPage} />
+        <Route path="/AGroup" component={AGroup} />
       </Switch>
+     
     </div>
   );
 }

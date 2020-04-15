@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DeleteIcon } from '../Images/icons';
 
+
 import { makeStyles } from '@material-ui/core/styles';
-import { Avatar, Badge } from '@material-ui/core';
+import { Avatar, Badge} from '@material-ui/core';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import {
   SwipeableList,
@@ -10,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list';
 import '@sandstreamdev/react-swipeable-list/dist/styles.css';
 import swal from 'sweetalert';
-import { withRouter, useParams, useHistory} from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
 
 //Styles
 import '../Styles/HomeStyle.css';
@@ -22,7 +23,6 @@ import FormDialog from '../Components/FormDialog';
 
 
 //Pages
-
 
 
 
@@ -46,34 +46,58 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-
-
-const HomePage = () => {
-  let { id } = useParams();
-
-  useEffect(() => {
-    
-    console.log('hey this is your id ' + id);
-  });
-  
+function HomePage() {
+  // let { id } = useParams();
   const classes = useStyles();
-  const [teams, AddTeam] = useState([]);
-  const [, SetData] = useState();
+  const [group, SetGroup] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
 
-  const GetTheNewTeam = (n) => {
-    AddTeam([...teams, {
-      name: n
+  useEffect(() => {
+
+    async function fetchMyAPI() {
+        const res = await fetch("http://localhost:56794/api/AppGroups", {
+          method: 'GET',
+          headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8',
+          }),
+        })
+        let data = await res.json();
+        SetGroup(data)
+    }
+
+    fetchMyAPI()
+  },[]);
+
+  const AddNewGroup = (name) => {
+    SetGroup([...group, {
+      GroupName: name
     }])
+    let apiUrl = "http://localhost:56794/api/AppGroups/"
+    let newGroup = {
+      GroupName: name,
+      CreatorName: 'Super-Girl'
+
+    }
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8'
+      }),
+      body: JSON.stringify(newGroup)
+    }).then(res => { return res.json(); })
+      .then(
+        (result) => {
+          console.log('The ', result, ' was successfully added!')
+        },
+        (error) => {
+          console.log(error)
+        })
   }
-
-
-
-
-  let Delete = index => {
-    if (swipeProgress === 100) {
+  const Delete = (id, index) => {
+    if (swipeProgress >= 70) {
       swal({
         title: "מחיקת קבוצה",
         text: "!כל רשימות הקבוצה ימחקו גם הם",
@@ -82,91 +106,91 @@ const HomePage = () => {
       })
         .then((willDelete) => {
           if (willDelete) {
-            teams.splice(index, 1);
-            SetData(...teams);
-            console.log('delete');
-            swal("הקבוצה נמחקה ")
+            let apiUrl = "http://localhost:56794/api/AppGroups/" + id;
+            fetch(apiUrl, {
+              method: 'DELETE',
+              headers: new Headers({
+                 'Content-type': 'application/json; charset=UTF-8' 
+              })
+            }).then(res => { return res.json(); })
+              .then(
+                (result) => {
+                  group.splice(index, 1)
+                  SetGroup([...group])
+                  console.log('The ', result, ' was successfully deleted!')
+                  swal("הקבוצה נמחקה ")
+                },
+                (error) => {
+                  console.log(error)
+                })            
           }
-        });
+        })
     }
   }
 
-  const swipeRightDataComplex = index => ({
+  const swipeRightDataComplex = (id, index) => ({
     content: (
       <span style={{ background: 'red', width: '100%', direction: 'ltr' }}>
         <ItemContent
           icon={<DeleteIcon />}
           label="Delete"
           side="right"
-
         />
       </span>
-
     ),
     action: () =>
-      triggerComplexItemAction(Delete(index))
+      triggerComplexItemAction(Delete(id, index))
   });
 
-  const handleClickSL = (name) =>{
-    console.log('clicked ' + name);
-    history.push(`/OnGroup`,{params:name});
 
+    const handleClickSL = (name,id) => {
+      console.log('clicked ' + name);
+      history.push(`/AGroup`, { name: name, id: id });
+      console.log(history)
+    }
+
+
+    return (
+
+      <div className="container">
+        <div className="header">
+          <h1>הקבוצות שלי</h1>
+        </div>
+        <div className="Maincontent"  >
+
+
+          {
+            group.map((g, index) =>
+              <span key={index} onClick={() => handleClickSL(g.GroupName,g.GroupID)} >
+                <SwipeableList className={classes.root} threshold={0.25} handleClickSL  >
+                  <SwipeableListItem
+                    swipeRight={swipeRightDataComplex(g.GroupID, index)}
+                    onSwipeProgress={handleSwipeProgress}
+                  >
+                    <ListItemAvatar style={{ marginRight: '5px' }} >
+                      <Badge badgeContent={10} color="secondary"  >
+                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      </Badge>
+                    </ListItemAvatar>
+                                    
+                    <ListItem name={g.GroupName} description="שמות הקבוצה יופיעו פה" />
+                  </SwipeableListItem>
+                </SwipeableList>
+
+              </span>
+            )
+          }
+        </div>
+        <div className="footer">
+          <FormDialog getData={AddNewGroup} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+        </div>
+       
+      </div>
     
-     
-    
-    
+    );
+
   }
 
-
-
-
-
-  return (
-    <div className="container">
-      <div className="header">
-        <h1>הקבוצות שלי</h1>
-      </div>
-      <div className="Maincontent"  >
-        
-        {
-          teams.map((team, index) => 
-          <span key={index}  onClick={() => handleClickSL(team.name)}>
-            <SwipeableList key={index} className={classes.root} threshold={0.25} handleClickSL  >
-              <SwipeableListItem 
-                swipeRight={swipeRightDataComplex(index)}
-                onSwipeProgress={handleSwipeProgress}
-              >
-                <ListItemAvatar style={{ marginRight: '5px' }} >
-                  <Badge badgeContent={10} color="secondary"  >
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                  </Badge>
-                </ListItemAvatar>
-                <ListItem 
-                  name={team.name}
-                  description="שמות הקבוצה יופיעו פה"
-                  
-                >
-                  
-                </ListItem>
-              </SwipeableListItem>
-            </SwipeableList>
-            </span>
-          
-          )
-        }
-        
-        
-
-      </div>
-      <div className="footer">
-        <FormDialog getData={GetTheNewTeam} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
-      </div>
-     
-
-    </div>
-  );
-
-}
 
 export default withRouter(HomePage)
 
