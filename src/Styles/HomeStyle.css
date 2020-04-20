@@ -9,6 +9,8 @@
 }
 #outlined-basic{
     text-align: center;
-    
+}
+.swal-input{
+    direction: rtl;
 }
  

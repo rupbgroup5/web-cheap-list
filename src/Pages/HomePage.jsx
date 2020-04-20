@@ -24,10 +24,6 @@ import FormDialog from '../Components/FormDialog';
 
 //Pages
 
-
-
-
-
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
@@ -53,11 +49,17 @@ function HomePage() {
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
+  const isLocal = true
+  var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/"
+
+  if (isLocal){
+    apiAppGroups =  "http://localhost:56794/api/AppGroups/"
+  }
 
   useEffect(() => {
 
     async function fetchMyAPI() {
-        const res = await fetch("http://localhost:56794/api/AppGroups", {
+        const res = await fetch("http://localhost:56794/api/AppGroups/", {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -71,17 +73,12 @@ function HomePage() {
   },[]);
 
   const AddNewGroup = (name) => {
-    SetGroup([...group, {
-      GroupName: name
-    }])
-    let apiUrl = "http://localhost:56794/api/AppGroups/"
     let newGroup = {
       GroupName: name,
-      CreatorName: 'Super-Girl'
-
+      CreatorName: 'OrelKarmi',
+      IsAdmin: true
     }
-
-    fetch(apiUrl, {
+    fetch(apiAppGroups, {
       method: 'POST',
       headers: new Headers({
         'Content-type': 'application/json; charset=UTF-8'
@@ -91,6 +88,9 @@ function HomePage() {
       .then(
         (result) => {
           console.log('The ', result, ' was successfully added!')
+          SetGroup([...group, {
+            GroupName: result.GroupName
+          }])
         },
         (error) => {
           console.log(error)
@@ -106,8 +106,7 @@ function HomePage() {
       })
         .then((willDelete) => {
           if (willDelete) {
-            let apiUrl = "http://localhost:56794/api/AppGroups/" + id;
-            fetch(apiUrl, {
+            fetch(apiAppGroups + id , {
               method: 'DELETE',
               headers: new Headers({
                  'Content-type': 'application/json; charset=UTF-8' 
@@ -143,10 +142,8 @@ function HomePage() {
   });
 
 
-    const handleClickSL = (name,id) => {
-      console.log('clicked ' + name);
-      history.push(`/AGroup`, { name: name, id: id });
-      console.log(history)
+    const handleClickSL = (index) => {
+      history.push(`/AGroups`, { group: group[index] });
     }
 
 
@@ -157,11 +154,9 @@ function HomePage() {
           <h1>הקבוצות שלי</h1>
         </div>
         <div className="Maincontent"  >
-
-
           {
             group.map((g, index) =>
-              <span key={index} onClick={() => handleClickSL(g.GroupName,g.GroupID)} >
+              <span key={index} onClick={() => handleClickSL(index)} >
                 <SwipeableList className={classes.root} threshold={0.25} handleClickSL  >
                   <SwipeableListItem
                     swipeRight={swipeRightDataComplex(g.GroupID, index)}
