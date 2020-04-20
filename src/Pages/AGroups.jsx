@@ -62,17 +62,19 @@ function AGroup() {
   const [list, SetList] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
-  const textInput = useRef(null)
-  let tempName = ""
-  let isLocal = true
-  var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/"
-  var apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
+  const [participants, set_participants] = useState(['אבי','בני',"צ'רלי"]);
+  const textInput = useRef(null);
+  let tempName = "";
+  let isLocal = true;
+  let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/";
+  let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/";
   if (isLocal) {
-    apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    apiAppList = "http://localhost:56794/api/AppList/"
+    apiAppGroups = "http://localhost:56794/api/AppGroups/";
+    apiAppList = "http://localhost:56794/api/AppList/";
   }
 
   async function fetchMyAPI(group) {
+
     const res = await fetch(`http://localhost:56794/api/AppList/${group.GroupID}`, {
       method: 'GET',
       headers: new Headers({
@@ -244,6 +246,12 @@ function AGroup() {
 
   }
 
+  const addParticipant = () =>{
+    
+    //open the users contact list and let him choose from there.
+    
+  }
+
 
   return (
     <div className="container">
@@ -285,8 +293,22 @@ function AGroup() {
         <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
       </div>
 
+
+      {/* #region yogev's addons start */}
+        <div>
+          <ul>
+            <h3>שמות חברי הקבוצה</h3>
+            {participants.map((p, index) => <li key={index}>{p}</li>
+            )}
+          </ul>
+          <button onClick={addParticipant}>הוסף משתתף</button>
+        </div>
+    {/* #endregion yogev's addons end */}
     </div>
   );
 };
+
+
+
 
 export default withRouter(AGroup);
