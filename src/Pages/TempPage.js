@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { withRouter, useParams } from 'react-router-dom';
 
 
@@ -6,9 +6,6 @@ import { withRouter, useParams } from 'react-router-dom';
 
 const TempPage = ({ match }) => {
 
-    useEffect(() => {
-        console.log();
-    });
 
     let { id } = useParams();
 
