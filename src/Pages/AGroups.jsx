@@ -73,6 +73,7 @@ function AGroup() {
   }
 
   async function fetchMyAPI(group) {
+
     const res = await fetch(`http://localhost:56794/api/AppList/${group.GroupID}`, {
       method: 'GET',
       headers: new Headers({
@@ -105,9 +106,10 @@ function AGroup() {
           console.log('The ', result, ' was successfully added!')
           console.log('resultPostList', result)
           SetList([...list, {
-            ListName: result.ListName,
-            ListTotalPrice: result.ListTotalPrice
+           ...result,
+           ListID:list.ListID
           }])
+        
         },
         (error) => {
           console.log(error)
@@ -192,6 +194,8 @@ function AGroup() {
   //     triggerComplexItemAction(EditDiscription(index))
   // });
 
+
+
   const handleClickSL = (index) => {
     history.push(`/AList`, { list: list[index] });
 
@@ -257,6 +261,7 @@ function AGroup() {
           onBlur={Confirmation}
           inputRef={textInput}
         />
+        <button>הוסף משתמש</button>
 
       </div>
       <div className="Maincontent"   >
@@ -272,7 +277,7 @@ function AGroup() {
                       <ShoppingCartIcon />
                     </StyledBadge>
                   </IconButton>
-                  <ListItem name={l.ListName} description={`סך עלות הרשימה : ${l.ListTotalPrice}`} />
+                  <ListItem name={l.ListName} description={`סך עלות הרשימה : ${l.ListEstimatedPrice === 'undefined' ? 0 : l.ListEstimatedPrice}`} />
                 </SwipeableListItem>
               </SwipeableList>
 

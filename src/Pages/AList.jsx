@@ -14,28 +14,34 @@ function AList() {
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
-    const [price, setPrice] = useState(0);
+    const [store, SetStore] = useState([]);
     const [product, SetProduct] = useState([]);
     const [productCart, SetProductCart] = useState([]);
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let tempProduct = '';
     let tempName = '';
+    let tempCity = '';
+    let templimit = 0;
     let isLocal = true
-    var apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
-    var apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
+    let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
+    let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
     if (isLocal) {
-        apiAppProduct = "http://localhost:56794/api/AppProduct"
+        apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
     async function fetchMyAPI(list) {
-        const res = await fetch(`http://localhost:56794/api/AppProduct/${list.ListID}`, {
-            method: 'GET',
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-            }),
-        })
-        let result = await res.json();
-        SetProductCart(result)
+        try {
+            const res = await fetch(`http://localhost:56794/api/AppProduct/${list.ListID}`, {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json; charset=UTF-8',
+                }),
+            })
+            let result = await res.json();
+            SetProductCart(result)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
@@ -53,19 +59,19 @@ function AList() {
             action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
         },
         GetStoresByCityID: {
-            action: "GetStoresByCityID", city_id: '', limit: 10
+            action: "GetStoresByCityID", city_id: '', limit: 3
         },
         GetStoresByGPS: {
             action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
         },
         GetProductsByBarCode: {
-            action: "GetProductsByBarCode", product_barcode: '', limit: 10
+            action: "GetProductsByBarCode", product_barcode: '', limit: 3
         },
         GetProductsByID: {
             action: 'GetProductsByID', product_id: '', limit: 10
         },
         GetProductsByName: {
-            action: "GetProductsByName", product_name: "", limit: 10
+            action: "GetProductsByName", product_name: "", limit: 5
         },
         GetPrice: {
             action: "GetPrice", store_id: '', limit: 10
@@ -86,68 +92,8 @@ function AList() {
             action: "GetCities", limit: 10
         },
         GetCityByName: {
-            action: "GetCityByName", city_name: '', limit: 10
+            action: "GetCityByName", city_name: '', limit: 1
         }
-    }
-
-    const handleProduct = (e) => {
-        tempProduct = e.target.value
-    }
-
-    const handleClickChoise = async () => {
-        SetProduct([...product, tempProduct])
-        console.log(product)
-        data.GetProductsByName.product_name = tempProduct;
-        data.GetProductsByName.limit = 1
-        try {
-            const query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
-            const resApi = await fetch(query, { method: 'GET' })
-            let result = await resApi.json();
-            console.log('product', result)
-            result[0] ={
-                ...result[0], 
-                ListID:list.ListID,
-                GroupID:list.GroupID
-            }
-            console.log('before',result[0])
-            const resDB = await fetch(apiAppProduct,{
-                method:'POST',
-                headers: new Headers({
-                    'Content-type': 'application/json; charset=UTF-8'
-                  }),
-                  body: JSON.stringify(result[0])
-            })
-            const resultDB = await resDB.json() 
-             SetProductCart([...productCart, resultDB])
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
-
-    const getTotalPrice = async () => {
-        let p = 0;
-        for (let i = 0; i < productCart.length; i++) {
-            data.GetPriceByProductBarCode.product_barcode = productCart[i].product_barcode
-            data.GetPriceByProductBarCode.store_id = 8
-            try {
-                const query = queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
-                const res = await fetch(query, { method: 'GET' })
-                var result = await res.json()
-                if (result.error_type === "NO_DATA") {
-                    alert('המוצר ' + productCart[i].product_name + ' לא קיים בחנות זו ')
-                    break;
-                }
-            } catch (error) {
-                console.log(error)
-                break;
-            }
-            console.log('JSON', result[0].store_product_price)
-            p += JSON.parse(result[0].store_product_price)
-            console.log('resultPrice', result[0])
-            console.log("price is ", p)
-        }
-        setPrice(p)
     }
 
     const editListName = (e) => {
@@ -193,11 +139,232 @@ function AList() {
         }
     }
 
+    const handleCity = (e) => {
+        tempCity = e.target.value
+    }
+
+    const handleClickCity = async () => {
+        try {
+            const res = await fetch(apiAppList + tempCity + '/' + list.ListID, {
+                method: 'PUT',
+            })
+            let result = await res.json();
+            list.CityName = result.CityName
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleLimit = (e) => {
+        templimit = e.target.value
+    }
+
+    const handleClickLimit = async () => {
+        try {
+            const res = await fetch(apiAppList + "limit/" + templimit + '/' + list.ListID, {
+                method: 'PUT',
+            })
+            let result = await res.json();
+            list.LimitPrice = result.LimitPrice
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleProduct = (e) => {
+        tempProduct = e.target.value
+    }
+
+    const handleClickChoise = async () => {
+        if (list.CityName !== null && tempProduct !== '') {
+            try {
+                //get cityID
+                data.GetCityByName.city_name = list.CityName
+                let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
+                let resCity = await fetch(query, { method: 'GET' })
+                let resultCity = await resCity.json();
+                console.log('resultCity', resultCity)
+                //get productBarcode
+                data.GetProductsByName.product_name = tempProduct;
+                query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
+                let resBarcode = await fetch(query, { method: 'GET' })
+                let resultBarcode = await resBarcode.json();
+                console.log('product', resultBarcode)
+                //getStoreByCityID
+                data.GetStoresByCityID.city_id = resultCity[0].city_id
+                query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+                let resStoreID = await fetch(query, { method: 'GET' })
+                let resultStoreID = await resStoreID.json()
+                let arrayProduct = []
+                for (let i = 0; i < resultBarcode.length; i++) {
+                    let price = 0;
+                    let count = 0;
+                    for (let j = 0; j < resultStoreID.length; j++) {
+                        data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
+                        data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
+                        query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
+                        let resPrice = await fetch(query, { method: 'GET' })
+                        let resultPrice = await resPrice.json();
+                        if (resultPrice.error_type === "NO_DATA") {
+                            console.log('err')
+                            continue;
+                        }
+                        price += JSON.parse(resultPrice[0].store_product_price)
+                        count++
+                    }
+                    price = price / count
+
+                    console.log('my price', price)
+                    let p = {
+                        product_barcode: resultBarcode[i].product_barcode,
+                        product_name: resultBarcode[i].product_name,
+                        product_description: resultBarcode[i].product_description,
+                        product_image: resultBarcode[i].product_image,
+                        manufacturer_name: resultBarcode[i].manufacturer_name,
+                        estimatedProductPrice: Number(price.toFixed(2))
+                    }
+                    arrayProduct.push(p)
+                }
+                SetProduct(...product, arrayProduct)
+            } catch (error) {
+                console.log(error)
+            }
+        } else alert('מלא את השדות תחילה')
+
+
+    }
+    const ConfirmationLimit = (index) => {
+        console.log( list.ListEstimatedPrice,product[index].estimatedProductPrice)
+        let tempCheck = list.ListEstimatedPrice + product[index].estimatedProductPrice
+        console.log('temp',tempCheck)
+        console.log( list.ListEstimatedPrice,product[index].estimatedProductPrice)
+        if ( tempCheck > list.LimitPrice) {
+            swal({
+                text: "שים לב! חרגת מהמגבלה",
+                buttons: ['בטל', 'המשך בכל זאת'],
+                dangerMode: true,
+            }).then((willContinue) => {
+                    if (willContinue) {
+                        Add2DB(index)
+                    }
+                })
+        } else if (tempCheck > list.LimitPrice * 0.7) {
+            alert('שים לב! עברת 70% מהמגבלה')
+            Add2DB(index)
+        }
+        else Add2DB(index)
+    }
+
+    const Add2DB = async (index) => {
+
+        let p = {
+            ...product[index],
+            ListID: list.ListID,
+            GroupID: list.GroupID
+        }
+        const resDB = await fetch(apiAppProduct, {
+            method: 'POST',
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8'
+            }),
+            body: JSON.stringify(p)
+        })
+        const resultDB = await resDB.json()
+        console.log('result', resultDB)
+        list.ListEstimatedPrice += resultDB.estimatedProductPrice
+        SetProduct([])
+        SetProductCart([...productCart, resultDB])
+        alert('המוצר התווסף בהצלחה')
+
+
+
+
+    }
+
+    const getTotalPrice = async () => {
+        try {
+            //getCityID
+            data.GetCityByName.city_name = list.CityName
+            let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
+            let resCity = await fetch(query, { method: 'GET' })
+            let resultCity = await resCity.json();
+            console.log('1')
+            //getStorebycityId
+            data.GetStoresByCityID.city_id = resultCity[0].city_id
+            query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+            let resStoreID = await fetch(query, { method: 'GET' })
+            let resultStoreID = await resStoreID.json();
+            console.log('2')
+            let tempArtayStore = []
+
+            for (let i = 0; i < resultStoreID.length; i++) {
+                let p = 0;
+                let outOfStock = [];
+                for (let j = 0; j < productCart.length; j++) {
+                    data.GetPriceByProductBarCode.product_barcode = productCart[j].product_barcode
+                    data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
+                    query = queryString.stringifyUrl({ url: "https://cors-anywhere.herokuapp.com/" + api, query: data.GetPriceByProductBarCode })
+                    const res = await fetch(query, { method: 'GET' })
+                    var result = await res.json()
+                    console.log('3')
+                    if (result.error_type === "NO_DATA") {
+                        alert('המוצר ' + productCart[j].product_name + ' לא קיים בחנות זו ')
+                        outOfStock.push(productCart[j])
+                        continue;
+
+                    }
+                    p += JSON.parse(result[0].store_product_price)
+                }
+                const s = {
+                    OutOfStock: outOfStock,
+                    Store: resultStoreID[i],
+                    TotalPrice: Number(p.toFixed(2))
+                }
+                tempArtayStore.push(s)
+            }
+            SetStore(tempArtayStore)
+            console.log('store', store)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const DeleteProduct = (index, barcode, ListID) => {
+        console.log(productCart[index])
+        swal({
+            title: "מחיקת פריט",
+            text: "כל פריטי הרשימה ימחקו גם הם ",
+            buttons: ['בטל', 'מחק'],
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    fetch(apiAppProduct + barcode + '/' + ListID, {
+                        method: 'DELETE',
+                        headers: new Headers({
+                            'Content-type': 'application/json; charset=UTF-8'
+                        })
+                    }).then(res => { return res.json(); })
+                        .then(
+                            (result) => {
+                                console.log('The ', result, ' was successfully deleted!')
+                                list.ListEstimatedPrice -= productCart[index].estimatedProductPrice
+                                productCart.splice(index, 1)
+                                SetProductCart([...productCart])
+                                swal("המוצר נמחק ")
+                            },
+                            (error) => {
+                                console.log(error)
+                            })
+                }
+            });
+
+    }
+
 
 
     return (
         <div className="container">
-            {console.log(list.ListID)}
             <div className="header">
                 <TextField
                     id="outlined-basic"
@@ -209,27 +376,61 @@ function AList() {
                 />
             </div>
             <div className="Maincontent">
+                <h3>{list.CityName} </h3>
+                <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp;
+                <button onClick={handleClickCity}>הגדר עיר לחיפוש </button>
+                <h3>{list.LimitPrice}</h3>
+                <input type={'number'} placeholder='הזן מגבלה חדשה' onChange={handleLimit}></input> &nbsp;
+                <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
+                <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
+                <button onClick={handleClickChoise}>חפש מוצר</button>
+                {console.log(list)}
                 <br />
-                <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} />
-                <button onClick={handleClickChoise}>בחור מוצר</button>
-                <br />
-            מוצרים <br />
-            {console.log(productCart)}
+                <h2>מוצרים</h2>
+                {console.log(list.ListEstimatedPrice)}
 
-                {productCart.map((p, index) =>
+                {product.map((p, index) =>
                     <div key={index}>
-                        <p >{p.product_name} שם המוצר:</p>
-                       {productCart.length - 1 === index ? 'המחיר הוא המשוער הוא  ' + p.EstimatedPrice : false}
+                        <p>
+                            {p.product_description} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
+                                <button onClick={() => ConfirmationLimit(index)}>הוסף לרשימה</button>
+                        </p>
                     </div>
-                )
-                }
-                
+                )}
+                <div>
+                    {console.log('productCart', productCart)}
+                    <h2>הרשימה שלי </h2>
+                    {productCart.map((p, index) =>
+                        <div key={index}>
+                            <p>
+                                {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
+                            <button onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)}>מחק מהרשימה</button>
+                            </p>
+                            {productCart.length - 1 === index ? 'מחיר משוער ' + list.ListEstimatedPrice : false}
+                        </div>
+                    )}
 
 
-
+                </div>
                 <br />
                 <button onClick={getTotalPrice}>תן לי את המחיר הזול ביותר </button> <br /><br />
-                המחיר הזול ביותר: {price} 
+
+                <b><u>רשימת הסופרים</u></b>
+                {store.map((s, index) =>
+                    <div key={index}>
+                        <p>
+                            <b>{s.Store.store_name}</b> ברחוב {s.Store.store_address} <b>עלות סל הקניות הוא</b> {s.TotalPrice} <br />
+                            <u><small>המוצרים שחסרים הם</small></u>
+                            {s.OutOfStock.map((o, index) =>
+                                <div key={index}>
+                                    <span>{o.product_name},</span>
+                                </div>
+                            )}
+                        </p>
+
+                    </div>
+                )}
+
             </div>
             <div className="footer">
 
