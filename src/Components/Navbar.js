@@ -1,20 +1,20 @@
-// import React from 'react';
-// import { Link, withRouter,useHistory } from 'react-router-dom';
+import React from 'react';
+import { Link, withRouter, useHistory } from 'react-router-dom';
 
 
-// const Navbar = ({ id }) => {
+const Navbar = ({ id }) => {
 
-//     const history = useHistory()
+    const history = useHistory()
 
-//     return (
-//         <nav>
-//             {/* <Link to='/'>ראשי</Link> |
-//             <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> |
-//             <Link to={`/TempPage/${id}`}>דף זמני</Link> |  */}
-//             <br/>
-            
-//            </nav>
-//     );
-// }
+    return (
+        <nav>
+            {/* <Link to='/'>ראשי</Link> | */}
+            <Link to={`/`}>הקבוצות שלי</Link> |
+            <Link to={`/TempPage/${id}`}>דף זמני</Link> |
+            <br />
 
-// export default withRouter(Navbar);
+        </nav>
+    );
+}
+
+export default withRouter(Navbar);
