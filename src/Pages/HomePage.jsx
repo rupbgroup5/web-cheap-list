@@ -45,8 +45,8 @@ const useStyles = makeStyles(theme => ({
 function HomePage() {
   // let { id } = useParams();
   const classes = useStyles();
-  const [group, SetGroup] = useState([]);
-  const [, triggerComplexItemAction] = useState();
+  const [groups, SetGroups] = useState([]);
+  const [,triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
   const isLocal = true
@@ -66,7 +66,7 @@ function HomePage() {
           }),
         })
         let data = await res.json();
-        SetGroup(data)
+        SetGroups(data)
     }
 
     fetchMyAPI()
@@ -76,7 +76,6 @@ function HomePage() {
     let newGroup = {
       GroupName: name,
       CreatorName: 'OrelKarmi',
-      IsAdmin: true
     }
     fetch(apiAppGroups, {
       method: 'POST',
@@ -88,13 +87,16 @@ function HomePage() {
       .then(
         (result) => {
           console.log('The ', result, ' was successfully added!')
-          SetGroup([...group, {
-            GroupName: result.GroupName
+          SetGroups([...groups, {
+            ...result
           }])
+          console.log(result)
         },
         (error) => {
           console.log(error)
         })
+       
+        console.log(groups)
   }
   const Delete = (id, index) => {
     if (swipeProgress >= 70) {
@@ -114,8 +116,8 @@ function HomePage() {
             }).then(res => { return res.json(); })
               .then(
                 (result) => {
-                  group.splice(index, 1)
-                  SetGroup([...group])
+                  groups.splice(index, 1)
+                  SetGroups([...groups])
                   console.log('The ', result, ' was successfully deleted!')
                   swal("הקבוצה נמחקה ")
                 },
@@ -127,7 +129,7 @@ function HomePage() {
     }
   }
 
-  const swipeRightDataComplex = (id, index) => ({
+  const SwipeRightContent = (id, index) => ({
     content: (
       <span style={{ background: 'red', width: '100%', direction: 'ltr' }}>
         <ItemContent
@@ -141,33 +143,28 @@ function HomePage() {
       triggerComplexItemAction(Delete(id, index))
   });
 
-
-    const handleClickSL = (index) => {
-      history.push(`/AGroups`, { group: group[index] });
+    const GetIntoGroup = (index) => {
+      history.push(`/AGroups`, { group: groups[index] });
     }
-
-
     return (
-
       <div className="container">
         <div className="header">
           <h1>הקבוצות שלי</h1>
         </div>
         <div className="Maincontent"  >
           {
-            group.map((g, index) =>
-              <span key={index} onClick={() => handleClickSL(index)} >
-                <SwipeableList className={classes.root} threshold={0.25} handleClickSL  >
+            groups.map((g, index) =>
+              <span key={index} onClick={() => GetIntoGroup(index)} >
+                <SwipeableList className={classes.root} threshold={0.25} >
                   <SwipeableListItem
-                    swipeRight={swipeRightDataComplex(g.GroupID, index)}
+                    swipeRight={SwipeRightContent(g.GroupID, index)}
                     onSwipeProgress={handleSwipeProgress}
                   >
                     <ListItemAvatar style={{ marginRight: '5px' }} >
                       <Badge badgeContent={10} color="secondary"  >
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                       </Badge>
-                    </ListItemAvatar>
-                                    
+                    </ListItemAvatar>               
                     <ListItem name={g.GroupName} description="שמות הקבוצה יופיעו פה" />
                   </SwipeableListItem>
                 </SwipeableList>

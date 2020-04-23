@@ -54,15 +54,14 @@ const StyledBadge = withStyles((theme) => ({
 }))(Badge);
 
 function AGroup() {
+  const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   const group = location.state.group;
   const [groupName, setName] = useState(group.GroupName)
-  const classes = useStyles();
-  const [list, SetList] = useState([]);
+  const [lists, SetLists] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
-  const [participants, set_participants] = useState(['אבי','בני',"צ'רלי"]);
   const textInput = useRef(null);
   let tempName = "";
   let isLocal = true;
@@ -74,7 +73,7 @@ function AGroup() {
   }
 
   async function fetchMyAPI(group) {
-
+   try {
     const res = await fetch(`http://localhost:56794/api/AppList/${group.GroupID}`, {
       method: 'GET',
       headers: new Headers({
@@ -82,9 +81,12 @@ function AGroup() {
       }),
     })
     let data = await res.json();
-    SetList(data)
+    SetLists(data)
+   } catch (error) {
+     console.log(error)
+   }
   }
-
+  
   useEffect(() => {
     fetchMyAPI(group)
   }, [group]);
@@ -106,17 +108,16 @@ function AGroup() {
         (result) => {
           console.log('The ', result, ' was successfully added!')
           console.log('resultPostList', result)
-          SetList([...list, {
-           ...result,
-           ListID:list.ListID
+          SetLists([...lists, {
+           ...result
           }])
+          console.log(lists)
         
         },
         (error) => {
           console.log(error)
         })
   }
-
   let Delete = (id, index) => {
     if (swipeProgress >= 70) {
       swal({
@@ -136,8 +137,8 @@ function AGroup() {
               .then(
                 (result) => {
                   console.log('The ', result, ' was successfully deleted!')
-                  list.splice(index, 1)
-                  SetList([...list])
+                  lists.splice(index, 1)
+                  SetLists([...lists])
                   swal("הרשימה נמחקה ")
                 },
                 (error) => {
@@ -154,10 +155,8 @@ function AGroup() {
         <ItemContent
           icon={<DeleteIcon />}
           side="right"
-
         />
       </span>
-
     ),
     action: () =>
       triggerComplexItemAction(Delete(ListID, index))
@@ -197,8 +196,8 @@ function AGroup() {
 
 
 
-  const handleClickSL = (index) => {
-    history.push(`/AList`, { list: list[index] });
+  const GetIntoList = (index) => {
+    history.push(`/AList`, { list: lists[index] });
 
   }
 
@@ -244,18 +243,7 @@ function AGroup() {
           }
         })
     }
-
-
-
   }
-
-  const addParticipant = () =>{
-    
-    //open the users contact list and let him choose from there.
-    
-  }
-
-
   return (
     <div className="container">
       <div className="header"  >
@@ -268,13 +256,11 @@ function AGroup() {
           onBlur={Confirmation}
           inputRef={textInput}
         />
-        <button>הוסף משתמש</button>
-
       </div>
       <div className="Maincontent"   >
         {
-          list.map((l, index) =>
-            <span key={index} onClick={() => handleClickSL(index)}>
+          lists.map((l, index) =>
+            <span key={index} onClick={() => GetIntoList(index)}>
               <SwipeableList key={index} className={classes.root} threshold={0.25}>
                 <SwipeableListItem
                   swipeRight={swipeRightDataComplex(l.ListID, index)}
@@ -284,10 +270,9 @@ function AGroup() {
                       <ShoppingCartIcon />
                     </StyledBadge>
                   </IconButton>
-                  <ListItem name={l.ListName} description={`סך עלות הרשימה : ${l.ListEstimatedPrice === 'undefined' ? 0 : l.ListEstimatedPrice}`} />
+                  <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
                 </SwipeableListItem>
               </SwipeableList>
-
             </span>
 
           )
@@ -296,18 +281,6 @@ function AGroup() {
       <div className="footer">
         <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
       </div>
-
-
-      {/* #region yogev's addons start */}
-        <div>
-          <ul>
-            <h3>שמות חברי הקבוצה</h3>
-            {participants.map((p, index) => <li key={index}>{p}</li>
-            )}
-          </ul>
-          <button onClick={addParticipant}>הוסף משתתף</button>
-        </div>
-    {/* #endregion yogev's addons end */}
     </div>
   );
 };

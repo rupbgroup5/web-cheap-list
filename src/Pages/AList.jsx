@@ -14,9 +14,9 @@ function AList() {
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
-    const [store, SetStore] = useState([]);
     const [product, SetProduct] = useState([]);
     const [productCart, SetProductCart] = useState([]);
+    const [stores, SetStores] = useState([]);
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let tempProduct = '';
     let tempName = '';
@@ -234,20 +234,20 @@ function AList() {
 
     }
     const ConfirmationLimit = (index) => {
-        console.log( list.ListEstimatedPrice,product[index].estimatedProductPrice)
+        console.log(list.ListEstimatedPrice, product[index].estimatedProductPrice)
         let tempCheck = list.ListEstimatedPrice + product[index].estimatedProductPrice
-        console.log('temp',tempCheck)
-        console.log( list.ListEstimatedPrice,product[index].estimatedProductPrice)
-        if ( tempCheck > list.LimitPrice) {
+        console.log('temp', tempCheck)
+        console.log(list.ListEstimatedPrice, product[index].estimatedProductPrice)
+        if (tempCheck > list.LimitPrice) {
             swal({
                 text: "שים לב! חרגת מהמגבלה",
                 buttons: ['בטל', 'המשך בכל זאת'],
                 dangerMode: true,
             }).then((willContinue) => {
-                    if (willContinue) {
-                        Add2DB(index)
-                    }
-                })
+                if (willContinue) {
+                    Add2DB(index)
+                }
+            })
         } else if (tempCheck > list.LimitPrice * 0.7) {
             alert('שים לב! עברת 70% מהמגבלה')
             Add2DB(index)
@@ -275,10 +275,6 @@ function AList() {
         SetProduct([])
         SetProductCart([...productCart, resultDB])
         alert('המוצר התווסף בהצלחה')
-
-
-
-
     }
 
     const getTotalPrice = async () => {
@@ -295,7 +291,7 @@ function AList() {
             let resStoreID = await fetch(query, { method: 'GET' })
             let resultStoreID = await resStoreID.json();
             console.log('2')
-            let tempArtayStore = []
+            let tempArrayStore = []
 
             for (let i = 0; i < resultStoreID.length; i++) {
                 let p = 0;
@@ -320,13 +316,42 @@ function AList() {
                     Store: resultStoreID[i],
                     TotalPrice: Number(p.toFixed(2))
                 }
-                tempArtayStore.push(s)
+                tempArrayStore.push(s)
             }
-            SetStore(tempArtayStore)
-            console.log('store', store)
+            SetStores(tempArrayStore)
+            console.log('store', stores)
+            // history.push(`/ListSuperMarket`, { params:tempArrayStore })
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const SearchSubstitute = async (indexS, indexO) => {
+        console.log(stores[indexS].OutOfStock[indexO])
+        let prodSubstitute = stores[indexS].OutOfStock[indexO];
+        data.GetProductsByName.product_name = prodSubstitute.product_description
+        let query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
+        let resBarcode = await fetch(query, { method: 'GET' })
+        let resultBarcode = await resBarcode.json();
+        let tempArray = []
+        for (let i = 0; i < resultBarcode.length; i++) {
+            data.GetPriceByProductBarCode.store_id = stores[indexS].store_id
+            data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
+            query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
+            let resPrice = await fetch(query, { method: 'GET' })
+            let resultPrice = await resPrice.json();
+            console.log('a',resultPrice)
+            if (resultPrice.product_barcode === prodSubstitute.product_barcode) {
+                continue;
+            }
+            tempArray.push(resultPrice)
+        }
+        console.log(tempArray)
+        if (tempArray.length !== 0) {
+            SetProduct(tempArray)
+        }
+        
+
     }
 
     const DeleteProduct = (index, barcode, ListID) => {
@@ -348,7 +373,7 @@ function AList() {
                         .then(
                             (result) => {
                                 console.log('The ', result, ' was successfully deleted!')
-                                list.ListEstimatedPrice -= productCart[index].estimatedProductPrice
+                                list.ListEstimatedPrice -= productCart[index].estimatedProductPrice.toFixed(2)
                                 productCart.splice(index, 1)
                                 SetProductCart([...productCart])
                                 swal("המוצר נמחק ")
@@ -360,6 +385,7 @@ function AList() {
             });
 
     }
+
 
 
 
@@ -387,12 +413,10 @@ function AList() {
                 {console.log(list)}
                 <br />
                 <h2>מוצרים</h2>
-                {console.log(list.ListEstimatedPrice)}
-
                 {product.map((p, index) =>
                     <div key={index}>
                         <p>
-                            {p.product_description} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
+                            {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
                                 <button onClick={() => ConfirmationLimit(index)}>הוסף לרשימה</button>
                         </p>
                     </div>
@@ -406,31 +430,30 @@ function AList() {
                                 {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
                             <button onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)}>מחק מהרשימה</button>
                             </p>
-                            {productCart.length - 1 === index ? 'מחיר משוער ' + list.ListEstimatedPrice : false}
+                            {productCart.length - 1 === index ? 'מחיר משוער ' + Number(list.ListEstimatedPrice).toFixed(2) : false}
                         </div>
                     )}
 
 
                 </div>
                 <br />
-                <button onClick={getTotalPrice}>תן לי את המחיר הזול ביותר </button> <br /><br />
-
+                <button onClick={getTotalPrice}>חפש סופרים בסביבתך</button> <br /><br />
                 <b><u>רשימת הסופרים</u></b>
-                {store.map((s, index) =>
-                    <div key={index}>
-                        <p>
-                            <b>{s.Store.store_name}</b> ברחוב {s.Store.store_address} <b>עלות סל הקניות הוא</b> {s.TotalPrice} <br />
+                {stores.map((s, indexS) =>
+                    <div key={indexS}>
+                        <div>
+                            <b>{s.Store.store_name}</b> ברחוב {s.Store.store_address} <b>:עלות סל הקניות הוא </b> {s.TotalPrice} <br />
                             <u><small>המוצרים שחסרים הם</small></u>
-                            {s.OutOfStock.map((o, index) =>
-                                <div key={index}>
+                            {s.OutOfStock.map((o, indexO) =>
+                                <p key={indexO}>
                                     <span>{o.product_name},</span>
-                                </div>
+                                    <button onClick={() => SearchSubstitute(indexS, indexO)} >חפש מוצר תחליפי</button>
+                                </p>
                             )}
-                        </p>
+                        </div>
 
                     </div>
                 )}
-
             </div>
             <div className="footer">
 
