@@ -11,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list';
 import '@sandstreamdev/react-swipeable-list/dist/styles.css';
 import swal from 'sweetalert';
-import { withRouter, useHistory } from 'react-router-dom';
+import { withRouter, useHistory,useParams } from 'react-router-dom';
 
 //Styles
 import '../Styles/HomeStyle.css';
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function HomePage() {
-  // let { id } = useParams();
+  let { id } = useParams();
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
   const [,triggerComplexItemAction] = useState();
@@ -57,6 +57,7 @@ function HomePage() {
   }
 
   useEffect(() => {
+    alert(id + ' is here');
 
     async function fetchMyAPI() {
         const res = await fetch("http://localhost:56794/api/AppGroups/", {
@@ -70,7 +71,7 @@ function HomePage() {
     }
 
     fetchMyAPI()
-  },[]);
+  },[id]);
 
   const AddNewGroup = (name) => {
     let newGroup = {

@@ -9,17 +9,14 @@ const TempPage = ({ match }) => {
 
     let { id } = useParams();
 
-
-
     const TestTheFetch = () => {
         alert('lets go')
-        //api/AppUsers/PostUser OR updateUserContacts
-        let localUrl = 'http://localhost:56794/api/AppUsers/updateUserContacts';
+        let localUrl = 'http://localhost:56794/api/AppUsers/PostUser';
         let newUser = {
-            UserID: 23,
+            // UserID: 23,
             UserName: 'checkManager',
             UserMail: 'checkManager@gmail.com',
-            Contacts: [{ Name: '!!!!!!!!!!!!!!!!!!!!!!', PhoneNumber: '050-5554422' }, { Name: 'הלוואי בריבוע', PhoneNumber: '050-5554422' }]
+            Contacts: [{ Name: `ג'לאל ה.עו"ד gam engli`, PhoneNumber: '050-5554422' }, { Name: 'הלוואי בריבוע', PhoneNumber: '050-5554422' }]
 
         }
         fetch(localUrl, {

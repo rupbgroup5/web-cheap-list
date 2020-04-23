@@ -25,7 +25,7 @@ function App() {
       <Navbar />
       <ArrowForwardIosIcon onClick={() => history.goBack()} style={{ fontSize: '1.5em', paddingLeft: '20px', float: 'right' }} />
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route path="/HomePage" component={HomePage} />
         <Route path="/TempPage" component={TempPage} />
         <Route path="/AGroups" component={AGroups} />
         <Route path="/AList" component={AList} />

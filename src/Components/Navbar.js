@@ -9,7 +9,7 @@ const Navbar = ({ id }) => {
     return (
         <nav>
             {/* <Link to='/'>ראשי</Link> | */}
-            <Link to={`/`}>הקבוצות שלי</Link> |
+            <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> |
             <Link to={`/TempPage/${id}`}>דף זמני</Link> |
             <br />
 
