@@ -11,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list';
 import '@sandstreamdev/react-swipeable-list/dist/styles.css';
 import swal from 'sweetalert';
-import { withRouter, useHistory,useParams } from 'react-router-dom';
+import { withRouter, useHistory,useParams,useLocation } from 'react-router-dom';
 
 //Styles
 import '../Styles/HomeStyle.css';
@@ -44,23 +44,24 @@ const useStyles = makeStyles(theme => ({
 
 function HomePage() {
   let { id } = useParams();
+  const location = useLocation()
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
   const [,triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
-  const isLocal = true
-  var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/"
+  const isLocal = false
+  var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
 
   if (isLocal){
     apiAppGroups =  "http://localhost:56794/api/AppGroups/"
   }
 
   useEffect(() => {
-    alert(id + ' is here');
-
+    // alert(id + ' is here');
+//http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/${id}
     async function fetchMyAPI() {
-        const res = await fetch("http://localhost:56794/api/AppGroups/", {
+        const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/`, {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -76,7 +77,7 @@ function HomePage() {
   const AddNewGroup = (name) => {
     let newGroup = {
       GroupName: name,
-      CreatorName: 'OrelKarmi',
+      UserID:1
     }
     fetch(apiAppGroups, {
       method: 'POST',
@@ -145,7 +146,10 @@ function HomePage() {
   });
 
     const GetIntoGroup = (index) => {
-      history.push(`/AGroups`, { group: groups[index] });
+      //  history.push(`/AGroups`)
+      //  history.location.hash = (groups[index]);
+      history.push(`/AGroups`,{group: groups[index]})
+      
     }
     return (
       <div className="container">

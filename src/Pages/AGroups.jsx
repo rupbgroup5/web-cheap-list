@@ -1,7 +1,7 @@
 
 
 import React, { useState, useRef, useEffect } from 'react';
-import { withRouter, useLocation, useHistory } from 'react-router-dom';
+import { withRouter, useLocation, useHistory, Redirect,Route,Switch} from 'react-router-dom';
 import { DeleteIcon } from '../Images/icons';
 
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -64,9 +64,9 @@ function AGroup() {
   const [swipeProgress, handleSwipeProgress] = useState();
   const textInput = useRef(null);
   let tempName = "";
-  let isLocal = true;
-  let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/";
-  let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/";
+  let isLocal = false;
+  let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
+  let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/";
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/";
     apiAppList = "http://localhost:56794/api/AppList/";
@@ -74,7 +74,7 @@ function AGroup() {
 
   async function fetchMyAPI(group) {
    try {
-    const res = await fetch(`http://localhost:56794/api/AppList/${group.GroupID}`, {
+    const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${group.GroupID}`, {
       method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
@@ -95,7 +95,7 @@ function AGroup() {
     let newList = {
       ListName: n,
       GroupID: group.GroupID,
-      CreatorName: 'OrelKarmi',
+      UserID:group.UserID
     }
     fetch(apiAppList, {
       method: 'POST',
@@ -197,8 +197,7 @@ function AGroup() {
 
 
   const GetIntoList = (index) => {
-    history.push(`/AList`, { list: lists[index] });
-
+    history.push(`/AList`,{list: lists[index]})
   }
 
   const editGroupName = (e) => {

@@ -9,8 +9,10 @@ import swal from 'sweetalert';
 import '../Styles/HomeStyle.css';
 
 function AList() {
+
     const location = useLocation()
-    const list = location.state.list;
+    const list = location.state.list
+    console.log('list',list)
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
@@ -22,16 +24,16 @@ function AList() {
     let tempName = '';
     let tempCity = '';
     let templimit = 0;
-    let isLocal = true
-    let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
-    let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppList/"
+    let isLocal = false
+    let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
+    let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
     if (isLocal) {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
     async function fetchMyAPI(list) {
         try {
-            const res = await fetch(`http://localhost:56794/api/AppProduct/${list.ListID}`, {
+            const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/${list.ListID}`, {
                 method: 'GET',
                 headers: new Headers({
                     'Content-Type': 'application/json; charset=UTF-8',
@@ -422,7 +424,6 @@ function AList() {
                     </div>
                 )}
                 <div>
-                    {console.log('productCart', productCart)}
                     <h2>הרשימה שלי </h2>
                     {productCart.map((p, index) =>
                         <div key={index}>
