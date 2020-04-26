@@ -1,29 +1,29 @@
 
 
-import React, { useState, useRef, useEffect } from 'react';
-import { withRouter, useLocation, useHistory, Redirect,Route,Switch} from 'react-router-dom';
-import { DeleteIcon } from '../Images/icons';
+import React, { useState, useRef, useEffect } from 'react'
+import { withRouter, useHistory, useParams} from 'react-router-dom' 
+import { DeleteIcon } from '../Images/icons'
 
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Badge, IconButton, TextField } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles'
+import { Badge, IconButton, TextField } from '@material-ui/core'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 
 
 import {
   SwipeableList,
   SwipeableListItem
-} from '@sandstreamdev/react-swipeable-list';
-import '@sandstreamdev/react-swipeable-list/dist/styles.css';
-import swal from 'sweetalert';
+} from '@sandstreamdev/react-swipeable-list'
+import '@sandstreamdev/react-swipeable-list/dist/styles.css'
+import swal from 'sweetalert'
 
 
 //Styles
-import '../Styles/HomeStyle.css';
+import '../Styles/HomeStyle.css'
 
 //Our Components
-import ListItem from '../Components/ListItem';
-import ItemContent from '../Components/ItemContent';
-import FormDialog from '../Components/FormDialog';
+import ListItem from '../Components/ListItem'
+import ItemContent from '../Components/ItemContent'
+import FormDialog from '../Components/FormDialog'
 
 
 const useStyles = makeStyles(theme => ({
@@ -43,7 +43,9 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(4),
 
   },
+
 }));
+
 const StyledBadge = withStyles((theme) => ({
   badge: {
     right: -3,
@@ -53,12 +55,16 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
+
+
+
+
 function AGroup() {
+  let { groupID,  groupName, userID } = useParams();
   const classes = useStyles();
   const history = useHistory();
-  const location = useLocation();
-  const group = location.state.group;
-  const [groupName, setName] = useState(group.GroupName)
+  
+  const [gName, setName] = useState(groupName)
   const [lists, SetLists] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
@@ -72,9 +78,9 @@ function AGroup() {
     apiAppList = "http://localhost:56794/api/AppList/";
   }
 
-  async function fetchMyAPI(group) {
+  async function fetchMyAPI() {
    try {
-    const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${group.GroupID}`, {
+    const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${groupID}`, { // //groupID,  groupName, userID
       method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
@@ -88,14 +94,15 @@ function AGroup() {
   }
   
   useEffect(() => {
-    fetchMyAPI(group)
-  }, [group]);
+
+    fetchMyAPI()
+  }, []);
 
   const AddNewList = (n) => {
     let newList = {
       ListName: n,
-      GroupID: group.GroupID,
-      UserID:group.UserID
+      GroupID: groupID,   
+      UserID:userID
     }
     fetch(apiAppList, {
       method: 'POST',
@@ -217,7 +224,7 @@ function AGroup() {
           if (userInput) {
             console.log(tempName)
             let g = {
-              GroupID: group.GroupID,
+              GroupID: groupID, 
               GroupName: tempName
             }
             fetch(apiAppGroups, {
@@ -251,7 +258,7 @@ function AGroup() {
           id="outlined-basic"
           variant="outlined"
           onInput={editGroupName}
-          placeholder={groupName}
+          placeholder={gName}
           onBlur={Confirmation}
           inputRef={textInput}
         />

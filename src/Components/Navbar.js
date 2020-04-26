@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import React from 'react'
+import { Link, withRouter } from 'react-router-dom'
 
 
 const Navbar = ({ id }) => {
@@ -8,9 +8,8 @@ const Navbar = ({ id }) => {
 
     return (
         <nav>
-            {/* <Link to='/'>ראשי</Link> | */}
             <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> |
-            <Link to={`/TempPage/${id}`}>דף זמני</Link> |
+            <Link to={`/TempPage/${id}/${null}`}>דף זמני</Link> | {/**must have the null property */}
             <br />
 
         </nav>

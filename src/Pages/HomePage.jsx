@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { DeleteIcon } from '../Images/icons';
+import React, { useState, useEffect } from 'react'
+import { DeleteIcon } from '../Images/icons'
 
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Avatar, Badge} from '@material-ui/core';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import { makeStyles } from '@material-ui/core/styles'
+import { Avatar, Badge} from '@material-ui/core'
+import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import {
   SwipeableList,
   SwipeableListItem
-} from '@sandstreamdev/react-swipeable-list';
-import '@sandstreamdev/react-swipeable-list/dist/styles.css';
-import swal from 'sweetalert';
-import { withRouter, useHistory,useParams,useLocation } from 'react-router-dom';
+} from '@sandstreamdev/react-swipeable-list'
+import '@sandstreamdev/react-swipeable-list/dist/styles.css'
+import swal from 'sweetalert'
+import { withRouter,useParams, useHistory } from 'react-router-dom' //,useLocation 
 
 //Styles
-import '../Styles/HomeStyle.css';
+import '../Styles/HomeStyle.css'
 
 //Our Components
-import ListItem from '../Components/ListItem';
-import ItemContent from '../Components/ItemContent';
-import FormDialog from '../Components/FormDialog';
+import ListItem from '../Components/ListItem'
+import ItemContent from '../Components/ItemContent'
+import FormDialog from '../Components/FormDialog'
 
 
 //Pages
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 
 function HomePage() {
   let { id } = useParams();
-  const location = useLocation()
+  //const location = useLocation()
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
   const [,triggerComplexItemAction] = useState();
@@ -79,6 +79,7 @@ function HomePage() {
       GroupName: name,
       UserID:1
     }
+
     fetch(apiAppGroups, {
       method: 'POST',
       headers: new Headers({
@@ -146,10 +147,12 @@ function HomePage() {
   });
 
     const GetIntoGroup = (index) => {
-      //  history.push(`/AGroups`)
-      //  history.location.hash = (groups[index]);
-      history.push(`/AGroups`,{group: groups[index]})
-      
+      let groupName = groups[index].GroupName;
+      let groupID = groups[index].GroupID
+      let userID = groups[index].UserID;
+             
+      history.push(`/AGroups/${groupID}/${groupName}/${userID}`);
+     
     }
     return (
       <div className="container">

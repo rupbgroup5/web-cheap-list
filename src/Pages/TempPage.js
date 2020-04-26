@@ -4,10 +4,10 @@ import { withRouter, useParams } from 'react-router-dom';
 
 
 
-const TempPage = ({ match }) => {
+const TempPage = () => {
 
 
-    let { id } = useParams();
+    let { id, name } = useParams();
 
     const TestTheFetch = () => {
         alert('lets go')
@@ -41,7 +41,7 @@ const TempPage = ({ match }) => {
         <div>
             <h1>temp page</h1>
             <h1>look at this id</h1>
-            <h2>{id}</h2>
+            <h2>{id}, {name}</h2>
             <button onClick={TestTheFetch}>test the fetch</button>
         </div>
     );
