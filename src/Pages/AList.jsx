@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { withRouter, useLocation } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 import { TextField } from '@material-ui/core';
 
@@ -10,9 +10,7 @@ import '../Styles/HomeStyle.css';
 
 function AList() {
 
-    const location = useLocation()
-    const list = location.state.list
-    console.log('list',list)
+    let list = JSON.parse(localStorage.getItem("list"));
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
@@ -412,7 +410,6 @@ function AList() {
                 <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
                 <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
                 <button onClick={handleClickChoise}>חפש מוצר</button>
-                {console.log(list)}
                 <br />
                 <h2>מוצרים</h2>
                 {product.map((p, index) =>

@@ -4,7 +4,6 @@ import { Link, withRouter } from 'react-router-dom'
 
 const Navbar = ({ id }) => {
 
-    // const history = useHistory()
 
     return (
         <nav>
