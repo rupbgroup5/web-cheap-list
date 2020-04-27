@@ -16,10 +16,9 @@ import AList from './Pages/AList'
 
 function App() {
 
-
+  //"homepage": "http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd"
   return (
     <div className="App">
-
 
 
       <Navbar />

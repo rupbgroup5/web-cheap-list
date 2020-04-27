@@ -58,24 +58,26 @@ function HomePage() {
   }
 
   useEffect(() => {
-     alert('hello from Rn ' + userIDfromRN);
+     //alert('hello from Rn ' + userIDfromRN);
 //http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
   (async function fetchMyAPI() {
-        const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/${userIDfromRN}`, {
+        const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/${12}`, {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
           }),
         })
         let data = await res.json();
+        console.log('data',data)
         SetGroups(data)
   }());
+  localStorage.clear('list')
   },[userIDfromRN]);
 
   const AddNewGroup = (name) => {
     let newGroup = {
       GroupName: name,
-      UserID:userIDfromRN
+      UserID:12
     }
 
     fetch(apiAppGroups, {
@@ -157,7 +159,9 @@ function HomePage() {
         <div className="header">
           <h1>הקבוצות שלי</h1>
         </div>
+        {console.log('1')}
         <div className="Maincontent"  >
+        {console.log(groups)}
           {
             groups.map((g, index) =>
               <span key={index} onClick={() => GetIntoGroup(index)} >

@@ -93,7 +93,6 @@ function AGroup() {
         console.log(error)
       }
     })();
-    localStorage.clear('list')
 
   }, [groupID]);
 
@@ -118,7 +117,6 @@ function AGroup() {
             ...result
           }])
           console.log(lists)
-
         },
         (error) => {
           console.log(error)
