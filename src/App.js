@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, Route, withRouter, useParams } from 'react-router-dom'
+import { Switch, Route, withRouter } from 'react-router-dom'
 
 //styles:
 import './App.css'
@@ -15,18 +15,18 @@ import AList from './Pages/AList'
 
 
 function App() {
-  const { param } = useParams();
+
 
   return (
     <div className="App">
 
 
 
-      <Navbar id={param} />
+      <Navbar />
       <Switch>
         <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
-        <Route path="/HomePage/:id" component={HomePage} />
-        <Route path="/TempPage/:id/:name" component={TempPage} />
+        <Route path="/HomePage/:userIDfromRN" component={HomePage} />
+        <Route path="/TempPage/:id" component={TempPage} />
         <Route path="/AGroups/:groupID/:groupName/:userID" component={AGroup} />
         <Route path="/AList" component={AList} />
       </Switch>

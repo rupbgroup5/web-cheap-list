@@ -80,7 +80,6 @@ function AGroup() {
 
 
   useEffect(() => {
-
     (async function fetchMyAPI() {
       try {
         const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${groupID}`, {

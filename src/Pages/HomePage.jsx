@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function HomePage() {
-  let { id } = useParams();
+  let { userIDfromRN} = useParams();
   //const location = useLocation()
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
@@ -58,8 +58,8 @@ function HomePage() {
   }
 
   useEffect(() => {
-    // alert(id + ' is here');
-//http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/${id}
+     alert('hello from Rn ' + userIDfromRN);
+//http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
     async function fetchMyAPI() {
         const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/`, {
           method: 'GET',
@@ -72,7 +72,7 @@ function HomePage() {
     }
 
     fetchMyAPI()
-  },[id]);
+  },[userIDfromRN]);
 
   const AddNewGroup = (name) => {
     let newGroup = {
