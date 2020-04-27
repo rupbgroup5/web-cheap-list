@@ -60,8 +60,8 @@ function HomePage() {
   useEffect(() => {
     // alert(id + ' is here');
 //http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd/api/AppGroups/${id}
-    async function fetchMyAPI() {
-        const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/`, {
+    (async function fetchMyAPI() {
+        const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/${id}`, {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -69,15 +69,13 @@ function HomePage() {
         })
         let data = await res.json();
         SetGroups(data)
-    }
-
-    fetchMyAPI()
+  }());
   },[id]);
 
   const AddNewGroup = (name) => {
     let newGroup = {
       GroupName: name,
-      UserID:1
+      UserID:id
     }
 
     fetch(apiAppGroups, {

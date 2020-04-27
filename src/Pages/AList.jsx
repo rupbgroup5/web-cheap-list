@@ -10,7 +10,7 @@ import '../Styles/HomeStyle.css';
 
 function AList() {
 
-    let list = JSON.parse(localStorage.getItem("list"));
+    const [list, SetList] = useState(JSON.parse(localStorage.getItem("list")))
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
@@ -18,9 +18,9 @@ function AList() {
     const [productCart, SetProductCart] = useState([]);
     const [stores, SetStores] = useState([]);
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
-    let tempProduct = '';
-    let tempName = '';
-    let tempCity = '';
+    let tempProduct = "";
+    let tempName = "";
+    let tempCity = "";
     let templimit = 0;
     let isLocal = false
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
@@ -29,9 +29,9 @@ function AList() {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
-    async function fetchMyAPI(list) {
+    async function fetchMyAPI() {
         try {
-            const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/${list.ListID}`, {
+            const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/${JSON.parse(localStorage.getItem('list')).ListID}`, {
                 method: 'GET',
                 headers: new Headers({
                     'Content-Type': 'application/json; charset=UTF-8',
@@ -45,8 +45,8 @@ function AList() {
     }
 
     useEffect(() => {
-        fetchMyAPI(list)
-    }, [list]);
+        fetchMyAPI()
+    }, []);
 
     const data = {
         TestFunction: {
@@ -102,7 +102,7 @@ function AList() {
     }
 
     const Confirmation = () => {
-        console.log(tempName)
+        console.log('is ', tempName)
         if (tempName !== "") {
             swal({
                 title: "שינוי שם הרשימה",
@@ -126,6 +126,7 @@ function AList() {
                             .then(
                                 (result) => {
                                     SetListName(tempName)
+                                    list.ListName = listName
                                     console.log('The name of ', result, ' id was changed')
                                     swal('שם הקבוצה שונה');
                                 },
@@ -233,6 +234,7 @@ function AList() {
 
 
     }
+
     const ConfirmationLimit = (index) => {
         console.log(list.ListEstimatedPrice, product[index].estimatedProductPrice)
         let tempCheck = list.ListEstimatedPrice + product[index].estimatedProductPrice
@@ -272,6 +274,7 @@ function AList() {
         const resultDB = await resDB.json()
         console.log('result', resultDB)
         list.ListEstimatedPrice += resultDB.estimatedProductPrice
+        SetList(list)
         SetProduct([])
         SetProductCart([...productCart, resultDB])
         alert('המוצר התווסף בהצלחה')
@@ -340,7 +343,7 @@ function AList() {
             query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
             let resPrice = await fetch(query, { method: 'GET' })
             let resultPrice = await resPrice.json();
-            console.log('a',resultPrice)
+            console.log('a', resultPrice)
             if (resultPrice.product_barcode === prodSubstitute.product_barcode) {
                 continue;
             }
@@ -350,7 +353,7 @@ function AList() {
         if (tempArray.length !== 0) {
             SetProduct(tempArray)
         }
-        
+
 
     }
 

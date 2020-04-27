@@ -63,7 +63,6 @@ function AGroup() {
   let { groupID, groupName, userID } = useParams();
   const classes = useStyles();
   const history = useHistory();
-
   const [gName, setName] = useState(groupName)
   const [lists, SetLists] = useState([]);
   const [, triggerComplexItemAction] = useState();
@@ -95,6 +94,7 @@ function AGroup() {
         console.log(error)
       }
     })();
+    localStorage.clear('list')
 
   }, [groupID]);
 
@@ -268,7 +268,6 @@ const Confirmation = () => {
 return (
   <div className="container">
     <div className="header"  >
-
       <TextField
         id="outlined-basic"
         variant="outlined"
