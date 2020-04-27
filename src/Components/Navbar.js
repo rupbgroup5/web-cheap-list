@@ -1,14 +1,15 @@
 import React from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { Link, withRouter, useParams } from 'react-router-dom'
 
 
-const Navbar = ({ id }) => {
+const Navbar = () => {
 
+    let { id } = useParams();
 
     return (
         <nav>
             <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> |
-            <Link to={`/TempPage/${id}/${null}`}>דף זמני</Link> | {/**must have the null property */}
+            <Link to={`/TempPage/${id}`}>דף זמני</Link> |
             <br />
 
         </nav>
