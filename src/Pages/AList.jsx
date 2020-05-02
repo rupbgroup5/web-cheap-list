@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { withRouter } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useContext } from 'react'
+import { withRouter } from 'react-router-dom'
 
-import { TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core'
 
-import swal from 'sweetalert';
+import swal from 'sweetalert'
 
 //Styles
-import '../Styles/HomeStyle.css';
+import '../Styles/HomeStyle.css'
+
+//Context Api:
+import { ListObjContext } from "../Contexts/ListDetailsContext";
+
 
 function AList() {
+    const { listObj } = useContext(ListObjContext);
 
-    const [list, SetList] = useState(JSON.parse(localStorage.getItem("list")))
+    const [list, SetList] = useState(listObj);//JSON.parse(localStorage.getItem("list"))
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
@@ -29,24 +34,25 @@ function AList() {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
-    async function fetchMyAPI() {
-        try {
-            const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/${JSON.parse(localStorage.getItem('list')).ListID}`, {
-                method: 'GET',
-                headers: new Headers({
-                    'Content-Type': 'application/json; charset=UTF-8',
-                }),
-            })
-            let result = await res.json();
-            SetProductCart(result)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+   
 
     useEffect(() => {
-        fetchMyAPI()
-    }, []);
+        (async() => {
+            try {
+                const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/${listObj.ListID}`, {
+                    method: 'GET',
+                    headers: new Headers({
+                        'Content-Type': 'application/json; charset=UTF-8',
+                    }),
+                })
+                let result = await res.json();
+                SetProductCart(result)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        )();
+    }, [listObj]);
 
     const data = {
         TestFunction: {
@@ -140,9 +146,9 @@ function AList() {
         }
     }
 
-    const handleCity = (e) => {
-        tempCity = e.target.value
-    }
+    const handleCity = (e) => { tempCity = e.target.value }
+       
+    
 
     const handleClickCity = async () => {
         try {
@@ -156,9 +162,9 @@ function AList() {
         }
     }
 
-    const handleLimit = (e) => {
-        templimit = e.target.value
-    }
+    const handleLimit = (e) => { templimit = e.target.value}
+       
+    
 
     const handleClickLimit = async () => {
         try {
@@ -172,9 +178,7 @@ function AList() {
         }
     }
 
-    const handleProduct = (e) => {
-        tempProduct = e.target.value
-    }
+    const handleProduct = (e) => { tempProduct = e.target.value}
 
     const handleClickChoise = async () => {
         if (list.CityName !== null && tempProduct !== '') {
@@ -284,7 +288,10 @@ function AList() {
         try {
             //getCityID
             data.GetCityByName.city_name = list.CityName
+            console.log(list.CityName);
+            
             let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
+            console.log('0')
             let resCity = await fetch(query, { method: 'GET' })
             let resultCity = await resCity.json();
             console.log('1')

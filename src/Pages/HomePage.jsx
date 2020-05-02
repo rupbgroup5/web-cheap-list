@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { DeleteIcon } from '../Images/icons'
 
 
@@ -11,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list'
 import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 import swal from 'sweetalert'
-import { withRouter,useParams, useHistory } from 'react-router-dom' //,useLocation 
+import { withRouter,useParams, useHistory } from 'react-router-dom' //,useLocation
 
 //Styles
 import '../Styles/HomeStyle.css'
@@ -22,8 +22,8 @@ import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
 import AuthenticateContact from '../Components/AuthenticateContact'
 
-
-//Pages
+//Context Api:
+import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,6 +44,11 @@ const useStyles = makeStyles(theme => ({
 
 
 function HomePage() {
+
+    //Context Api:
+    const { SetGroupDetails } = useContext(GroupDetailsContext);
+
+
   let { userIDfromRN} = useParams();
   //const location = useLocation()
   const classes = useStyles();
@@ -53,6 +58,7 @@ function HomePage() {
   const history = useHistory();
   const isLocal = true
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
+
 
   if (isLocal){
     apiAppGroups =  "http://localhost:56794/api/AppGroups/"
@@ -111,7 +117,7 @@ function HomePage() {
         (error) => {
           console.log(error)
         })
-       
+
         console.log(groups)
   }
   const Delete = (id, index) => {
@@ -127,7 +133,7 @@ function HomePage() {
             fetch(apiAppGroups + id , {
               method: 'DELETE',
               headers: new Headers({
-                 'Content-type': 'application/json; charset=UTF-8' 
+                 'Content-type': 'application/json; charset=UTF-8'
               })
             }).then(res => { return res.json(); })
               .then(
@@ -139,7 +145,7 @@ function HomePage() {
                 },
                 (error) => {
                   console.log(error)
-                })            
+                })
           }
         })
     }
@@ -160,12 +166,12 @@ function HomePage() {
   });
 
     const GetIntoGroup = (index) => {
-      let groupName = groups[index].GroupName;
-      let groupID = groups[index].GroupID
-      let userID = groups[index].UserID;
-             
-      history.push(`/AGroups/${groupID}/${groupName}/${userID}`);
-     
+
+      SetGroupDetails(groups[index]);
+
+
+      history.push(`/AGroups`);
+
     }
 
     const GetParticipiants = (groups)=> {
@@ -180,7 +186,7 @@ function HomePage() {
 
 
     return (
-       
+
       <div className="container">
         <div className="header">
           <h1>הקבוצות שלי</h1>
@@ -199,7 +205,7 @@ function HomePage() {
                       <Badge badgeContent={10} color="secondary"  >
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                       </Badge>
-                    </ListItemAvatar>               
+                    </ListItemAvatar>
                     <ListItem name={g.GroupName} description={GetParticipiants(g)}/>
                   </SwipeableListItem>
                 </SwipeableList>
@@ -211,9 +217,9 @@ function HomePage() {
         <div className="footer">
           <FormDialog getData={AddNewGroup} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
         </div>
-       
+
       </div>
-    
+
     );
 
   }

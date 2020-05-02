@@ -1,7 +1,7 @@
 
 
-import React, { useState, useRef, useEffect } from 'react'
-import { withRouter, useHistory, useParams } from 'react-router-dom'
+import React, { useState, useRef, useEffect, useContext } from 'react'
+import { withRouter, useHistory } from 'react-router-dom'
 import { DeleteIcon } from '../Images/icons'
 
 import { makeStyles, withStyles } from '@material-ui/core/styles'
@@ -24,6 +24,11 @@ import '../Styles/HomeStyle.css'
 import ListItem from '../Components/ListItem'
 import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
+
+
+//Context Api:
+import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
+import { ListObjContext } from "../Contexts/ListDetailsContext";
 
 
 const useStyles = makeStyles(theme => ({
@@ -56,14 +61,14 @@ const StyledBadge = withStyles((theme) => ({
 }))(Badge);
 
 
-
-
-
 function AGroup() {
-  let { groupID, groupName, userID } = useParams();
+    //Context Api:
+  const { groupDetails } = useContext(GroupDetailsContext);
+  const { SetListObj } = useContext(ListObjContext);
+
   const classes = useStyles();
   const history = useHistory();
-  const [gName, setName] = useState(groupName)
+  const [gName, setName] = useState(groupDetails.GroupName)
   const [lists, SetLists] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
@@ -78,10 +83,12 @@ function AGroup() {
   }
 
 
+
+
   useEffect(() => {
     (async function fetchMyAPI() {
       try {
-        const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${groupID}`, {
+        const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${groupDetails.GroupID}`, {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -94,13 +101,13 @@ function AGroup() {
       }
     })();
 
-  }, [groupID]);
+  }, [groupDetails]);
 
   const AddNewList = (n) => {
     let newList = {
       ListName: n,
-      GroupID: groupID,
-      UserID: userID
+      GroupID: groupDetails.GroupID,
+      UserID: groupDetails.UserID
     }
     fetch(apiAppList, {
       method: 'POST',
@@ -202,19 +209,12 @@ function AGroup() {
 
   const GetIntoList = (index) => {
 
+  SetListObj(lists[index]);
     history.push('/AList')
-    localStorage.setItem('list', JSON.stringify(lists[index]));
 
 
+    //localStorage.setItem('list', JSON.stringify(lists[index]));
 
-    // let list2move = {
-    //   ID: ListID,
-    //   name: ListName,
-    //   groupID: GroupID,
-    //   userID: UserID
-    // }
-
- // history.push(`/AList/${list2move.ID}/${list2move.name}/${list2move.groupID}/${list2move.userID}`)
 
 }
 
@@ -235,7 +235,7 @@ const Confirmation = () => {
         if (userInput) {
           console.log(tempName)
           let g = {
-            GroupID: groupID,
+            GroupID: groupDetails.GroupID,
             GroupName: tempName
           }
           fetch(apiAppGroups, {
