@@ -20,6 +20,7 @@ import '../Styles/HomeStyle.css'
 import ListItem from '../Components/ListItem'
 import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
+import AuthenticateContact from '../Components/AuthenticateContact'
 
 
 //Pages
@@ -50,18 +51,19 @@ function HomePage() {
   const [,triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
-  const isLocal = false
+  const isLocal = true
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
 
   if (isLocal){
     apiAppGroups =  "http://localhost:56794/api/AppGroups/"
+    userIDfromRN = 1
   }
 
   useEffect(() => {
      //alert('hello from Rn ' + userIDfromRN);
 //http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
   (async function fetchMyAPI() {
-        const res = await fetch( `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/${12}`, {
+        const res = await fetch( `http://localhost:56794/api/AppGroups/${userIDfromRN}`, {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -74,11 +76,22 @@ function HomePage() {
   localStorage.clear('list')
   },[userIDfromRN]);
 
-  const AddNewGroup = (name) => {
-    let newGroup = {
-      GroupName: name,
-      UserID:12
+  const AddNewGroup = async (groupName,participiants) => {
+    let participiantsArr = []
+    for (let i = 0; i < participiants.length; i++) {
+     let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
+     console.log('new',newParticipiant)
+     await participiantsArr.push(newParticipiant)
+     console.log('arr',participiantsArr)
     }
+    console.log('name',groupName)
+
+     let newGroup = {
+      GroupName: groupName,
+      UserID:userIDfromRN,
+      Participiants:participiantsArr
+    };
+    console.log('group',newGroup)
 
     fetch(apiAppGroups, {
       method: 'POST',
@@ -154,14 +167,26 @@ function HomePage() {
       history.push(`/AGroups/${groupID}/${groupName}/${userID}`);
      
     }
+
+    const GetParticipiants = (groups)=> {
+      let str = groups.Participiants[0].UserName;
+      for (let i = 1; i < groups.Participiants.length; i++) {
+        str += ', ' +  groups.Participiants[i].UserName
+        console.log('str',str)
+      }
+      return str;
+    }
+
+
+
     return (
+       
       <div className="container">
         <div className="header">
           <h1>הקבוצות שלי</h1>
         </div>
         {console.log('1')}
         <div className="Maincontent"  >
-        {console.log(groups)}
           {
             groups.map((g, index) =>
               <span key={index} onClick={() => GetIntoGroup(index)} >
@@ -175,7 +200,7 @@ function HomePage() {
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                       </Badge>
                     </ListItemAvatar>               
-                    <ListItem name={g.GroupName} description="שמות הקבוצה יופיעו פה" />
+                    <ListItem name={g.GroupName} description={GetParticipiants(g)}/>
                   </SwipeableListItem>
                 </SwipeableList>
 
@@ -184,7 +209,7 @@ function HomePage() {
           }
         </div>
         <div className="footer">
-          <FormDialog getData={AddNewGroup} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+          <FormDialog getData={AddNewGroup} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
         </div>
        
       </div>

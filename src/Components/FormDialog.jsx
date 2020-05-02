@@ -7,12 +7,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import Contacts from '../Components/Contacts'
 
 
 export default function FormDialog(props) {
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
+  const [enable, SetEnable] = useState(false);
+  const [groupName ,SetGroupName] = useState();
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -25,19 +29,27 @@ export default function FormDialog(props) {
   };
   let handleCloseOk = () => {
     setOpen(false);
-    props.getData(value);
+    SetEnable(true)
+    SetGroupName(value)
+  }
+
+  const handleCloseListContact = (bool,arr) => {
+    SetEnable(bool);
+    console.log(groupName)
+    props.getData(groupName,arr);
   }
 
 
   return (
     <div>
+      {enable && <Contacts userID={props.userID} close={handleCloseListContact} />}
       <Fab color="primary" aria-label="add">
         <AddIcon onClick={handleClickOpen} style={{ position: 'sticky' }} />
       </Fab>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{props.headLine}</DialogTitle>
         <DialogContent>
-          <TextField onChange={e => setValue(e.target.value)}     
+          <TextField onChange={e => setValue(e.target.value)}
             autoFocus
             margin="dense"
             id="name"

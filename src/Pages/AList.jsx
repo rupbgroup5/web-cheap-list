@@ -22,7 +22,7 @@ function AList() {
     let tempName = "";
     let tempCity = "";
     let templimit = 0;
-    let isLocal = false
+    let isLocal = true
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
     if (isLocal) {

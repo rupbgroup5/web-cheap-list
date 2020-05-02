@@ -69,7 +69,7 @@ function AGroup() {
   const [swipeProgress, handleSwipeProgress] = useState();
   const textInput = useRef(null);
   let tempName = "";
-  let isLocal = false;
+  let isLocal = true;
   let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
   let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/";
   if (isLocal) {
