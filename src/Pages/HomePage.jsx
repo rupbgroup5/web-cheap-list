@@ -21,6 +21,7 @@ import ListItem from '../Components/ListItem'
 import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
 import AuthenticateContact from '../Components/AuthenticateContact'
+import Contacts from '../Components/Contacts'
 
 //Context Api:
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
@@ -58,7 +59,8 @@ function HomePage() {
   const history = useHistory();
   const isLocal = true
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
-
+  const [enable, SetEnable] = useState(false);
+  const [tempGroupName,SetTempGroupName] = useState();
 
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
@@ -82,18 +84,16 @@ function HomePage() {
     localStorage.clear('list')
   }, [userIDfromRN]);
 
-  const AddNewGroup = async (groupName, participiants) => {
+  const AddNewGroup = async (participiants) => {
     let participiantsArr = []
     for (let i = 0; i < participiants.length; i++) {
       let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
-      console.log('new', newParticipiant)
       await participiantsArr.push(newParticipiant)
-      console.log('arr', participiantsArr)
     }
-    console.log('name', groupName)
+    console.log('name', tempGroupName)
 
     let newGroup = {
-      GroupName: groupName,
+      GroupName: tempGroupName,
       UserID: userIDfromRN,
       Participiants: participiantsArr
     };
@@ -178,16 +178,23 @@ function HomePage() {
      let str = groups.Participiants[0].UserName;
       for (let i = 1; i < groups.Participiants.length; i++) {
         str += ', ' + groups.Participiants[i].UserName
-        console.log('str', str)
       }
       return str;
     }
     
+    const AddNewMembers = (groupName)=> {
+      console.log('groupName',groupName)
+       SetTempGroupName(groupName);    
+      SetEnable(true)
+    }   
+
+    const handleCloseListContact = (arr) => {
+      SetEnable(false);
+      AddNewGroup(arr);
+      
+    }
+
   
-
-
-
-
 
 
   return (
@@ -196,7 +203,6 @@ function HomePage() {
       <div className="header">
         <h1>הקבוצות שלי</h1>
       </div>
-      {console.log(groups)}
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>
@@ -217,10 +223,12 @@ function HomePage() {
 
             </span>
           )
-        }
+        }  
+        <br/>
+        {enable && <Contacts userID={userIDfromRN} groupName={tempGroupName} close={handleCloseListContact} style={{textAlign:'center'}}/>}
       </div>
       <div className="footer">
-        <FormDialog getData={AddNewGroup} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+        <FormDialog getData={AddNewMembers} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
 
     </div>

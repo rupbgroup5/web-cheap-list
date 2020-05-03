@@ -8,8 +8,6 @@
         }),
     })
     let member = await res.json();
-    console.log('member', member)
-    console.log(PhoneNumber)
 
     if (member.UserID === 0) {
         const newUser = {

@@ -1,13 +1,13 @@
 /* eslint-disable no-use-before-define */
-import React,{useEffect,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Chip from '@material-ui/core/Chip';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export default function Contacts(props) {
-  const [contacts,SetContacts] = useState([])
+  const [contacts, SetContacts] = useState([])
   const fixedOptions = [];
-  const [value, setValue] = useState([...fixedOptions,]);
+  const [members, SetMembers] = useState([...fixedOptions,]);
 
 
   useEffect(() => {
@@ -25,34 +25,47 @@ export default function Contacts(props) {
 
   }, [props.userID])
 
+  const CloseContacts = () => {
+    console.log('value', members)
+    if (members.length !== 0) {
+      props.close(members)
+    }
+    else { alert('לא בחרת משתתפים עדיין') }
+
+  }
+
   return (
-    <Autocomplete
-      multiple
-      id="fixed-tags-demo"
-      value={value}
-      onChange={(event, newValue) => {
-        setValue([
-          ...fixedOptions,
-          ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
-        ]);
-      }}
-      options={contacts}
-      getOptionLabel={(option) => option.Name}
-      renderTags={(tagValue, getTagProps) =>
-        tagValue.map((option, index) => (
-          <Chip
-            label={option.Name}
-            {...getTagProps({ index })}
-            disabled={fixedOptions.indexOf(option) !== -1}
-          />
-        ))
-      }
-      style={{ width: 400, paddingBottom:200}}
-      
-      renderInput={(params) => (
-        <TextField  {...params} label="Contacts" variant="outlined" placeholder="חפש" />
-      )}
-    />
+    <span>
+      <h5>בחר אנשי קשר לקבוצת {props.groupName}</h5>
+      <Autocomplete
+        multiple
+        id="fixed-tags-demo"
+        value={members}
+        onChange={(event, newValue) => {
+          SetMembers([
+            ...fixedOptions,
+            ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
+          ]);
+        }}
+        options={contacts}
+        getOptionLabel={(option) => option.Name}
+        renderTags={(tagValue, getTagProps) =>
+          tagValue.map((option, index) => (
+            <Chip
+              label={option.Name}
+              {...getTagProps({ index })}
+              disabled={fixedOptions.indexOf(option) !== -1}
+            />
+          ))
+        }
+
+        style={{ width: 400 }}
+        renderInput={(params) => (
+          <TextField  {...params} label="Contacts" variant="outlined" placeholder="חפש" />
+        )}
+      />
+      <button onClick={CloseContacts}>הוסף אנשי קשר </button>
+    </span>
   );
 }
 
