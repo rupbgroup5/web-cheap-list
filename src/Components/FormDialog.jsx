@@ -15,9 +15,6 @@ export default function FormDialog(props) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
 
-  const [groupName ,SetGroupName] = useState();
-
-
   const handleClickOpen = () => {
     setOpen(true);
 

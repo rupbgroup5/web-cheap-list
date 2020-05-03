@@ -22,6 +22,7 @@ import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
 import AuthenticateContact from '../Components/AuthenticateContact'
 import Contacts from '../Components/Contacts'
+import {SendPushAddToGroup} from '../Components/SendPush'
 
 //Context Api:
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
@@ -64,7 +65,7 @@ function HomePage() {
 
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 1
+    userIDfromRN = 12
   }
 
   useEffect(() => {
@@ -90,14 +91,20 @@ function HomePage() {
       let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
       await participiantsArr.push(newParticipiant)
     }
-    console.log('name', tempGroupName)
+    console.log('participiantsArr', participiantsArr)
 
     let newGroup = {
       GroupName: tempGroupName,
       UserID: userIDfromRN,
       Participiants: participiantsArr
     };
-    console.log('group', newGroup)
+    for (let i = 0; i < participiantsArr.length; i++) {
+      if (participiantsArr[i].ExpoToken !== null) {
+        SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName,tempGroupName)
+      }
+      
+    }
+  
 
     fetch(apiAppGroups, {
       method: 'POST',
