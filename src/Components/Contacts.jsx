@@ -1,21 +1,13 @@
-import React,{useState, useEffect, useRef} from 'react';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
-import {FormControlLabel,FormGroup} from '@material-ui/core';
+/* eslint-disable no-use-before-define */
+import React,{useEffect,useState} from 'react';
+import Chip from '@material-ui/core/Chip';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
-
-
-function Contacts(props) {
-  //const { onClose, value: valueProp, open, ...other } = props;
-  const [enabled, SetEnabled] = useState(true);
-  const [check, setCheck] = useState([]) 
-  const radioGroupRef = useRef(null);
-  const [contacts, SetContacts] = useState([]);
-  const [displayedContacts, SetDisplayContacts] = useState([])
+export default function Contacts(props) {
+  const [contacts,SetContacts] = useState([])
+  const fixedOptions = [];
+  const [value, setValue] = useState([...fixedOptions,]);
 
 
   useEffect(() => {
@@ -29,86 +21,38 @@ function Contacts(props) {
       let data = await res.json();
       console.log('data', data)
       SetContacts(data)
-      SetDisplayContacts(data)
     }());
 
   }, [props.userID])
 
-  const handleEntering = () => {
-    if (radioGroupRef.current != null) {
-      radioGroupRef.current.focus();
-    }
-  };
-
-  const handleCancel = () => {
-    SetEnabled(false);
-    props.close(false)
-  };
-
-  const handleOk = () => {
-    let arr = []
-    for(var item in check) {
-      if (check[item]) {
-        arr.push(contacts[item])     
-      }
-    }
-    console.log('arr',arr)
-    SetEnabled(false);
-    props.close(false,arr)
-
-  };
-
-
-  const handleChange = (event,index) => {
-    let ContactName = displayedContacts[index].Name
-    console.log(ContactName)
-     setCheck({...check, [ContactName]:event.target.checked} )
-     console.log(check)
-    }  
-    
-    
-  const searchHandler = (event) => {
-    let searchQuery = event.target.value,
-    displayedContacts = contacts.filter((el)=>{
-      let searchValue = el.Name;
-      return searchValue.indexOf(searchQuery) !== -1;
-    });
-    SetDisplayContacts(displayedContacts)
-  }
-
   return (
-    
-    <Dialog
-      disableBackdropClick
-      disableEscapeKeyDown
-      maxWidth="xs"
-      onEntering={handleEntering}
-      aria-labelledby="confirmation-dialog-title"
-      open={enabled}
-    >
-      <DialogTitle id="confirmation-dialog-title">
-        <input type="text" placeholder="חפש איש קשר" onChange={searchHandler}/>
-         </DialogTitle>
-      <DialogContent dividers>
-          {displayedContacts.map((c,index) => (
-            <FormGroup key={index}>
-             <FormControlLabel
-             control={<Checkbox key={index} onChange={e=>handleChange(e,index)} value={index}  />}
-             label={c.Name} 
-           />
-           </FormGroup>
-          ))}
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={handleCancel} color="primary">
-          בטל
-        </Button>
-        <Button onClick={handleOk} color="primary">
-          אישור
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <Autocomplete
+      multiple
+      id="fixed-tags-demo"
+      value={value}
+      onChange={(event, newValue) => {
+        setValue([
+          ...fixedOptions,
+          ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
+        ]);
+      }}
+      options={contacts}
+      getOptionLabel={(option) => option.Name}
+      renderTags={(tagValue, getTagProps) =>
+        tagValue.map((option, index) => (
+          <Chip
+            label={option.Name}
+            {...getTagProps({ index })}
+            disabled={fixedOptions.indexOf(option) !== -1}
+          />
+        ))
+      }
+      style={{ width: 400, paddingBottom:200}}
+      
+      renderInput={(params) => (
+        <TextField  {...params} label="Contacts" variant="outlined" placeholder="חפש" />
+      )}
+    />
   );
 }
 
-export default Contacts

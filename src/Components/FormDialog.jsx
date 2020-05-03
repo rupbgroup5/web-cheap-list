@@ -42,7 +42,7 @@ export default function FormDialog(props) {
 
   return (
     <div>
-      {enable && <Contacts userID={props.userID} close={handleCloseListContact} />}
+      {enable && <Contacts userID={props.userID} close={handleCloseListContact} style={{textAlign:'center'}}/>}
       <Fab color="primary" aria-label="add">
         <AddIcon onClick={handleClickOpen} style={{ position: 'sticky' }} />
       </Fab>
@@ -69,7 +69,6 @@ export default function FormDialog(props) {
 
         </DialogActions>
       </Dialog>
-
     </div>
   );
 }

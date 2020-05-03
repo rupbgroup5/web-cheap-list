@@ -3,7 +3,7 @@ import { DeleteIcon } from '../Images/icons'
 
 
 import { makeStyles } from '@material-ui/core/styles'
-import { Avatar, Badge} from '@material-ui/core'
+import { Avatar, Badge } from '@material-ui/core'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import {
   SwipeableList,
@@ -11,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list'
 import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 import swal from 'sweetalert'
-import { withRouter,useParams, useHistory } from 'react-router-dom' //,useLocation
+import { withRouter, useParams, useHistory } from 'react-router-dom' //,useLocation
 
 //Styles
 import '../Styles/HomeStyle.css'
@@ -45,59 +45,59 @@ const useStyles = makeStyles(theme => ({
 
 function HomePage() {
 
-    //Context Api:
-    const { SetGroupDetails } = useContext(GroupDetailsContext);
+  //Context Api:
+  const { SetGroupDetails } = useContext(GroupDetailsContext);
 
 
-  let { userIDfromRN} = useParams();
+  let { userIDfromRN } = useParams();
   //const location = useLocation()
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
-  const [,triggerComplexItemAction] = useState();
+  const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
   const isLocal = true
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
 
 
-  if (isLocal){
-    apiAppGroups =  "http://localhost:56794/api/AppGroups/"
+  if (isLocal) {
+    apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 1
   }
 
   useEffect(() => {
-     //alert('hello from Rn ' + userIDfromRN);
-//http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
-  (async function fetchMyAPI() {
-        const res = await fetch( `http://localhost:56794/api/AppGroups/${userIDfromRN}`, {
-          method: 'GET',
-          headers: new Headers({
-            'Content-Type': 'application/json; charset=UTF-8',
-          }),
-        })
-        let data = await res.json();
-        console.log('data',data)
-        SetGroups(data)
-  }());
-  localStorage.clear('list')
-  },[userIDfromRN]);
+    //alert('hello from Rn ' + userIDfromRN);
+    //http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
+    (async function fetchMyAPI() {
+      const res = await fetch(`http://localhost:56794/api/AppGroups/${userIDfromRN}`, {
+        method: 'GET',
+        headers: new Headers({
+          'Content-Type': 'application/json; charset=UTF-8',
+        }),
+      })
+      let data = await res.json();
+      console.log('data', data)
+      SetGroups(data)
+    }());
+    localStorage.clear('list')
+  }, [userIDfromRN]);
 
-  const AddNewGroup = async (groupName,participiants) => {
+  const AddNewGroup = async (groupName, participiants) => {
     let participiantsArr = []
     for (let i = 0; i < participiants.length; i++) {
-     let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
-     console.log('new',newParticipiant)
-     await participiantsArr.push(newParticipiant)
-     console.log('arr',participiantsArr)
+      let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
+      console.log('new', newParticipiant)
+      await participiantsArr.push(newParticipiant)
+      console.log('arr', participiantsArr)
     }
-    console.log('name',groupName)
+    console.log('name', groupName)
 
-     let newGroup = {
+    let newGroup = {
       GroupName: groupName,
-      UserID:userIDfromRN,
-      Participiants:participiantsArr
+      UserID: userIDfromRN,
+      Participiants: participiantsArr
     };
-    console.log('group',newGroup)
+    console.log('group', newGroup)
 
     fetch(apiAppGroups, {
       method: 'POST',
@@ -118,7 +118,7 @@ function HomePage() {
           console.log(error)
         })
 
-        console.log(groups)
+    console.log(groups)
   }
   const Delete = (id, index) => {
     if (swipeProgress >= 70) {
@@ -130,10 +130,10 @@ function HomePage() {
       })
         .then((willDelete) => {
           if (willDelete) {
-            fetch(apiAppGroups + id , {
+            fetch(apiAppGroups + id, {
               method: 'DELETE',
               headers: new Headers({
-                 'Content-type': 'application/json; charset=UTF-8'
+                'Content-type': 'application/json; charset=UTF-8'
               })
             }).then(res => { return res.json(); })
               .then(
@@ -165,64 +165,69 @@ function HomePage() {
       triggerComplexItemAction(Delete(id, index))
   });
 
-    const GetIntoGroup = (index) => {
+  const GetIntoGroup = (index) => {
 
-      SetGroupDetails(groups[index]);
+    SetGroupDetails(groups[index]);
 
 
-      history.push(`/AGroups`);
+    history.push(`/AGroups`);
 
-    }
+  }
 
-    const GetParticipiants = (groups)=> {
-      let str = groups.Participiants[0].UserName;
+  const GetParticipiants = (groups) => {
+     let str = groups.Participiants[0].UserName;
       for (let i = 1; i < groups.Participiants.length; i++) {
-        str += ', ' +  groups.Participiants[i].UserName
-        console.log('str',str)
+        str += ', ' + groups.Participiants[i].UserName
+        console.log('str', str)
       }
       return str;
     }
+    
+  
 
 
 
-    return (
 
-      <div className="container">
-        <div className="header">
-          <h1>הקבוצות שלי</h1>
-        </div>
-        {console.log('1')}
-        <div className="Maincontent"  >
-          {
-            groups.map((g, index) =>
-              <span key={index} onClick={() => GetIntoGroup(index)} >
-                <SwipeableList className={classes.root} threshold={0.25} >
-                  <SwipeableListItem
-                    swipeRight={SwipeRightContent(g.GroupID, index)}
-                    onSwipeProgress={handleSwipeProgress}
-                  >
-                    <ListItemAvatar style={{ marginRight: '5px' }} >
-                      <Badge badgeContent={10} color="secondary"  >
-                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                      </Badge>
-                    </ListItemAvatar>
-                    <ListItem name={g.GroupName} description={GetParticipiants(g)}/>
-                  </SwipeableListItem>
-                </SwipeableList>
 
-              </span>
-            )
-          }
-        </div>
-        <div className="footer">
-          <FormDialog getData={AddNewGroup} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
-        </div>
 
+  return (
+
+    <div className="container">
+      <div className="header">
+        <h1>הקבוצות שלי</h1>
+      </div>
+      {console.log(groups)}
+      <div className="Maincontent"  >
+        {
+          groups.map((g, index) =>
+            <span key={index} onClick={() => GetIntoGroup(index)} >
+              <SwipeableList className={classes.root} threshold={0.25} >
+                <SwipeableListItem
+                  swipeRight={SwipeRightContent(g.GroupID, index)}
+                  onSwipeProgress={handleSwipeProgress}
+                >
+                  <ListItemAvatar style={{ marginRight: '5px' }} >
+                    <Badge badgeContent={10} color="secondary"  >
+                      <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                    </Badge>
+                  </ListItemAvatar>
+                  <ListItem name={g.GroupName} description={GetParticipiants(g)} />
+                </SwipeableListItem>
+              </SwipeableList>
+
+            </span>
+          )
+        }
+      </div>
+      <div className="footer">
+        <FormDialog getData={AddNewGroup} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
 
-    );
+    </div>
 
-  }
+  );
+
+}
 
 
 export default withRouter(HomePage)
