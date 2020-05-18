@@ -82,7 +82,7 @@ function HomePage() {
       console.log('data', data)
       SetGroups(data)
     }());
-    localStorage.clear('list')
+    //localStorage.clear('list')
   }, [userIDfromRN]);
 
   const AddNewGroup = async (participiants) => {

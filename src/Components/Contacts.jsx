@@ -12,7 +12,7 @@ export default function Contacts(props) {
 
   useEffect(() => {
     (async function fetchMyAPI() {
-      const res = await fetch(`http://localhost:56794/api/AppUsers/GetUserContacts/${props.userID}`, {
+      const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/GetUserContacts/${props.userID}`, {
         method: 'GET',
         headers: new Headers({
           'Content-Type': 'application/json; charset=UTF-8',
@@ -59,7 +59,7 @@ export default function Contacts(props) {
           ))
         }
 
-        style={{ width: 400 }}
+        style={{ width: 350 }}
         renderInput={(params) => (
           <TextField  {...params} label="Contacts" variant="outlined" placeholder="חפש" />
         )}

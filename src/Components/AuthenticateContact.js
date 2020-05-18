@@ -1,7 +1,7 @@
 
   const AuthenticateContact = async (PhoneNumber) => {
 
-   const res = await fetch(`http://localhost:56794/api/AppUsers/AuthenticateContact/${PhoneNumber}`, {
+   const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/AuthenticateContact/${PhoneNumber}`, {
         method: 'GET',
         headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -15,7 +15,7 @@
             PhoneNumber: PhoneNumber //The defulat userName is the PhoneNumber until the user will change his name
         }
         console.log('into if')
-        await fetch("http://localhost:56794/api/AppUsers/SystemPostUser", {
+        await fetch("http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/SystemPostUser", {
             method: 'POST',
             headers: new Headers({
                 'Content-type': 'application/json; charset=UTF-8'
