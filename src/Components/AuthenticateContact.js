@@ -1,7 +1,18 @@
+import { useContext} from 'react'
 
-  const AuthenticateContact = async (PhoneNumber) => {
+//Context Api
+import { IsLocalContext } from '../Contexts/IsLocalContext'
 
-   const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/AuthenticateContact/${PhoneNumber}`, {
+const AuthenticateContact = async (PhoneNumber) => {
+
+    const {isLocal} = useContext(IsLocalContext)
+    let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
+    
+    if (isLocal) {
+        apiAppUser = 'http://localhost:56794/api/AppUsers/'
+    }
+
+    const res = await fetch(`${apiAppUser}AuthenticateContact/${PhoneNumber}`, {
         method: 'GET',
         headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -15,7 +26,7 @@
             PhoneNumber: PhoneNumber //The defulat userName is the PhoneNumber until the user will change his name
         }
         console.log('into if')
-        await fetch("http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/SystemPostUser", {
+        await fetch(`${apiAppUser}SystemPostUser`, {
             method: 'POST',
             headers: new Headers({
                 'Content-type': 'application/json; charset=UTF-8'
@@ -25,14 +36,14 @@
             .then(
                 (result) => {
                     console.log('The ', result, ' was successfully added!')
-                    member =  result;
+                    member = result;
                 },
                 (error) => {
                     console.log(error)
                 })
-    } 
+    }
     return member
-    
+
 
 }
 

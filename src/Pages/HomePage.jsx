@@ -26,6 +26,7 @@ import {SendPushAddToGroup} from '../Components/SendPush'
 
 //Context Api:
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
+import { IsLocalContext } from '../Contexts/IsLocalContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,6 +50,8 @@ function HomePage() {
 
   //Context Api:
   const { SetGroupDetails } = useContext(GroupDetailsContext);
+  const {isLocal} = useContext(IsLocalContext);
+
 
 
   let { userIDfromRN } = useParams();
@@ -58,7 +61,7 @@ function HomePage() {
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
-  const isLocal = true
+  //const isLocal = true
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
@@ -72,7 +75,7 @@ function HomePage() {
     //alert('hello from Rn ' + userIDfromRN);
     //http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
     (async function fetchMyAPI() {
-      const res = await fetch(`http://localhost:56794/api/AppGroups/${userIDfromRN}`, {
+      const res = await fetch(apiAppGroups + userIDfromRN, {
         method: 'GET',
         headers: new Headers({
           'Content-Type': 'application/json; charset=UTF-8',
@@ -82,8 +85,7 @@ function HomePage() {
       console.log('data', data)
       SetGroups(data)
     }());
-    //localStorage.clear('list')
-  }, [userIDfromRN]);
+  }, [userIDfromRN,apiAppGroups]);
 
   const AddNewGroup = async (participiants) => {
     let participiantsArr = []

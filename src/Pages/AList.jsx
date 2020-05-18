@@ -10,36 +10,39 @@ import '../Styles/HomeStyle.css'
 
 //Context Api:
 import { ListObjContext } from "../Contexts/ListDetailsContext";
+import { IsLocalContext } from "../Contexts/IsLocalContext";
 
 
 function AList() {
+    //Context API
     const { listObj } = useContext(ListObjContext);
+    const { isLocal } = useContext(IsLocalContext);
 
     const [list, SetList] = useState(listObj);//JSON.parse(localStorage.getItem("list"))
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
-    const [productCart, SetProductCart] = useState([]);
+    const [productCart, SetProductCart] = useState([]); //Convert to Context
     const [stores, SetStores] = useState([]);
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let tempProduct = "";
     let tempName = "";
     let tempCity = "";
     let templimit = 0;
-    let isLocal = true
+    //let isLocal = true
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
     if (isLocal) {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
-   
+
 
     useEffect(() => {
-        (async() => {
+        (async () => {
             try {
-                const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/${listObj.ListID}`, {
+                const res = await fetch(apiAppProduct + listObj.ListID, {
                     method: 'GET',
                     headers: new Headers({
                         'Content-Type': 'application/json; charset=UTF-8',
@@ -52,7 +55,7 @@ function AList() {
             }
         }
         )();
-    }, [listObj]);
+    }, [listObj, apiAppProduct]);
 
     const data = {
         TestFunction: {
@@ -147,8 +150,6 @@ function AList() {
     }
 
     const handleCity = (e) => { tempCity = e.target.value }
-       
-    
 
     const handleClickCity = async () => {
         try {
@@ -162,9 +163,7 @@ function AList() {
         }
     }
 
-    const handleLimit = (e) => { templimit = e.target.value}
-       
-    
+    const handleLimit = (e) => { templimit = e.target.value }
 
     const handleClickLimit = async () => {
         try {
@@ -178,7 +177,7 @@ function AList() {
         }
     }
 
-    const handleProduct = (e) => { tempProduct = e.target.value}
+    const handleProduct = (e) => { tempProduct = e.target.value }
 
     const handleClickChoise = async () => {
         if (list.CityName !== null && tempProduct !== '') {
@@ -289,7 +288,7 @@ function AList() {
             //getCityID
             data.GetCityByName.city_name = list.CityName
             console.log(list.CityName);
-            
+
             let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
             console.log('0')
             let resCity = await fetch(query, { method: 'GET' })

@@ -29,6 +29,9 @@ import FormDialog from '../Components/FormDialog'
 //Context Api:
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 import { ListObjContext } from "../Contexts/ListDetailsContext";
+import { IsLocalContext } from "../Contexts/IsLocalContext";
+
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -65,6 +68,7 @@ function AGroup() {
     //Context Api:
   const { groupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
+  const {isLocal} = useContext(IsLocalContext);
 
   const classes = useStyles();
   const history = useHistory();
@@ -74,7 +78,7 @@ function AGroup() {
   const [swipeProgress, handleSwipeProgress] = useState();
   const textInput = useRef(null);
   let tempName = "";
-  let isLocal = true;
+  //let isLocal = true;
   let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
   let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/";
   if (isLocal) {
@@ -88,7 +92,7 @@ function AGroup() {
   useEffect(() => {
     (async function fetchMyAPI() {
       try {
-        const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/${groupDetails.GroupID}`, {
+        const res = await fetch(apiAppList + groupDetails.GroupID, {
           method: 'GET',
           headers: new Headers({
             'Content-Type': 'application/json; charset=UTF-8',
@@ -101,7 +105,7 @@ function AGroup() {
       }
     })();
 
-  }, [groupDetails]);
+  }, [groupDetails,apiAppList]);
 
   const AddNewList = (n) => {
     let newList = {
