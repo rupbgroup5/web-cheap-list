@@ -11,19 +11,21 @@ import '../Styles/HomeStyle.css'
 //Context Api:
 import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
+import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 
 
 function AList() {
     //Context API
     const { listObj } = useContext(ListObjContext);
     const { isLocal } = useContext(IsLocalContext);
+    const  { productCart, SetProductCart } = useContext(ProductsCartContext);
 
     const [list, SetList] = useState(listObj);//JSON.parse(localStorage.getItem("list"))
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
-    const [productCart, SetProductCart] = useState([]); //Convert to Context
+    //const [productCart, SetProductCart] = useState([]); //Convert to Context
     const [stores, SetStores] = useState([]);
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let tempProduct = "";
@@ -55,7 +57,7 @@ function AList() {
             }
         }
         )();
-    }, [listObj, apiAppProduct]);
+    }, [listObj, apiAppProduct, SetProductCart]);
 
     const data = {
         TestFunction: {

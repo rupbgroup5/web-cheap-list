@@ -22,7 +22,7 @@ import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
 import AuthenticateContact from '../Components/AuthenticateContact'
 import Contacts from '../Components/Contacts'
-import {SendPushAddToGroup} from '../Components/SendPush'
+import { SendPushAddToGroup } from '../Components/SendPush'
 
 //Context Api:
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
@@ -69,6 +69,7 @@ function HomePage() {
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 12
+    
   }
 
   useEffect(() => {
