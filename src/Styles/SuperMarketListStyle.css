@@ -1,0 +1,40 @@
+#lists-container {
+    margin-top: 5vh;
+    text-align: right;
+    width: fit-content;
+}
+
+#list-header {
+    text-align: center;
+    color: blue;
+    text-decoration: underline;
+    margin-top: 1vh;
+}
+
+#taken-list {
+    margin-top: 2vh;
+    height: 30vh;
+    width: 45vw;
+    border: 3px solid black;
+    float: right;
+}
+
+#untaken-list {
+    margin-right: 5vw;
+    margin-top: 2vh;
+    height: 30vh;
+    width: 45vw;
+    border: 3px solid black;
+    float: right;
+}
+
+h5 {
+    text-align: center;
+    color: blue;
+    text-decoration: underline;
+}
+
+#finishBtn {
+    text-align: center;
+    margin-top: 37vh;
+}

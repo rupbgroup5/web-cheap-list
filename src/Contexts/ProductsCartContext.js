@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-
+import '../Styles/SuperMarketListStyle.css'
 
 export const ProductsCartContext = createContext();
 
