@@ -11,21 +11,17 @@
     margin-top: 1vh;
 }
 
-#taken-list {
+#taken-list, #untaken-list {
+    float: right;
     margin-top: 2vh;
     height: 30vh;
     width: 45vw;
+    font-size: small;
     border: 3px solid black;
-    float: right;
 }
 
 #untaken-list {
     margin-right: 5vw;
-    margin-top: 2vh;
-    height: 30vh;
-    width: 45vw;
-    border: 3px solid black;
-    float: right;
 }
 
 h5 {
