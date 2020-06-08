@@ -21,6 +21,7 @@ import GroupDetailsContextProvider from './Contexts/GroupDetailsContext'
 import ListDetailsContextProvider from './Contexts/ListDetailsContext'
 import IsLocalContextProvider from './Contexts/IsLocalContext'
 import ProductsCartContextProvider from './Contexts/ProductsCartContext'
+import MainNabar from './Components/MainNavBar'
 
 
 
@@ -32,6 +33,7 @@ function App() {
         <GroupDetailsContextProvider>
           <ListDetailsContextProvider>
             <ProductsCartContextProvider>
+              <MainNabar/>
               <Navbar />
               <Switch>
                 <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
