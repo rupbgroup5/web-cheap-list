@@ -240,7 +240,6 @@ function HomePage() {
       <div className="footer">
         <FormDialog getData={AddNewMembers} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
-
     </div>
 
   );
