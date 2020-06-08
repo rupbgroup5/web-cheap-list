@@ -1,125 +1,89 @@
 import React, { useState } from 'react' //, { useContext }
-import { withRouter } from 'react-router-dom'
-import { FixedSizeList as List } from 'react-window'; //https://react-window.now.sh/#/examples/list/fixed-size
-import Checkbox from '@material-ui/core/Checkbox';
+import { withRouter, useHistory } from 'react-router-dom'
+import Checkbox from '@material-ui/core/Checkbox'
+import Badge from '@material-ui/core/Badge'
+import Button from '@material-ui/core/Button'
 
-import Button from '@material-ui/core/Button';
-
+//swipeable list:
+import {
+SwipeableList,
+SwipeableListItem
+} from '@sandstreamdev/react-swipeable-list'
+import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 
 
 //Context Api:
-//import { ProductsCartContext } from "../Contexts/ProductsCartContext";
-
-
+//import { ProductsCartContext } from "../Contexts/ProductsCartContext"
 
 const SuperMarketList = () => {
-  //const  { productCart } = useContext(ProductsCartContext); //SetProductCart
-  //temp:
-  const [productCart, SetProductCart ] = useState(["גבינה לבנה 5%", "קוטג'", "חומוס", "חלב", "לחם"]);
-  const [takenArray, SettakenArray] = useState([]);
-  const [unTakenArray, SetUnTakenArray] = useState([]);
+  const history = useHistory();
 
-  const HandleChecked = (productName, productIndex) => {
-    let temp = [];
-    for (let i = 0; i < productCart.length; i++){
-      if(i !== productIndex){
-        temp.push(productCart[i]);
-      }
-    } 
-    SetProductCart(temp);
-    takenArray.push(productName);
+//const { productCart } = useContext(ProductsCartContext); //SetProductCart
+//temp:
 
-  }
-  const HandleUnChecked = (productName, productIndex) =>{
-    let temp = [];
-    for (let i = 0; i < takenArray.length; i++){
-      if(i !== productIndex){
-        temp.push(takenArray[i]);
-      }
-    } 
-    SettakenArray(temp);
-    productCart.push(productName);
-  }
+const [productCart, SetProductCart] = useState([
+"לחם",
+"חלב",
+"חומוס",
+" גבינה לבנה 5%",
+"ביצים",
+"שמן זית",
+"זיתים",
+"מרגרינה",
+"גבינה צהובה",
+"גיל",
+"יוגורט",
+"שוקלד",
+"אפרסקים",
+"תפוחים",
+"אבטיח",
+"קבבים",
+"אנטריקוט",
+"חזה עוף",
+"ירקות סנפרוסט לתנור",
+"תבלינים",
+]);
 
-  const ProductInCart = ({ index, style }) => (
-    <div style={style}>
-      {productCart[index]}
-      <Checkbox
-        color="primary"
-        onClick={()=>{HandleChecked(productCart[index], index)}}
-      />
-    </div>
-  );
-
-  const ProductInTaken = ({ index, style }) => (
-    <div style={style}>
-      {takenArray[index]}
-      <Checkbox
-        color="primary"
-        checked={true}
-        onClick={()=>{HandleUnChecked(takenArray[index], index)}}
-      />
-    </div>
-  );
-  const ProductInUnTaken = ({ index, style }) => (
-    <div style={style}>
-      {unTakenArray[index]}
-      <Checkbox
-        color="primary"
-      />
-    </div>
-  );
-
-  return (
-    <div id='lists-container'>
-
-      <h3 id="list-header">הרשימה שלי בסופר</h3>
-      <List
-        height={220}
-        itemCount={productCart.length}
-        itemSize={30}
-        width={300}
-      >
-        {ProductInCart}
-      </List>
-
-      <div id='taken-list'>
-        <h5>נכנס לעגלה</h5>
-        {takenArray.length === 0 ? <p>העגלה עדיין ריקה</p>: 
-        <List
-          height={100}
-          itemCount={takenArray.length}
-          itemSize={30}
-          width={200}
-        >
-         {ProductInTaken}
-        </List>
-      }
-      </div>
-
-      
-      <div id='untaken-list'>
-        <h5>מוצרים שלא לקחתי</h5>
-        {takenArray.length === 0 ? <p>רשימה זו ריקה</p>: 
-        <List
-          height={100}
-          itemCount={unTakenArray.length}
-          itemSize={30}
-          width={200}
-        >
-          {ProductInUnTaken}
-        </List>
+const Go2MyCart = () =>{
+  history.push("/MyCart")
 }
-      </div>
 
-      <div id='finishBtn'>
-        <Button variant="contained" color="primary" >
-        סיימתי קנייה
-        </Button>
-      </div>
-          </div>
 
-  )
+return (
+<div>
+    <h3 id="productCart-headline">הרשימה שלי</h3>
+  <div id="productCart-list">
+    <SwipeableList>
+      {productCart.map((product, index)=>{
+      return(
+      <SwipeableListItem key={index} swipeRight={{
+              content: <div className="swipe-divs">
+                לא לקחתי
+              </div>,
+              action: () => console.info('swipe action triggered')
+            }}>
+              <Checkbox
+              color="primary"
+              />
+        <div>{product}</div>
+      </SwipeableListItem>
+      )
+      })}
+    </SwipeableList>
+  </div>
+<div id="buttons-container"> 
+
+    <Badge badgeContent={2} color="error">
+      <Button variant="contained" color="primary" onClick={Go2MyCart}>העגלה שלי</Button>
+    </Badge>
+    <Badge badgeContent={4} color="error">
+      <Button variant="contained" color="primary">לא לקחתי</Button>
+    </Badge>
+
+</div> 
+</div>
+
+)
 }
 
 export default withRouter(SuperMarketList);
