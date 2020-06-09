@@ -1,0 +1,22 @@
+#compareList{
+    margin-top: 15px;
+    overflow: hidden;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+.product{
+    display: inline-block;
+    margin-left: 5px;
+    text-align: center;
+    white-space: normal;
+    vertical-align: top;
+}
+
+#compareList .product img{
+    width:90px;
+    height:auto;
+}
+img{
+    border:none;
+    max-width: 100%;
+}

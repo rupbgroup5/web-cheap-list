@@ -6,7 +6,7 @@ import { TextField } from '@material-ui/core'
 import swal from 'sweetalert'
 
 //Styles
-import '../Styles/HomeStyle.css'
+import '../Styles/ProductCartStyle.css'
 
 //Context Api:
 import { ListObjContext } from "../Contexts/ListDetailsContext";
@@ -221,11 +221,14 @@ function AList() {
                     price = price / count
 
                     console.log('my price', price)
+                    //Get SRCIMG
+                let resSRC = await fetch("http://localhost:56794/api/Scraper/" + resultBarcode[i].product_name, { method: 'GET' })
+                let resultSRC = await resSRC.json();
                     let p = {
                         product_barcode: resultBarcode[i].product_barcode,
                         product_name: resultBarcode[i].product_name,
                         product_description: resultBarcode[i].product_description,
-                        product_image: resultBarcode[i].product_image,
+                        product_image: resultSRC,
                         manufacturer_name: resultBarcode[i].manufacturer_name,
                         estimatedProductPrice: Number(price.toFixed(2))
                     }
@@ -427,25 +430,25 @@ function AList() {
                     <div key={index}>
                         <p>
                             {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
+                            <img src = {p.product_image} alt=""/>
                                 <button onClick={() => ConfirmationLimit(index)}>הוסף לרשימה</button>
                         </p>
                     </div>
                 )}
-                <div>
-                    <h2>הרשימה שלי </h2>
+                <div  id="compareList">
                     {productCart.map((p, index) =>
-                        <div key={index}>
-                            <p>
-                                {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
+                        <div key={index} className="product">
+                           <img src={p.product_image} alt=" "/>
+                           <br/>
+                            {p.product_description} <br/> במחיר { p.estimatedProductPrice}
+                            <br/>
                             <button onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)}>מחק מהרשימה</button>
-                            </p>
-                            {productCart.length - 1 === index ? 'מחיר משוער ' + Number(list.ListEstimatedPrice).toFixed(2) : false}
-                        </div>
-                    )}
-
-
+                        </div>  
+                    )}                     
                 </div>
-                <br />
+                <br/><br/>
+                {productCart.length - 1 !== 0 ? 'מחיר משוער ' + Number(list.ListEstimatedPrice).toFixed(2) : false}
+                <br /> <br/>
                 <button onClick={getTotalPrice}>חפש סופרים בסביבתך</button> <br /><br />
                 <b><u>רשימת הסופרים</u></b>
                 {stores.map((s, indexS) =>

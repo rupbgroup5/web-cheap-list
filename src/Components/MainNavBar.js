@@ -23,7 +23,7 @@ export default function MainNabar() {
         <nav className="nav">
             <div className="nav-Logo">
                 <IconButton>
-                <img src={logo} alt =" "/>
+                {/* <img src={logo} alt =" "/> */}
                 </IconButton>
             </div>
             <div className="nav-Profile">
