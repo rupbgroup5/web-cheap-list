@@ -1,15 +1,35 @@
-#lists-container {
-    margin-top: 5vh;
-    text-align: right;
-    width: fit-content;
-}
-
-#list-header {
+#productCart-headline {
     text-align: center;
     color: blue;
     text-decoration: underline;
     margin-top: 1vh;
 }
+
+#productCart-list {
+    margin-top: 5vh;
+    text-align: right;
+    width: 100vw;
+    height: 65vh;
+}
+
+.swipe-divs {
+    background: red;
+    width: 100vw;
+    height: 8vh;
+    text-align: left;
+    font-weight: bold;
+    padding-top: 3vh;
+}
+
+#buttons-container {
+    margin-top: 10vh;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 5vw;
+    padding-right: 5vw;
+}
+
+/*
 
 #taken-list, #untaken-list {
     float: right;
@@ -33,4 +53,4 @@ h5 {
 #finishBtn {
     text-align: center;
     margin-top: 37vh;
-}
+} */

@@ -13,7 +13,7 @@ import AGroup from './Pages/AGroup'
 import TempPage from './Pages/TempPage'
 import AList from './Pages/AList'
 import SuperMarketList from './Pages/SuperMarketList'
-
+import MyCart from './Pages/MyCart'
 
 
 //Contexts Providers:
@@ -42,6 +42,7 @@ function App() {
                 <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
                 <Route path="/AList" component={AList} />
                 <Route path="/SuperMarketList" component={SuperMarketList} />
+                <Route path="/MyCart" component={MyCart} />
               </Switch>
             </ProductsCartContextProvider>
           </ListDetailsContextProvider>
