@@ -1,17 +1,18 @@
-import { useContext} from 'react'
+// import  { useContext } from 'react'
 
-//Context Api
-import { IsLocalContext } from '../Contexts/IsLocalContext'
+// //Context Api
+// import { IsLocalContext } from "../Contexts/IsLocalContext";
+
+
 
 const AuthenticateContact = async (PhoneNumber) => {
-
-    const {isLocal} = useContext(IsLocalContext)
-    let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
+    //const  { isLocal } = useContext(IsLocalContext); not working, probably because breaking the Rules of Hooks.
+     let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
     
-    if (isLocal) {
-        apiAppUser = 'http://localhost:56794/api/AppUsers/'
-    }
-
+     if (true) {
+      apiAppUser = 'http://localhost:56794/api/AppUsers/'
+     }
+     
     const res = await fetch(`${apiAppUser}AuthenticateContact/${PhoneNumber}`, {
         method: 'GET',
         headers: new Headers({
@@ -43,8 +44,6 @@ const AuthenticateContact = async (PhoneNumber) => {
                 })
     }
     return member
-
-
 }
 
 export default AuthenticateContact

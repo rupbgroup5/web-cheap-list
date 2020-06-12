@@ -68,7 +68,7 @@ function AGroup() {
     //Context Api:
   const { groupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
-  const {isLocal} = useContext(IsLocalContext);
+  const { isLocal } = useContext(IsLocalContext);
 
   const classes = useStyles();
   const history = useHistory();
@@ -78,7 +78,6 @@ function AGroup() {
   const [swipeProgress, handleSwipeProgress] = useState();
   const textInput = useRef(null);
   let tempName = "";
-  //let isLocal = true;
   let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
   let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/";
   if (isLocal) {

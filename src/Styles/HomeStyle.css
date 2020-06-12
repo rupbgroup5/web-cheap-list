@@ -4,8 +4,13 @@
     margin-top: 20px;
 }
 .footer{
-    margin-left: 200px;
-    margin-top:200px;
+    position: '-webkit-sticky';
+    position: sticky;
+    position: fixed;
+    bottom:20px;
+    margin-left:300px;
+
+
 }
 #outlined-basic{
     text-align: center;

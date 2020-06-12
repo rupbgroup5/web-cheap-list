@@ -1,7 +1,22 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
-
 import { TextField } from '@material-ui/core'
+
+//SpedDial
+import { makeStyles } from '@material-ui/core/styles';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Switch from '@material-ui/core/Switch';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import FileCopyIcon from '@material-ui/icons/FileCopyOutlined';
+import SaveIcon from '@material-ui/icons/Save';
+import PrintIcon from '@material-ui/icons/Print';
+import ShareIcon from '@material-ui/icons/Share';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 
 import swal from 'sweetalert'
 
@@ -19,6 +34,11 @@ function AList() {
     const { listObj } = useContext(ListObjContext);
     const { isLocal } = useContext(IsLocalContext);
     const  { productCart, SetProductCart } = useContext(ProductsCartContext);
+
+    //SpeedDial
+    const [direction, setDirection] = useState('up');
+    const [open, setOpen] = useState(false);
+    const [hidden, setHidden] = useState(false);
 
     const [list, SetList] = useState(listObj);//JSON.parse(localStorage.getItem("list"))
     const [listName, SetListName] = useState(list.ListName)
@@ -58,54 +78,6 @@ function AList() {
         }
         )();
     }, [listObj, apiAppProduct, SetProductCart]);
-
-    const data = {
-        TestFunction: {
-            action: "TestFunction"
-        },
-        GetChains: {
-            action: "GetChains"
-        },
-        GetStoresByChain: {
-            action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
-        },
-        GetStoresByCityID: {
-            action: "GetStoresByCityID", city_id: '', limit: 3
-        },
-        GetStoresByGPS: {
-            action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
-        },
-        GetProductsByBarCode: {
-            action: "GetProductsByBarCode", product_barcode: '', limit: 3
-        },
-        GetProductsByID: {
-            action: 'GetProductsByID', product_id: '', limit: 10
-        },
-        GetProductsByName: {
-            action: "GetProductsByName", product_name: "", limit: 5
-        },
-        GetPrice: {
-            action: "GetPrice", store_id: '', limit: 10
-        },
-        GetPriceByProductBarCode: {
-            action: "GetPriceByProductBarCode", store_id: '', product_barcode: ''
-        },
-        GetPriceByProductID: {
-            action: "GetPriceByProductID", store_id: '', product_id: ''
-        },
-        GetHistoryByProductBarCode: {
-            action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
-        },
-        GetHistoryByProductID: {
-            action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
-        },
-        GetCities: {
-            action: "GetCities", limit: 10
-        },
-        GetCityByName: {
-            action: "GetCityByName", city_name: '', limit: 1
-        }
-    }
 
     const editListName = (e) => {
         tempName = "";
@@ -400,6 +372,21 @@ function AList() {
 
     }
 
+    const handleDirectionChange = (event) => {
+        setDirection(event.target.value);
+      };
+    
+      const handleHiddenChange = (event) => {
+        setHidden(event.target.checked);
+      };
+    
+      const handleClose = () => {
+        setOpen(false);
+      };
+    
+      const handleOpen = () => {
+        setOpen(true);
+      };
 
 
 
@@ -468,16 +455,83 @@ function AList() {
                 )}
             </div>
             <div className="footer">
-
+        <SpeedDial
+          ariaLabel="SpeedDial example"
+          //className={classes.speedDial}
+          hidden={hidden}
+          icon={<SpeedDialIcon />}
+          onClose={handleClose}
+          onOpen={handleOpen}
+          open={open}
+          direction="up"
+        >
+          {actions.map((action) => (
+            <SpeedDialAction
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              onClick={handleClose}
+            />
+          ))}
+        </SpeedDial>     
             </div>
         </div>
-
-
-
-
-
-
-
     )
 }
 export default withRouter(AList)
+
+const data = {
+    TestFunction: {
+        action: "TestFunction"
+    },
+    GetChains: {
+        action: "GetChains"
+    },
+    GetStoresByChain: {
+        action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
+    },
+    GetStoresByCityID: {
+        action: "GetStoresByCityID", city_id: '', limit: 3
+    },
+    GetStoresByGPS: {
+        action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
+    },
+    GetProductsByBarCode: {
+        action: "GetProductsByBarCode", product_barcode: '', limit: 3
+    },
+    GetProductsByID: {
+        action: 'GetProductsByID', product_id: '', limit: 10
+    },
+    GetProductsByName: {
+        action: "GetProductsByName", product_name: "", limit: 5
+    },
+    GetPrice: {
+        action: "GetPrice", store_id: '', limit: 10
+    },
+    GetPriceByProductBarCode: {
+        action: "GetPriceByProductBarCode", store_id: '', product_barcode: ''
+    },
+    GetPriceByProductID: {
+        action: "GetPriceByProductID", store_id: '', product_id: ''
+    },
+    GetHistoryByProductBarCode: {
+        action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
+    },
+    GetHistoryByProductID: {
+        action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
+    },
+    GetCities: {
+        action: "GetCities", limit: 10
+    },
+    GetCityByName: {
+        action: "GetCityByName", city_name: '', limit: 1
+    }
+}
+
+const actions = [
+    { icon: <FileCopyIcon />, name: 'Copy' },
+    { icon: <SaveIcon />, name: 'Save' },
+    { icon: <PrintIcon />, name: 'Print' },
+    { icon: <ShareIcon />, name: 'Share' },
+    { icon: <FavoriteIcon />, name: 'Like' },
+  ];
