@@ -43,7 +43,7 @@ const MyCart = () => {
                             <SwipeableListItem key={index} swipeRight={{
                                 content: <div className="swipe-divs">
                                     להחזיר לרשימת קניות
-              </div>,
+                            </div>,
                                 action: () => console.info('swipe action triggered')
                             }}>
                                 <Checkbox
