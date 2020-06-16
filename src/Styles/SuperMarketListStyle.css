@@ -9,16 +9,25 @@
     margin-top: 5vh;
     text-align: right;
     width: 100vw;
-    height: 65vh;
+    height: 55vh;
+    box-shadow: 0 0 20px 0px black;
 }
 
-.swipe-divs {
-    background: red;
+.swipeLeft-divs, .swipeRight-divs {
     width: 100vw;
     height: 8vh;
-    text-align: left;
     font-weight: bold;
     padding-top: 3vh;
+}
+
+.swipeLeft-divs {
+    background: red;
+    text-align: right;
+}
+
+.swipeRight-divs {
+    background: green;
+    text-align: left;
 }
 
 #buttons-container {
@@ -27,6 +36,12 @@
     justify-content: space-between;
     padding-left: 5vw;
     padding-right: 5vw;
+}
+
+.list-item {
+    margin-right: 5vw;
+    font-size: large;
+    font-family: cursive;
 }
 
 /*

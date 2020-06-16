@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react' //, { useContext }
+import React, { useState, useEffect, useContext } from 'react'
 import { withRouter, useHistory } from 'react-router-dom'
-import Checkbox from '@material-ui/core/Checkbox'
 import Badge from '@material-ui/core/Badge'
 import Button from '@material-ui/core/Button'
+import '../Styles/SuperMarketListStyle.css'
 
 //swipeable list:
 import {
@@ -11,25 +11,20 @@ import {
 } from '@sandstreamdev/react-swipeable-list'
 import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 
-
-import '../Styles/SuperMarketListStyle.css'
-
-
 //Context Api:
 //import { ProductsCartContext } from "../Contexts/ProductsCartContext"
 
 
-/** Yogev leaves Note to him self:
- * after connecting the ProductsCartContext to this component
- * the initial content of the list meneger will be ProductsCartContext.
- * 
- */
 
-const SuperMarketList = () => {
+
+
+const SuperMarketList = (props) => {
   const history = useHistory();
+        const [swipeProgress, handleSwipeProgress] = useState();
 
   //const { productCart } = useContext(ProductsCartContext); //SetProductCart
-  //temp:
+
+  //temporary productCart that is not came from Alist:
   const [productCart, SetProductCart] = useState([
     "לחם",
     "חלב",
@@ -53,23 +48,29 @@ const SuperMarketList = () => {
     "תבלינים",
   ]);
 
-  const superMarketArr = [];
-
-  useEffect(() => {
-    let superMarketItem = {
-      name: String,
-      list: String,
-    }
-    productCart.forEach((p) => {
-      superMarketItem.name = p;
-      superMarketItem.list = "supermarket-list";
-    });
-
-  }, [superMarketArr], [productCart]);
-
+// I think I going to use localstorge inorder to manage taken/non taken/supermarket list..
+// tbc... TBD
   const Go2MyCart = () => {
     history.push("/MyCart")
   }
+
+  const Move2takenList = (p) => {
+
+    let product2move;
+
+    if (swipeProgress >= 70) {
+      let deleteMeIndex = productCart.indexOf(p);
+      product2move = productCart.splice(deleteMeIndex, 1);
+      SetProductCart([...productCart]);
+
+      props.SendProduct(product2move)
+    }
+
+  }
+
+
+
+
 
 
   return (
@@ -79,19 +80,27 @@ const SuperMarketList = () => {
         <SwipeableList>
           {productCart.map((product, index) => {
             return (
-              <SwipeableListItem key={index} swipeRight={{
-                content: <div className="swipe-divs">
-                  לא לקחתי
+              <SwipeableListItem key={index}
+                swipeRight={{
+                  action: () => Move2takenList(product),
+                  content: <div className="swipeRight-divs">
+                    הכנס לעגלה שלי
               </div>,
-                action: () => console.info('swipe action triggered')
-              }}>
-                <Checkbox
-                  color="primary"
-                />
-                <div>{product}</div>
+                }}
+                swipeLeft={{
+                  content: <div className="swipeLeft-divs">
+                    לא לקחתי
+                </div>,
+                  action: () => console.info('swipe action triggered')
+                }}
+                onSwipeProgress={handleSwipeProgress}
+                threshold={0.25}
+              >
+                <div className="list-item" onClick={() => { alert("החלק אותי") }}>{index + 1 + ". " + product}</div>
               </SwipeableListItem>
             )
           })}
+
         </SwipeableList>
       </div>
       <div id="buttons-container">

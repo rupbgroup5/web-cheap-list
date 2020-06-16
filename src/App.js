@@ -22,7 +22,6 @@ import GroupDetailsContextProvider from './Contexts/GroupDetailsContext'
 import ListDetailsContextProvider from './Contexts/ListDetailsContext'
 import IsLocalContextProvider from './Contexts/IsLocalContext'
 import ProductsCartContextProvider from './Contexts/ProductsCartContext'
-import ListManagerContextProvider from './Contexts/ListManagerContext'
 
 
 function App() {
@@ -41,11 +40,8 @@ function App() {
                 <Route path="/TempPage/:id" component={TempPage} />
                 <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
                 <Route path="/AList" component={AList} />
-
-                <ListManagerContextProvider>
-                  <Route path="/SuperMarketList" component={SuperMarketList} />
-                  <Route path="/MyCart" component={MyCart} />
-                </ListManagerContextProvider>
+                <Route path="/SuperMarketList" component={SuperMarketList}/>
+                <Route path="/MyCart" component={MyCart} />
 
               </Switch>
             </ProductsCartContextProvider>
