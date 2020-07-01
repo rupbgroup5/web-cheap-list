@@ -1,22 +1,17 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
-import { TextField } from '@material-ui/core'
+import { TextField, TextareaAutosize } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles';
+import Circle from 'react-circle';
+import Button from '@material-ui/core/Button';
+import SaveIcon from '@material-ui/icons/Save';
 
 //SpedDial
-import { makeStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Switch from '@material-ui/core/Switch';
-import SpeedDial from '@material-ui/lab/SpeedDial';
-import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
-import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
-import FileCopyIcon from '@material-ui/icons/FileCopyOutlined';
-import SaveIcon from '@material-ui/icons/Save';
-import PrintIcon from '@material-ui/icons/Print';
-import ShareIcon from '@material-ui/icons/Share';
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@material-ui/lab/';
+import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
+import AddShoppingCartOutlinedIcon from '@material-ui/icons/AddShoppingCartOutlined';
+import AddAlarmOutlinedIcon from '@material-ui/icons/AddAlarmOutlined';
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 
 import swal from 'sweetalert'
 
@@ -28,21 +23,38 @@ import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 
+import FormDialog from '../Components/FormDialog'
+
+//Actions
+
+import Location from '../Components/Actions/Location'
+
+const useStyles = makeStyles((theme) => ({
+    button: {
+        margin: theme.spacing(1),
+    },
+}));
+
+
+
+
 
 function AList() {
+    const classes = useStyles();
+    const [location, SetLocation] = useState(false)
+
     //Context API
     const { listObj } = useContext(ListObjContext);
     const { isLocal } = useContext(IsLocalContext);
-    const  { productCart, SetProductCart } = useContext(ProductsCartContext);
+    const { productCart, SetProductCart } = useContext(ProductsCartContext);
 
     //SpeedDial
-    const [direction, setDirection] = useState('up');
-    const [open, setOpen] = useState(false);
-    const [hidden, setHidden] = useState(false);
+    const [openSpeedDial, setOpenSpeedDial] = useState(false);
 
-    const [list, SetList] = useState(listObj);//JSON.parse(localStorage.getItem("list"))
+    const [list, SetList] = useState(listObj);
     const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
+    const limitInput = useRef(null)
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
     //const [productCart, SetProductCart] = useState([]); //Convert to Context
@@ -51,7 +63,7 @@ function AList() {
     let tempProduct = "";
     let tempName = "";
     let tempCity = "";
-    let templimit = 0;
+    let tempLimit = '';
     //let isLocal = true
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
@@ -59,7 +71,47 @@ function AList() {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
+    const [limit,SetLimit] = useState(list.LimitPrice)
+    const [progressBar, SetProgressBar] = useState(0)
+    const [implementLimit, SetimplementLimit] = useState(((list.ListEstimatedPrice / list.LimitPrice).toFixed(2)) * 100)
 
+    const [color, SetColor] = useState("#009900")
+    const [disableSave, SetDisableSave] = useState(true)
+
+    const updatePercentage = () => {
+        setTimeout(() => {
+            SetProgressBar(progressBar + 1);
+        }, 30);
+        if (progressBar > 50) {
+            SetColor('#ff884d')
+        }
+        if (progressBar > 80) {
+            SetColor("#ff3300")
+        }
+    };
+    const updatePercentage2 = () =>{
+        setTimeout(() => {
+            SetProgressBar(progressBar -1);
+        }, 30);
+        if (progressBar <= 50 ) {
+            SetColor("#009900")
+        }
+        if (progressBar > 50) {
+            SetColor('#ff884d')
+        }
+        if (progressBar > 80) {
+            SetColor("#ff3300")
+        }
+    }
+
+    useEffect(() => {
+        if (implementLimit > 0) updatePercentage();
+    }, [implementLimit]);
+
+    useEffect(() => {
+        if (progressBar < implementLimit) updatePercentage();
+        else if(progressBar > implementLimit) updatePercentage2()
+    }, [progressBar]);
 
     useEffect(() => {
         (async () => {
@@ -125,27 +177,58 @@ function AList() {
 
     const handleCity = (e) => { tempCity = e.target.value }
 
-    const handleClickCity = async () => {
-        try {
-            const res = await fetch(apiAppList + tempCity + '/' + list.ListID, {
-                method: 'PUT',
-            })
-            let result = await res.json();
-            list.CityName = result.CityName
-        } catch (error) {
-            console.log(error)
+    const handleClickAction = (action) => {
+        let location = {}
+
+        if (action === 'Location') {
+            SetLocation(true)
+
+
+            console.log(action)
+            // if (navigator.geolocation) {
+            //     navigator.geolocation.watchPosition(function(position) {
+            //       console.log("Latitude is :", position.coords.latitude);
+            //       console.log("Longitude is :", position.coords.longitude);
+            //       location ={
+            //           lat: position.coords.latitude,
+            //           lng: position.coords.longitude
+            //       }
+            //      //alert(location.lat + ' ' +  location.lng)
+            //     });
+            //   }else{
+            //       alert('not working')
+            //   }
+
         }
+
+        // try {
+        //     const res = await fetch(apiAppList + tempCity + '/' + list.ListID, {
+        //         method: 'PUT',
+        //     })
+        //     let result = await res.json();
+        //     list.CityName = result.CityName
+        // } catch (error) {
+        //     console.log(error)
+        // }
     }
 
-    const handleLimit = (e) => { templimit = e.target.value }
+    const handleLimit = (e) => {
+        console.log(tempLimit)
+        if (e === '') {
+            limitInput.current.value = ''
+        }
+        tempLimit = e.target.value
+       
+    }
 
     const handleClickLimit = async () => {
         try {
-            const res = await fetch(apiAppList + "limit/" + templimit + '/' + list.ListID, {
+            const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + list.ListID, {
                 method: 'PUT',
             })
             let result = await res.json();
-            list.LimitPrice = result.LimitPrice
+            SetLimit(tempLimit);
+            SetimplementLimit(((list.ListEstimatedPrice / tempLimit ).toFixed(2)) * 100)
         } catch (error) {
             console.log(error)
         }
@@ -194,8 +277,8 @@ function AList() {
 
                     console.log('my price', price)
                     //Get SRCIMG
-                let resSRC = await fetch("http://localhost:56794/api/Scraper/" + resultBarcode[i].product_name, { method: 'GET' })
-                let resultSRC = await resSRC.json();
+                    let resSRC = await fetch("http://localhost:56794/api/Scraper/" + resultBarcode[i].product_name, { method: 'GET' })
+                    let resultSRC = await resSRC.json();
                     let p = {
                         product_barcode: resultBarcode[i].product_barcode,
                         product_name: resultBarcode[i].product_name,
@@ -372,21 +455,15 @@ function AList() {
 
     }
 
-    const handleDirectionChange = (event) => {
-        setDirection(event.target.value);
-      };
-    
-      const handleHiddenChange = (event) => {
-        setHidden(event.target.checked);
-      };
-    
-      const handleClose = () => {
-        setOpen(false);
-      };
-    
-      const handleOpen = () => {
-        setOpen(true);
-      };
+    const handleClose = () => {
+        setOpenSpeedDial(false);
+    }
+
+    const handleOpen = () => { setOpenSpeedDial(true); }
+
+    const CloseDialog = () => {
+        SetLocation(false)
+    }
 
 
 
@@ -403,41 +480,81 @@ function AList() {
                 />
             </div>
             <div className="Maincontent">
-                <h3>{list.CityName} </h3>
-                <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp;
-                <button onClick={handleClickCity}>הגדר עיר לחיפוש </button>
-                <h3>{list.LimitPrice}</h3>
+                {location && <Location CloseDialog={CloseDialog} />}
+                {/* <h3>{list.CityName} </h3> */}
+                {/* <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp; */}
+                {/* <button onClick={handleClickCity}>הגדר עיר לחיפוש </button> */}
+                {/* <h3>{list.LimitPrice}</h3>
                 <input type={'number'} placeholder='הזן מגבלה חדשה' onChange={handleLimit}></input> &nbsp;
                 <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
                 <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
-                <button onClick={handleClickChoise}>חפש מוצר</button>
+                <button onClick={handleClickChoise}>חפש מוצר</button> */}
                 <br />
-                <h2>מוצרים</h2>
+                <h2>סל קניות</h2>
                 {product.map((p, index) =>
                     <div key={index}>
                         <p>
                             {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
-                            <img src = {p.product_image} alt=""/>
-                                <button onClick={() => ConfirmationLimit(index)}>הוסף לרשימה</button>
+                            <img src={p.product_image} alt="" />
+                            <button onClick={ConfirmationLimit(index)}>הוסף לרשימה</button>
                         </p>
                     </div>
                 )}
-                <div  id="compareList">
+
+                <div id="compareList">
                     {productCart.map((p, index) =>
                         <div key={index} className="product">
-                           <img src={p.product_image} alt=" "/>
-                           <br/>
-                            {p.product_description} <br/> במחיר { p.estimatedProductPrice}
-                            <br/>
+                            <img src={p.product_image} alt=" " />
+                            <br />
+                            {p.product_description} <br /> במחיר {p.estimatedProductPrice}
+                            <br />
                             <button onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)}>מחק מהרשימה</button>
-                        </div>  
-                    )}                     
+                        </div>
+                    )}
                 </div>
-                <br/><br/>
+                <br />
                 {productCart.length - 1 !== 0 ? 'מחיר משוער ' + Number(list.ListEstimatedPrice).toFixed(2) : false}
-                <br /> <br/>
-                <button onClick={getTotalPrice}>חפש סופרים בסביבתך</button> <br /><br />
-                <b><u>רשימת הסופרים</u></b>
+                <br /><br />
+                <Circle
+                    animate={true} // Boolean: Animated/Static progress
+                    animationDuration="0.15s" //String: Length of animation
+                    size={100} // Number: Defines the size of the circle.
+                    lineWidth={14} // Number: Defines the thickness of the circle's stroke.
+                    //progress={((list.LimitPrice / list.ListEstimatedPrice).toFixed(2))*100} 
+                    progress={progressBar} // Number: Update to change the progress and percentage.
+                    progressColor={color}  // String: Color of "progress" portion of circle.
+                    //bgColor='Moccasin' // String: Color of "empty" portion of circle.
+                    textColor={color} // String: Color of percentage text color.
+                    textStyle={{
+                        font: 'bold 5rem Helvetica, Arial, sans-serif' // CSSProperties: Custom styling for percentage.
+                    }}
+                    percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
+                />
+                <br /><br />
+                <TextField type={'number'}
+                    placeholder="הגדר מגבלה חדשה"
+                    helperText={` המגבלה הנוכחית שלך היא 
+                ${limit}`}
+                    style={{ width: 150 }}
+                    onFocus={() => { SetDisableSave(false) }}
+                    onInput={handleLimit}
+                    inputRef={limitInput}
+                    onBlur={() => { tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false) }}
+                />
+                <Button
+                    color='primary'
+                    size="small"
+                    className={classes.button}
+                    startIcon={<SaveIcon style={{ marginLeft: 3 }} />}
+                    disabled={disableSave}
+                    onClick={handleClickLimit}
+                >
+                    שמור
+                </Button>
+
+                <br /> <br />
+                {/* <button onClick={getTotalPrice}>חפש סופרים בסביבתך</button> <br /><br /> */}
+                {/* <b><u>רשימת הסופרים</u></b> */}
                 {stores.map((s, indexS) =>
                     <div key={indexS}>
                         <div>
@@ -450,34 +567,34 @@ function AList() {
                                 </p>
                             )}
                         </div>
-
                     </div>
                 )}
             </div>
-            <div className="footer">
-        <SpeedDial
-          ariaLabel="SpeedDial example"
-          //className={classes.speedDial}
-          hidden={hidden}
-          icon={<SpeedDialIcon />}
-          onClose={handleClose}
-          onOpen={handleOpen}
-          open={open}
-          direction="up"
-        >
-          {actions.map((action) => (
-            <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              onClick={handleClose}
-            />
-          ))}
-        </SpeedDial>     
+            <div className="footer" >
+                <SpeedDial
+                    ariaLabel="SpeedDial"
+                    icon={<SpeedDialIcon />}
+                    onClose={handleClose}
+                    onOpen={handleOpen}
+                    open={openSpeedDial}
+                    direction="up"
+                >
+                    {actions.map((action) => (
+                        <SpeedDialAction
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                            onClick={() => handleClickAction(action.name)}
+                        />
+                    ))}
+                </SpeedDial>
+
             </div>
         </div>
     )
+
 }
+
 export default withRouter(AList)
 
 const data = {
@@ -529,9 +646,12 @@ const data = {
 }
 
 const actions = [
-    { icon: <FileCopyIcon />, name: 'Copy' },
-    { icon: <SaveIcon />, name: 'Save' },
-    { icon: <PrintIcon />, name: 'Print' },
-    { icon: <ShareIcon />, name: 'Share' },
-    { icon: <FavoriteIcon />, name: 'Like' },
-  ];
+    { icon: <LocationOnOutlinedIcon />, name: "Location" },
+    { icon: <AddShoppingCartOutlinedIcon />, name: "AddProduct" },
+    { icon: <AddAlarmOutlinedIcon />, name: "SetDeadLine" },
+    { icon: <SearchOutlinedIcon />, name: "Search" }
+];
+
+
+
+

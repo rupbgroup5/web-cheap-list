@@ -18,4 +18,10 @@
 .swal-input{
     direction: rtl;
 }
+.MuiAutocomplete-option{
+    direction: rtl;
+}
+.MuiAutocomplete-noOptions{
+    direction: rtl;
+}
  

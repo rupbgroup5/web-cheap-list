@@ -38,6 +38,7 @@ export default function Contacts(props) {
     <span>
       <h5>בחר אנשי קשר לקבוצת {props.groupName}</h5>
       <Autocomplete
+      noOptionsText='אין תוצאות'
         multiple
         id="fixed-tags-demo"
         value={members}
@@ -59,9 +60,9 @@ export default function Contacts(props) {
           ))
         }
 
-        style={{ width: 350 }}
+        style={{ width: '100%' }}
         renderInput={(params) => (
-          <TextField  {...params} label="Contacts" variant="outlined" placeholder="חפש" />
+          <TextField  {...params} label="אנשי קשר" variant="outlined" placeholder="חפש" />
         )}
       />
       <button onClick={CloseContacts}>הוסף אנשי קשר </button>

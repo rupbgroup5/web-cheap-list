@@ -39,7 +39,7 @@ export default function FormDialog(props) {
   return (
     <div>
       <Fab color="primary" aria-label="add">
-        <AddIcon onClick={handleClickOpen} style={{ position: 'sticky' }} />
+        <AddIcon onClick={handleClickOpen}/>
       </Fab>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{props.headLine}</DialogTitle>

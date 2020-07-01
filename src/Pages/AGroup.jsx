@@ -280,7 +280,7 @@ return (
     <div className="Maincontent"   >
       {
         lists.map((l, index) =>
-          <span key={index} onClick={() => GetIntoList(index)}>
+          <span key={index} onClick={()=> GetIntoList(index)}>
             <SwipeableList key={index} className={classes.root} threshold={0.25}>
               <SwipeableListItem
                 swipeRight={swipeRightDataComplex(l.ListID, index)}

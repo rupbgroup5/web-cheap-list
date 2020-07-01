@@ -178,8 +178,6 @@ function HomePage() {
   const GetIntoGroup = (index) => {
 
     SetGroupDetails(groups[index]);
-
-
     history.push(`/AGroups`);
 
   }
@@ -195,7 +193,7 @@ function HomePage() {
     const AddNewMembers = (groupName)=> {
       console.log('groupName',groupName)
        SetTempGroupName(groupName);    
-      SetEnable(true)
+       SetEnable(true)
     }   
 
     const handleCloseListContact = (arr) => {
@@ -216,7 +214,7 @@ function HomePage() {
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>
-            <span key={index} onClick={() => GetIntoGroup(index)} >
+            <span key={index} onClick={()=>GetIntoGroup(index)} >
               <SwipeableList className={classes.root} threshold={0.25} >
                 <SwipeableListItem
                   swipeRight={SwipeRightContent(g.GroupID, index)}
@@ -238,7 +236,8 @@ function HomePage() {
         {enable && <Contacts userID={userIDfromRN} groupName={tempGroupName} close={handleCloseListContact} style={{textAlign:'center'}}/>}
       </div>
       <div className="footer">
-        <FormDialog getData={AddNewMembers} userID={userIDfromRN} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+        <FormDialog getData={AddNewMembers}  headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+        {/* userID={userIDfromRN} */}
       </div>
     </div>
 
