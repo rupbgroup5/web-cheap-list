@@ -83,7 +83,7 @@ function HomePage() {
         }),
       })
       let data = await res.json();
-      console.log('data', data)
+         console.log('data', data)
       SetGroups(data)
     }());
   }, [userIDfromRN,apiAppGroups]);

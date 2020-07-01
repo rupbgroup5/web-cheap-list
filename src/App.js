@@ -6,6 +6,7 @@ import './App.css'
 
 //Our Components:
 import Navbar from './Components/Navbar'
+import MainNabar from './Components/MainNavBar'
 
 //pages: 
 import HomePage from './Pages/HomePage'
@@ -21,13 +22,6 @@ import GroupDetailsContextProvider from './Contexts/GroupDetailsContext'
 import ListDetailsContextProvider from './Contexts/ListDetailsContext'
 import IsLocalContextProvider from './Contexts/IsLocalContext'
 import ProductsCartContextProvider from './Contexts/ProductsCartContext'
-import MainNabar from './Components/MainNavBar'
-import GoogleMaps from './Components/GoogleMaps'
-import GetAllCities from './Components/GetAllCities'
-
-
-
-
 
 
 
@@ -39,7 +33,7 @@ function App() {
         <GroupDetailsContextProvider>
           <ListDetailsContextProvider>
             <ProductsCartContextProvider>
-              <MainNabar/>
+              <MainNabar />
               <Navbar />
               <Switch>
                 <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
@@ -47,8 +41,9 @@ function App() {
                 <Route path="/TempPage/:id" component={TempPage} />
                 <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
                 <Route path="/AList" component={AList} />
-                <Route path="/SuperMarketList" component={SuperMarketList} />
+                <Route path="/SuperMarketList" component={SuperMarketList}/>
                 <Route path="/MyCart" component={MyCart} />
+
               </Switch>
             </ProductsCartContextProvider>
           </ListDetailsContextProvider>
