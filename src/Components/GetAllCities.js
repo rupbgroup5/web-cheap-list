@@ -21,14 +21,17 @@ export default function GetAllCities() {
              await data.forEach(d => {
                   let city ={
                       cityID: d.city_id,
-                      cityName: d.city_name
+                      cityName: d.city_name,
+                      Lat: d.city_gps_lat,
+                      Lng: d.city_gps_lng
+
                   }
                   arrCities.push(city)
               });
 
               console.log(arrCities);
             
-              const resDB = await fetch("http://localhost:56794/api/PostCities", {
+              const resDB = await fetch("http://localhost:56794/api/Cities", {
                 method: 'POST',
                 headers: new Headers({
                     'Content-type': 'application/json; charset=UTF-8'
@@ -36,9 +39,6 @@ export default function GetAllCities() {
                 body: JSON.stringify(arrCities)
             })
             const resultDB = await resDB.json()
-            console.log('result', resultDB)
-
-
             } catch (error) {
               console.log(error)
             }

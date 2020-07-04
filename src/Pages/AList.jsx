@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import { withRouter } from 'react-router-dom'
-import { TextField, TextareaAutosize } from '@material-ui/core'
+import { TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Circle from 'react-circle';
 import Button from '@material-ui/core/Button';
@@ -23,11 +23,12 @@ import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 
-import FormDialog from '../Components/FormDialog'
+
 
 //Actions
 
 import Location from '../Components/Actions/Location'
+import SearchStores from '../Components/Actions/SearchStores';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -41,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
 
 function AList() {
     const classes = useStyles();
-    const [location, SetLocation] = useState(false)
 
     //Context API
     const { listObj } = useContext(ListObjContext);
@@ -50,6 +50,9 @@ function AList() {
 
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
+    const [location, SetLocation] = useState(listObj.Latitude === '' ? true : false)
+    const [searchStores, SetSearchStores] = useState(false)
+
 
     const [list, SetList] = useState(listObj);
     const [listName, SetListName] = useState(list.ListName)
@@ -57,26 +60,26 @@ function AList() {
     const limitInput = useRef(null)
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
-    //const [productCart, SetProductCart] = useState([]); //Convert to Context
     const [stores, SetStores] = useState([]);
+    const [limit,SetLimit] = useState(list.LimitPrice)
+    const [progressBar, SetProgressBar] = useState(0)
+    const [implementLimit, SetimplementLimit] = useState(((list.ListEstimatedPrice / list.LimitPrice).toFixed(2)) * 100)
+    const [color, SetColor] = useState("#009900")
+    const [disableSave, SetDisableSave] = useState(true)
+
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
-    let tempProduct = "";
-    let tempName = "";
-    let tempCity = "";
-    let tempLimit = '';
-    //let isLocal = true
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
     if (isLocal) {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
-    const [limit,SetLimit] = useState(list.LimitPrice)
-    const [progressBar, SetProgressBar] = useState(0)
-    const [implementLimit, SetimplementLimit] = useState(((list.ListEstimatedPrice / list.LimitPrice).toFixed(2)) * 100)
 
-    const [color, SetColor] = useState("#009900")
-    const [disableSave, SetDisableSave] = useState(true)
+    let tempProduct = "";
+    let tempName = "";
+    let tempCity = "";
+    let tempLimit = '';
+   
 
     const updatePercentage = () => {
         setTimeout(() => {
@@ -182,34 +185,10 @@ function AList() {
 
         if (action === 'Location') {
             SetLocation(true)
-
-
-            console.log(action)
-            // if (navigator.geolocation) {
-            //     navigator.geolocation.watchPosition(function(position) {
-            //       console.log("Latitude is :", position.coords.latitude);
-            //       console.log("Longitude is :", position.coords.longitude);
-            //       location ={
-            //           lat: position.coords.latitude,
-            //           lng: position.coords.longitude
-            //       }
-            //      //alert(location.lat + ' ' +  location.lng)
-            //     });
-            //   }else{
-            //       alert('not working')
-            //   }
-
+        }else if(action ==='SearchStores' ){
+            SetSearchStores(true)
         }
-
-        // try {
-        //     const res = await fetch(apiAppList + tempCity + '/' + list.ListID, {
-        //         method: 'PUT',
-        //     })
-        //     let result = await res.json();
-        //     list.CityName = result.CityName
-        // } catch (error) {
-        //     console.log(error)
-        // }
+        
     }
 
     const handleLimit = (e) => {
@@ -461,9 +440,9 @@ function AList() {
 
     const handleOpen = () => { setOpenSpeedDial(true); }
 
-    const CloseDialog = () => {
-        SetLocation(false)
-    }
+    const CloseDialogLocation = () => { SetLocation(false) }
+
+    const CloseDialogSearchStores = () => { SetSearchStores(false) }
 
 
 
@@ -480,7 +459,8 @@ function AList() {
                 />
             </div>
             <div className="Maincontent">
-                {location && <Location CloseDialog={CloseDialog} />}
+                {location && <Location CloseDialog={CloseDialogLocation} />}
+                {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores}/>}
                 {/* <h3>{list.CityName} </h3> */}
                 {/* <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp; */}
                 {/* <button onClick={handleClickCity}>הגדר עיר לחיפוש </button> */}
@@ -489,7 +469,6 @@ function AList() {
                 <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
                 <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
                 <button onClick={handleClickChoise}>חפש מוצר</button> */}
-                <br />
                 <h2>סל קניות</h2>
                 {product.map((p, index) =>
                     <div key={index}>
@@ -648,8 +627,8 @@ const data = {
 const actions = [
     { icon: <LocationOnOutlinedIcon />, name: "Location" },
     { icon: <AddShoppingCartOutlinedIcon />, name: "AddProduct" },
-    { icon: <AddAlarmOutlinedIcon />, name: "SetDeadLine" },
-    { icon: <SearchOutlinedIcon />, name: "Search" }
+    { icon: <SearchOutlinedIcon />, name: "SearchStores" }
+
 ];
 
 

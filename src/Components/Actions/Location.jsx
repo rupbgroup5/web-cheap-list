@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect } from 'react';
+import React, { useState, forwardRef, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
+import Slider from '@material-ui/core/Slider';
 
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -16,16 +17,19 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
+//Context API:
+import { ListObjContext } from "../../Contexts/ListDetailsContext";
+import { IsLocalContext } from "../../Contexts/IsLocalContext";
+import { UserIDContext } from '../../Contexts/UserIDContext'
 
-import Slider from '@material-ui/core/Slider';
 
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+
+
+import { createMuiTheme} from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
-  direction: 'rtl', 
+  direction: 'rtl',
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -55,58 +59,110 @@ const Transition = forwardRef((props, ref) => {
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog(props) {
+export default function Location(props) {
   const classes = useStyles();
+
+  //ContextApi
+  const { listObj, SetListObj } = useContext(ListObjContext);
+  const { isLocal } = useContext(IsLocalContext);
+  const { userID } = useContext(UserIDContext)
+
+  
   const [open, setOpen] = useState(true);
-  //const [label, SetLabel] = useState('הזן טווח בק"מ לחיפוש')
-  const [type, SetType] = useState('number')
-  const [select, SetSelect] = useState(false)
-  const [enable, SetEnable] = useState(false)
+  const [enable, SetEnable] = useState((listObj.TypeLocation === 'currentLocation' ? false : true))
   const [openSelect, setOpenSelect] = useState(false);
   const [cities, SetCities] = useState([])
+  const [coords, SetCoords] = useState({})
 
-  let api = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/GetCities/"
-  if (true) {
-      api = "http://localhost:56794/api/GetCities/"
-    }
+  let api = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/"
+  if (isLocal) {
+    api = "http://localhost:56794/api/"
+
+  }
 
   useEffect(() => {
     (async () => {
       try {
-          const res = await fetch(api, {
-              method: 'GET',
-              headers: new Headers({
-                  'Content-Type': 'application/json; charset=UTF-8',
-              }),
-          })
-          let result = await res.json();
-          SetCities(result)
+        const res = await fetch(api + 'Cities', {
+          method: 'GET',
+          headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8',
+          }),
+        })
+        let result = await res.json();
+        SetCities(result)
       } catch (error) {
-          console.log(error)
+        console.log(error)
       }
-  }
-  )();
+    }
+    )();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const resUser = await fetch(`${api}AppUsers/GetUser/${userID}`, {
+          method: 'GET',
+          headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8',
+          }),
+        })
+        let resGetUser = await resUser.json();
+        SetCoords({
+          lat: resGetUser.Latitude,
+          lng: resGetUser.Longitude
+        })
+      } catch (error) {
+
+      }
+    }
+    )();
   }, []);
 
 
 
-
-
-
   const handleChange = (event) => {
-    console.log('traget', event.target.value)
+
     if (event.target.value === 'city') {
-      //SetLabel('הזן עיר לחיפוש')
       SetEnable(true)
-      SetSelect(true)
-      SetType('text')
+      SetListObj({
+        ...listObj,
+        TypeLocation: 'city',
+        KM_radius: 5
+      })
     }
     if (event.target.value === 'currentLocation') {
-      //SetLabel('הזן טווח בק"מ לחיפוש')
       SetEnable(false);
-      SetType('number')
+      SetListObj({
+        ...listObj,
+        TypeLocation: 'currentLocation',
+        CityName: 'הזן עיר לחיפוש',
+        CityID: 0,
+        Latitude:coords.lat,
+        Longitude:coords.lng
+
+      })
     }
 
+  }
+
+  const handleKM = (event, newValue) => {
+    SetListObj({
+      ...listObj,
+      KM_radius: newValue,
+    })
+  }
+
+  const handleCity = (event, newValue) => {
+    console.log(newValue.Lat, newValue.Lng )
+    SetListObj({
+      ...listObj,
+      TypeLocation: 'city',
+      CityID: newValue.cityID,
+      CityName: newValue.cityName,
+      Latitude: newValue.Lat,
+      Longitude: newValue.Lng,
+    })
   }
 
 
@@ -114,22 +170,64 @@ export default function FullScreenDialog(props) {
     setOpen(false);
     props.CloseDialog()
   };
-  const handleOk = () => {
-    setOpen(false);
-    props.CloseDialog()
+
+  const handleOk = async () => {
+
+    let l = {};
+    let OK = true;
+
+    if (listObj.TypeLocation === 'currentLocation') {
+      l = {
+        TypeLocation: listObj.TypeLocation,
+        ListID: listObj.ListID,
+        Latitude: coords.lat,
+        Longitude: coords.lng,
+        CityName: null,
+        CityID: listObj.CityID,
+        KM_radius: listObj.KM_radius
+      }
+    } else {
+      if (listObj.CityName === 'הזן עיר לחיפוש') {
+        alert('הזן עיר תחילה')
+        OK = false
+      }
+      console.log('a',listObj)
+      l = {
+        TypeLocation: listObj.TypeLocation,
+        ListID: listObj.ListID,
+        Latitude: listObj.Latitude,
+        Longitude: listObj.Longitude,
+        CityName: listObj.CityName,
+        CityID: listObj.CityID,
+        KM_radius: 5
+      }
+    }
+    if (OK) {
+    try {
+      const res = await fetch(`${api}appList/Location`, {
+        method: 'PUT',
+        headers: new Headers({
+          'Content-Type': 'application/json; charset=UTF-8',
+        }),
+        body: JSON.stringify(l)
+      })
+
+      let result = await res.json();
+      setOpen(false);
+      props.CloseDialog()
+    } catch (error) {
+      console.log(error)
+    }
+
+    }
   }
 
-  const handleCloseSelect = () => {
-    setOpenSelect(false)
-  }
+  const handleCloseSelect = () => { setOpenSelect(false) }
 
 
-  const handleOpenSelect = () => {
-    setOpenSelect(true)
-  }
-  function valuetext(value) {
-    return {value};
-  }
+  const handleOpenSelect = () => { setOpenSelect(true) }
+
+  function valuetext(value) { return { value }; }
 
   const marks = [
     {
@@ -161,9 +259,9 @@ export default function FullScreenDialog(props) {
 
 
 
-
   return (
     <div dir='rtl' style={{ alignItems: 'center' }} >
+      {console.log(listObj)}
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
         <AppBar className={classes.appBar}>
           <Toolbar>
@@ -171,7 +269,7 @@ export default function FullScreenDialog(props) {
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-              הגדרות חיפוש
+              הגדרות מיקום
             </Typography>
             <Button autoFocus color="inherit" onClick={handleOk}>
               אישור
@@ -180,9 +278,7 @@ export default function FullScreenDialog(props) {
         </AppBar>
         <br /><br />
         <FormControl className={classes.FormControl}>
-          <RadioGroup row aria-label="position" name="position" defaultValue='currentLocation' onChange={handleChange} >
-
-
+          <RadioGroup row aria-label="position" name="position" value={listObj.TypeLocation} onChange={handleChange} >
             <FormControlLabel
               value="city"
               control={<Radio color="default" />}
@@ -207,7 +303,7 @@ export default function FullScreenDialog(props) {
               בחר טווח ק"מ רצוי לחיפוש
            </Typography>
             <Slider
-              defaultValue={5}
+              value={listObj.KM_radius}
               getAriaValueText={valuetext}
               aria-labelledby="discrete-slider"
               valueLabelDisplay="auto"
@@ -215,18 +311,19 @@ export default function FullScreenDialog(props) {
               marks={marks}
               min={5}
               max={30}
+              onChange={handleKM}
             /></span>}
 
-          {enable && <Autocomplete 
+          {enable && <Autocomplete
             id="combo-box-demo"
             options={cities}
             getOptionLabel={(option) => option.cityName}
-            style={{ width: 170}}
+            style={{ width: 170 }}
             noOptionsText='אין תוצאות'
-            closeIcon={false}           
+            closeIcon={false}
             blurOnSelect={true}
-            onChange={console.log((option) => option.cityID)}
-            renderInput={(params) => <TextField {...params} className="standard-basic" label="הזן עיר לחיפוש" variant="standard" required={true} />}
+            onChange={handleCity}
+            renderInput={(params) => <TextField {...params} className="standard-basic" label={listObj.CityName} variant="standard" required={true} />}
           />}
         </div>
       </Dialog>

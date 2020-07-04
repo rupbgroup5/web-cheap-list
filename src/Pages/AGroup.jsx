@@ -176,39 +176,6 @@ function AGroup() {
       triggerComplexItemAction(Delete(ListID, index))
   });
 
-  // let EditDiscription = index => {
-  //   if (swipeProgress >= 70) {
-  //     swal("תיאור הרשימה ", {
-  //       content: "input",
-  //       className: "swal-input"
-
-  //     })
-  //       .then((value) => {
-  //         list[index].descriptionListList = value;
-  //         SetList([...list])
-  //         console.log(list)
-
-  //       });
-  //   }
-
-  // }
-
-  // const swipeLeftDataComplex = index => ({
-  //   content: (
-  //     <span style={{ background: '#7cd1f9', width: '100%' }}>
-  //       <ItemContent
-  //         label=' הוספת תיאור '
-  //         side="left"
-
-  //       />
-  //     </span>
-
-  //   ),
-  //   action: () =>
-  //     triggerComplexItemAction(EditDiscription(index))
-  // });
-
-
 
   const GetIntoList = (index) => {
 

@@ -1,12 +1,12 @@
-// import  { useContext } from 'react'
+ //import  { useContext } from 'react'
 
-// //Context Api
-// import { IsLocalContext } from "../Contexts/IsLocalContext";
+ //Context Api
+ //import { IsLocalContext } from "../Contexts/IsLocalContext";
 
 
 
 const AuthenticateContact = async (PhoneNumber) => {
-    //const  { isLocal } = useContext(IsLocalContext); not working, probably because breaking the Rules of Hooks.
+    //const  { isLocal } = useContext(IsLocalContext); //not working, probably because breaking the Rules of Hooks.
      let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
     
      if (false) {

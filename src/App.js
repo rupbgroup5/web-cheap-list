@@ -22,14 +22,17 @@ import GroupDetailsContextProvider from './Contexts/GroupDetailsContext'
 import ListDetailsContextProvider from './Contexts/ListDetailsContext'
 import IsLocalContextProvider from './Contexts/IsLocalContext'
 import ProductsCartContextProvider from './Contexts/ProductsCartContext'
+import UserIDContextProvider from './Contexts/UserIDContext'
 
 
 
 function App() {
 
   return (
+    
     <div className="App">
       <IsLocalContextProvider>
+        <UserIDContextProvider>
         <GroupDetailsContextProvider>
           <ListDetailsContextProvider>
             <ProductsCartContextProvider>
@@ -48,11 +51,16 @@ function App() {
             </ProductsCartContextProvider>
           </ListDetailsContextProvider>
         </GroupDetailsContextProvider>
+        </UserIDContextProvider>
        </IsLocalContextProvider>
 
       
 
     </div>
+
+   
+ 
+
 
 
 

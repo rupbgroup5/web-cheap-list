@@ -11,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list'
 import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 import swal from 'sweetalert'
-import { withRouter, useParams, useHistory } from 'react-router-dom' //,useLocation
+import { withRouter, useParams, useHistory } from 'react-router-dom' 
 
 //Styles
 import '../Styles/HomeStyle.css'
@@ -27,6 +27,7 @@ import { SendPushAddToGroup } from '../Components/SendPush'
 //Context Api:
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 import { IsLocalContext } from '../Contexts/IsLocalContext'
+import { UserIDContext } from '../Contexts/UserIDContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,11 +52,11 @@ function HomePage() {
   //Context Api:
   const { SetGroupDetails } = useContext(GroupDetailsContext);
   const {isLocal} = useContext(IsLocalContext);
+  const { SetUserID } = useContext(UserIDContext)
 
 
 
   let { userIDfromRN } = useParams();
-  //const location = useLocation()
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
   const [, triggerComplexItemAction] = useState();
@@ -73,8 +74,6 @@ function HomePage() {
   }
 
   useEffect(() => {
-    //alert('hello from Rn ' + userIDfromRN);
-    //http://proj.ruppin.ac.il/bgroup5/FinalProject/frontEnd
     (async function fetchMyAPI() {
       const res = await fetch(apiAppGroups + userIDfromRN, {
         method: 'GET',
@@ -83,7 +82,6 @@ function HomePage() {
         }),
       })
       let data = await res.json();
-         console.log('data', data)
       SetGroups(data)
     }());
   }, [userIDfromRN,apiAppGroups]);
@@ -176,7 +174,7 @@ function HomePage() {
   });
 
   const GetIntoGroup = (index) => {
-
+    SetUserID(userIDfromRN)
     SetGroupDetails(groups[index]);
     history.push(`/AGroups`);
 
