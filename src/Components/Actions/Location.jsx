@@ -26,6 +26,7 @@ import { UserIDContext } from '../../Contexts/UserIDContext'
 
 
 
+
 import { createMuiTheme} from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
@@ -65,7 +66,7 @@ export default function Location(props) {
   //ContextApi
   const { listObj, SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
-  const { userID } = useContext(UserIDContext)
+  const { userID } = useContext(UserIDContext);
 
   
   const [open, setOpen] = useState(true);
@@ -140,8 +141,8 @@ export default function Location(props) {
         CityID: 0,
         Latitude:coords.lat,
         Longitude:coords.lng
-
       })
+
     }
 
   }

@@ -66,7 +66,6 @@ function AList() {
     const [implementLimit, SetimplementLimit] = useState(((list.ListEstimatedPrice / list.LimitPrice).toFixed(2)) * 100)
     const [color, SetColor] = useState("#009900")
     const [disableSave, SetDisableSave] = useState(true)
-
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
@@ -512,8 +511,7 @@ function AList() {
                 <br /><br />
                 <TextField type={'number'}
                     placeholder="הגדר מגבלה חדשה"
-                    helperText={` המגבלה הנוכחית שלך היא 
-                ${limit}`}
+                    helperText={`מגבלה נוכחית: ${limit}`}
                     style={{ width: 150 }}
                     onFocus={() => { SetDisableSave(false) }}
                     onInput={handleLimit}

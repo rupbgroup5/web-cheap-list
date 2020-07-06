@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from "react-google-maps"
-import { Circle } from 'react-google-maps/lib/components/Circle'
+
 
 
 //ContextApi
@@ -21,11 +21,13 @@ import { ListObjContext } from "../Contexts/ListDetailsContext";
             />
            */}
 
-const Map = () => {
+const Map = (props) => {
+
+    //ContextApi
     const { listObj } = useContext(ListObjContext);
-    useEffect(() => {
-        console.log(listObj)
-    }, []);
+
+
+
     const defaultMapOptions = {
         fullscreenControl: false,
         zoomControl: false,
@@ -33,30 +35,47 @@ const Map = () => {
         scaleControl: false,
         streetViewControl: false,
     };
+
+
     return (
+        <div>
+            {console.log(props.Stores[0].Deatils.store_gps_lng)}
+            <GoogleMap
+                defaultZoom={12}
+                defaultCenter={{ lat: JSON.parse(listObj.Latitude), lng: JSON.parse(listObj.Longitude) }}
+                defaultOptions={defaultMapOptions}
+            >
 
-        <GoogleMap
-            defaultZoom={12}
-            defaultCenter={{ lat: JSON.parse(listObj.Latitude), lng: JSON.parse(listObj.Longitude) }}
-            defaultOptions={defaultMapOptions}
-        >
 
-        </GoogleMap>
+            </GoogleMap>
+
+            {props.Stores.map((s,index)=>
+            <Marker key={index} position={{ lat: JSON.parse(s.Deatils.store_gps_lat), lng: JSON.parse(s.Deatils.store_gps_lng) }} 
+            animation={2}
+            />
+            )}
+        </div>
+
+
+
     )
 }
 
 
 
-function GoogleMaps() {
+
+
+function GoogleMaps(props) {
     const WrappedMap = withScriptjs(withGoogleMap(Map))
+
     return (
         <div style={{ width: '100vw', height: '50vh' }}>
-            {console.log(process.env.REACT_APP_SECRET_KEY)}
             <WrappedMap
                 googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.REACT_APP_GOOGLE_KEY}&language=HE&region:israel`}
                 loadingElement={<div style={{ height: `100%` }} />}
                 containerElement={<div style={{ height: `100%` }} />}
                 mapElement={<div style={{ height: `100%` }} />}
+                Stores={props.Stores}
             />
         </div>
     )
