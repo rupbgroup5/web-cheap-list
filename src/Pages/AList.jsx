@@ -10,8 +10,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@material-ui/lab/';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import AddShoppingCartOutlinedIcon from '@material-ui/icons/AddShoppingCartOutlined';
-import AddAlarmOutlinedIcon from '@material-ui/icons/AddAlarmOutlined';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import ListAltOutlinedIcon from '@material-ui/icons/ListAltOutlined';
 
 import swal from 'sweetalert'
 
@@ -29,6 +29,7 @@ import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 
 import Location from '../Components/Actions/Location'
 import SearchStores from '../Components/Actions/SearchStores';
+import SuperMarketList from '../Components/Actions/SuperMarketList';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -52,6 +53,7 @@ function AList() {
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
     const [location, SetLocation] = useState(listObj.Latitude === '' ? true : false)
     const [searchStores, SetSearchStores] = useState(false)
+    const [superMarketList ,SetSuperMarketList] = useState(false)
 
 
     const [list, SetList] = useState(listObj);
@@ -186,6 +188,8 @@ function AList() {
             SetLocation(true)
         }else if(action ==='SearchStores' ){
             SetSearchStores(true)
+        }else if(action === 'SuperMarketList'){
+            SetSuperMarketList(true)
         }
         
     }
@@ -443,6 +447,8 @@ function AList() {
 
     const CloseDialogSearchStores = () => { SetSearchStores(false) }
 
+    const CloseDialogSMList = () => { SetSuperMarketList(false) }
+
 
 
     return (
@@ -458,8 +464,12 @@ function AList() {
                 />
             </div>
             <div className="Maincontent">
+               
                 {location && <Location CloseDialog={CloseDialogLocation} />}
                 {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores}/>}
+                {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
+
+
                 {/* <h3>{list.CityName} </h3> */}
                 {/* <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp; */}
                 {/* <button onClick={handleClickCity}>הגדר עיר לחיפוש </button> */}
@@ -625,7 +635,8 @@ const data = {
 const actions = [
     { icon: <LocationOnOutlinedIcon />, name: "Location" },
     { icon: <AddShoppingCartOutlinedIcon />, name: "AddProduct" },
-    { icon: <SearchOutlinedIcon />, name: "SearchStores" }
+    { icon: <SearchOutlinedIcon />, name: "SearchStores" },
+    { icon: <ListAltOutlinedIcon/>, name:'SuperMarketList'}
 
 ];
 

@@ -8,8 +8,8 @@ const Navbar = () => {
 
     return (
         <nav>
-            <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> |
-            <Link to={`/SuperMarketList`}>temp list</Link> |
+            {/* <Link to={`/HomePage/${id}`}>הקבוצות שלי</Link> | */}
+            {/* <Link to={`/SuperMarketList`}>temp list</Link> | */}
             <br />
 
         </nav>

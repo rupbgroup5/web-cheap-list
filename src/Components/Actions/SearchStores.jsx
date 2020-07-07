@@ -44,12 +44,12 @@ const Transition = forwardRef((props, ref) => {
 
 
 export default function SearchStores(props) {
+  const classes = useStyles();
 
   //ContextApi
   const { listObj } = useContext(ListObjContext);
   const { productCart } = useContext(ProductsCartContext);
 
-  const classes = useStyles();
   const [open, setOpen] = useState(true);
   const [stores, SetStores] = useState([]);
   const [loading,SetLoading] = useState(true)
@@ -101,7 +101,6 @@ export default function SearchStores(props) {
             var result = await res.json()
             console.log('3')
             if (result.error_type === "NO_DATA") {
-              alert('המוצר ' + productCart[j].product_name + ' לא קיים בחנות זו ')
               outOfStock.push(productCart[j])
               continue;
   
@@ -124,48 +123,6 @@ export default function SearchStores(props) {
     })()
   },[]);
 
-  const getTotalPrice = async () => {
-    try {
-
-      //getStorebycityId
-      data.GetStoresByCityID.city_id = listObj.City_ID
-      let query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
-      let resStoreID = await fetch(query, { method: 'GET' })
-      let resultStoreID = await resStoreID.json();
-      console.log('2')
-      let tempArrayStore = []
-
-      for (let i = 0; i < resultStoreID.length; i++) {
-        let p = 0;
-        let outOfStock = [];
-        for (let j = 0; j < productCart.length; j++) {
-          data.GetPriceByProductBarCode.product_barcode = productCart[j].product_barcode
-          data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
-          query = queryString.stringifyUrl({ url: "https://cors-anywhere.herokuapp.com/" + api, query: data.GetPriceByProductBarCode })
-          const res = await fetch(query, { method: 'GET' })
-          var result = await res.json()
-          console.log('3')
-          if (result.error_type === "NO_DATA") {
-            alert('המוצר ' + productCart[j].product_name + ' לא קיים בחנות זו ')
-            outOfStock.push(productCart[j])
-            continue;
-
-          }
-          p += JSON.parse(result[0].store_product_price)
-        }
-        const s = {
-          OutOfStock: outOfStock,
-          Store: resultStoreID[i],
-          TotalPrice: Number(p.toFixed(2))
-        }
-        tempArrayStore.push(s)
-      }
-      SetStores(tempArrayStore)
-      SetLoading(false)
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
@@ -201,7 +158,7 @@ const data = {
       action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
   },
   GetStoresByCityID: {
-      action: "GetStoresByCityID", city_id: '', limit: 10
+      action: "GetStoresByCityID", city_id: '', limit: 5
   },
   GetStoresByGPS: {
       action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10

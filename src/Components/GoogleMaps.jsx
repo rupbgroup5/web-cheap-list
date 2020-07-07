@@ -26,6 +26,9 @@ const Map = (props) => {
     //ContextApi
     const { listObj } = useContext(ListObjContext);
 
+    const [selectedStore, SetSelectedStore] = useState(null)
+    const [isOpen, SetIsOpen] = useState(false)
+
 
 
     const defaultMapOptions = {
@@ -36,25 +39,50 @@ const Map = (props) => {
         streetViewControl: false,
     };
 
+    const HandleInfoOpen = (s) => {
+        console.log(s)
+        SetSelectedStore(s);
+        SetIsOpen(true);
+
+    }
+
+    const HandleInfoClose = () => { SetIsOpen(false); }
+
 
     return (
-        <div>
-            {console.log(props.Stores[0].Deatils.store_gps_lng)}
-            <GoogleMap
-                defaultZoom={12}
-                defaultCenter={{ lat: JSON.parse(listObj.Latitude), lng: JSON.parse(listObj.Longitude) }}
-                defaultOptions={defaultMapOptions}
-            >
 
 
-            </GoogleMap>
+        <GoogleMap
+            defaultZoom={12}
+            defaultCenter={{ lat: JSON.parse(listObj.Latitude), lng: JSON.parse(listObj.Longitude) }}
+            defaultOptions={defaultMapOptions}
+        >
+            {props.Stores.map((s, index) =>
 
-            {props.Stores.map((s,index)=>
-            <Marker key={index} position={{ lat: JSON.parse(s.Deatils.store_gps_lat), lng: JSON.parse(s.Deatils.store_gps_lng) }} 
-            animation={2}
-            />
+                <Marker key={index} position={{ lat: JSON.parse(s.Deatils.store_gps_lat), lng: JSON.parse(s.Deatils.store_gps_lng) }}
+                    animation={2}
+                    onClick={() => { HandleInfoOpen(s) }}
+                />
             )}
-        </div>
+
+            {isOpen &&
+                <Marker dir='rtl' style={{ backgroundColor: 'black' }} position={{ lat: JSON.parse(selectedStore.Deatils.store_gps_lat), lng: JSON.parse(selectedStore.Deatils.store_gps_lng) }}>
+                    <InfoWindow dir='rtl' onCloseClick={HandleInfoClose} >
+                        <div>
+                            <div><b>{selectedStore.Deatils.sub_chain_name}</b></div>
+                            <div> רח' {selectedStore.Deatils.store_address}  </div>
+                            <div>{selectedStore.Deatils.city_name}, {selectedStore.Deatils.store_zip_code}</div>
+                          
+                        </div>
+                    </InfoWindow>
+                </Marker>}
+
+
+        </GoogleMap>
+
+
+
+
 
 
 
@@ -69,7 +97,7 @@ function GoogleMaps(props) {
     const WrappedMap = withScriptjs(withGoogleMap(Map))
 
     return (
-        <div style={{ width: '100vw', height: '50vh' }}>
+        <div dir='rtl' style={{ width: '100vw', height: '50vh', }}>
             <WrappedMap
                 googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.REACT_APP_GOOGLE_KEY}&language=HE&region:israel`}
                 loadingElement={<div style={{ height: `100%` }} />}
