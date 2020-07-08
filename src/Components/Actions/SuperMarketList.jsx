@@ -51,31 +51,31 @@ const SuperMarketList = (props) => {
 
   //-------------------------------------------------------------
   //-------------------------TEMP-------------------------------- 
-  const { productCart } = useContext(ProductsCartContext);
+  // const { productCart } = useContext(ProductsCartContext);
   //↓↓ -- ↑↑
   //temporary productCart that is not came from Alist just for construction time:
-  // const [ productCart ] = useState([
-  //   "לחם",
-  //   "חלב",
-  //   "חומוס",
-  //   " גבינה לבנה 5%",
-  //   "ביצים",
-  //   "שמן זית",
-  //   "זיתים",
-  //   "מרגרינה",
-  //   "גבינה צהובה",
-  //   "גיל",
-  //   "יוגורט",
-  //   "שוקלד",
-  //   "אפרסקים",
-  //   "תפוחים",
-  //   "אבטיח",
-  //   "קבבים",
-  //   "אנטריקוט",
-  //   "חזה עוף",
-  //   "ירקות סנפרוסט לתנור",
-  //   "תבלינים",
-  // ]);
+  const [ productCart ] = useState([
+    "לחם",
+    "חלב",
+    "חומוס",
+    " גבינה לבנה 5%",
+    "ביצים",
+    "שמן זית",
+    "זיתים",
+    "מרגרינה",
+    "גבינה צהובה",
+    "גיל",
+    "יוגורט",
+    "שוקלד",
+    "אפרסקים",
+    "תפוחים",
+    "אבטיח",
+    "קבבים",
+    "אנטריקוט",
+    "חזה עוף",
+    "ירקות סנפרוסט לתנור",
+    "תבלינים",
+  ]);
   //-------------------------TEMP-------------------------------- 
   //-------------------------------------------------------------
 
@@ -84,6 +84,9 @@ const SuperMarketList = (props) => {
   const [notTakenBadge, SetNotTakenBadge] = useState();
 
   useEffect(() => {
+
+    //when fixing issues take care to take from the context api the names of products only and
+    //not the whole json (product.product_description)
     if (localStorage.getItem('SuperMarketList')) { //if the ls is full with something under this key
       SetProductCart_SMLonly(JSON.parse(localStorage.getItem('SuperMarketList')));
     } else {
@@ -172,6 +175,7 @@ const SuperMarketList = (props) => {
   return (
 
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
+      {console.log("productCart_SMLonly ",productCart_SMLonly[0])}
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -200,7 +204,7 @@ const SuperMarketList = (props) => {
                   onSwipeProgress={handleSwipeProgress}
                 // threshold={0.25}
                 >
-                  <div className="list-item" onClick={() => { alert("החלק אותי") }}>{index + 1 + ". " + product}</div>
+                  <div className="list-item" onClick={() => { alert("החלק אותי") }}>{product}</div>
                 </SwipeableListItem>
               )
             })}

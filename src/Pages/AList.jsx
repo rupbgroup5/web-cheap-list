@@ -464,7 +464,7 @@ function AList() {
                 />
             </div>
             <div className="Maincontent">
-               
+               {console.log(productCart)}
                 {location && <Location CloseDialog={CloseDialogLocation} />}
                 {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores}/>}
                 {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}

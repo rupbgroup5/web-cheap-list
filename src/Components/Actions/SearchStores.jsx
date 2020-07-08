@@ -78,7 +78,9 @@ export default function SearchStores(props) {
 
   useEffect(() => {
     (async()=>{
-      try{       
+      try{
+        console.log('useEd');
+               
         data.GetStoresByCityID.city_id = listObj.CityID
         let query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
         let resStoreID = await fetch(query, { method: 'GET' })
@@ -158,7 +160,7 @@ const data = {
       action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
   },
   GetStoresByCityID: {
-      action: "GetStoresByCityID", city_id: '', limit: 5
+      action: "GetStoresByCityID", city_id: '', limit: 1
   },
   GetStoresByGPS: {
       action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10

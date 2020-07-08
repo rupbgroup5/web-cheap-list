@@ -5,7 +5,7 @@ import { Switch, Route, withRouter } from 'react-router-dom'
 import './App.css'
 
 //Our Components:
-import Navbar from './Components/Navbar'
+//import Navbar from './Components/Navbar'
 import MainNabar from './Components/MainNavBar'
 
 //pages: 
