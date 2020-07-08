@@ -103,7 +103,7 @@ const SuperMarketList = (props) => {
       let LS_NotTaken = JSON.parse(localStorage.getItem('NotTaken'));
       SetNotTakenBadge(LS_NotTaken.length);
     }
-  }, []);
+  }, [productCart]);
 
   const handleClose = () => {
     setOpen(false);

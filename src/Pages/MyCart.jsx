@@ -104,7 +104,7 @@ const MyCart = () => {
 
                 </SwipeableList>
             </div> <br />
-            <Button variant="contained" color="primary" onClick={()=> history.goBack()}>חזור לרשימת קניות</Button>
+            <Button variant="outlined" color="primary" onClick={()=> history.goBack()}>חזור לרשימת קניות</Button>
 
         </div>
 

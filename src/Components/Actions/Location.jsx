@@ -27,11 +27,8 @@ import { UserIDContext } from '../../Contexts/UserIDContext'
 
 
 
-import { createMuiTheme} from '@material-ui/core/styles';
 
-const theme = createMuiTheme({
-  direction: 'rtl',
-});
+
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -71,7 +68,6 @@ export default function Location(props) {
   
   const [open, setOpen] = useState(true);
   const [enable, SetEnable] = useState((listObj.TypeLocation === 'currentLocation' ? false : true))
-  const [openSelect, setOpenSelect] = useState(false);
   const [cities, SetCities] = useState([])
   const [coords, SetCoords] = useState({})
 
@@ -97,7 +93,7 @@ export default function Location(props) {
       }
     }
     )();
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     (async () => {
@@ -118,7 +114,7 @@ export default function Location(props) {
       }
     }
     )();
-  }, []);
+  }, [api,userID]);
 
 
 
@@ -212,8 +208,8 @@ export default function Location(props) {
         }),
         body: JSON.stringify(l)
       })
-
       let result = await res.json();
+      console.log(result)
       setOpen(false);
       props.CloseDialog()
     } catch (error) {
@@ -223,10 +219,6 @@ export default function Location(props) {
     }
   }
 
-  const handleCloseSelect = () => { setOpenSelect(false) }
-
-
-  const handleOpenSelect = () => { setOpenSelect(true) }
 
   function valuetext(value) { return { value }; }
 

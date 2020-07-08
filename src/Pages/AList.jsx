@@ -30,6 +30,7 @@ import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 import Location from '../Components/Actions/Location'
 import SearchStores from '../Components/Actions/SearchStores';
 import SuperMarketList from '../Components/Actions/SuperMarketList';
+import { useCallback } from 'react';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -78,10 +79,8 @@ function AList() {
 
     let tempProduct = "";
     let tempName = "";
-    let tempCity = "";
     let tempLimit = '';
    
-
     const updatePercentage = () => {
         setTimeout(() => {
             SetProgressBar(progressBar + 1);
@@ -114,7 +113,7 @@ function AList() {
 
     useEffect(() => {
         if (progressBar < implementLimit) updatePercentage();
-        else if(progressBar > implementLimit) updatePercentage2()
+         else if(progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
 
     useEffect(() => {
@@ -179,10 +178,8 @@ function AList() {
         }
     }
 
-    const handleCity = (e) => { tempCity = e.target.value }
-
+    
     const handleClickAction = (action) => {
-        let location = {}
 
         if (action === 'Location') {
             SetLocation(true)
@@ -211,74 +208,75 @@ function AList() {
             let result = await res.json();
             SetLimit(tempLimit);
             SetimplementLimit(((list.ListEstimatedPrice / tempLimit ).toFixed(2)) * 100)
+            console.log(result)
         } catch (error) {
             console.log(error)
         }
     }
 
-    const handleProduct = (e) => { tempProduct = e.target.value }
+    //const handleProduct = (e) => { tempProduct = e.target.value }
 
-    const handleClickChoise = async () => {
-        if (list.CityName !== null && tempProduct !== '') {
-            try {
-                //get cityID
-                data.GetCityByName.city_name = list.CityName
-                let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
-                let resCity = await fetch(query, { method: 'GET' })
-                let resultCity = await resCity.json();
-                console.log('resultCity', resultCity)
-                //get productBarcode
-                data.GetProductsByName.product_name = tempProduct;
-                query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
-                let resBarcode = await fetch(query, { method: 'GET' })
-                let resultBarcode = await resBarcode.json();
-                console.log('product', resultBarcode)
-                //getStoreByCityID
-                data.GetStoresByCityID.city_id = resultCity[0].city_id
-                query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
-                let resStoreID = await fetch(query, { method: 'GET' })
-                let resultStoreID = await resStoreID.json()
-                let arrayProduct = []
-                for (let i = 0; i < resultBarcode.length; i++) {
-                    let price = 0;
-                    let count = 0;
-                    for (let j = 0; j < resultStoreID.length; j++) {
-                        data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
-                        data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
-                        query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
-                        let resPrice = await fetch(query, { method: 'GET' })
-                        let resultPrice = await resPrice.json();
-                        if (resultPrice.error_type === "NO_DATA") {
-                            console.log('err')
-                            continue;
-                        }
-                        price += JSON.parse(resultPrice[0].store_product_price)
-                        count++
-                    }
-                    price = price / count
+    // const handleClickChoise = async () => {
+    //     if (list.CityName !== null && tempProduct !== '') {
+    //         try {
+    //             //get cityID
+    //             data.GetCityByName.city_name = list.CityName
+    //             let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
+    //             let resCity = await fetch(query, { method: 'GET' })
+    //             let resultCity = await resCity.json();
+    //             console.log('resultCity', resultCity)
+    //             //get productBarcode
+    //             data.GetProductsByName.product_name = tempProduct;
+    //             query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
+    //             let resBarcode = await fetch(query, { method: 'GET' })
+    //             let resultBarcode = await resBarcode.json();
+    //             console.log('product', resultBarcode)
+    //             //getStoreByCityID
+    //             data.GetStoresByCityID.city_id = resultCity[0].city_id
+    //             query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+    //             let resStoreID = await fetch(query, { method: 'GET' })
+    //             let resultStoreID = await resStoreID.json()
+    //             let arrayProduct = []
+    //             for (let i = 0; i < resultBarcode.length; i++) {
+    //                 let price = 0;
+    //                 let count = 0;
+    //                 for (let j = 0; j < resultStoreID.length; j++) {
+    //                     data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
+    //                     data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
+    //                     query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
+    //                     let resPrice = await fetch(query, { method: 'GET' })
+    //                     let resultPrice = await resPrice.json();
+    //                     if (resultPrice.error_type === "NO_DATA") {
+    //                         console.log('err')
+    //                         continue;
+    //                     }
+    //                     price += JSON.parse(resultPrice[0].store_product_price)
+    //                     count++
+    //                 }
+    //                 price = price / count
 
-                    console.log('my price', price)
-                    //Get SRCIMG
-                    let resSRC = await fetch("http://localhost:56794/api/Scraper/" + resultBarcode[i].product_name, { method: 'GET' })
-                    let resultSRC = await resSRC.json();
-                    let p = {
-                        product_barcode: resultBarcode[i].product_barcode,
-                        product_name: resultBarcode[i].product_name,
-                        product_description: resultBarcode[i].product_description,
-                        product_image: resultSRC,
-                        manufacturer_name: resultBarcode[i].manufacturer_name,
-                        estimatedProductPrice: Number(price.toFixed(2))
-                    }
-                    arrayProduct.push(p)
-                }
-                SetProduct(...product, arrayProduct)
-            } catch (error) {
-                console.log(error)
-            }
-        } else alert('מלא את השדות תחילה')
+    //                 console.log('my price', price)
+    //                 //Get SRCIMG
+    //                 let resSRC = await fetch("http://localhost:56794/api/Scraper/" + resultBarcode[i].product_name, { method: 'GET' })
+    //                 let resultSRC = await resSRC.json();
+    //                 let p = {
+    //                     product_barcode: resultBarcode[i].product_barcode,
+    //                     product_name: resultBarcode[i].product_name,
+    //                     product_description: resultBarcode[i].product_description,
+    //                     product_image: resultSRC,
+    //                     manufacturer_name: resultBarcode[i].manufacturer_name,
+    //                     estimatedProductPrice: Number(price.toFixed(2))
+    //                 }
+    //                 arrayProduct.push(p)
+    //             }
+    //             SetProduct(...product, arrayProduct)
+    //         } catch (error) {
+    //             console.log(error)
+    //         }
+    //     } else alert('מלא את השדות תחילה')
 
 
-    }
+    // }
 
     const ConfirmationLimit = (index) => {
         console.log(list.ListEstimatedPrice, product[index].estimatedProductPrice)
@@ -325,59 +323,60 @@ function AList() {
         alert('המוצר התווסף בהצלחה')
     }
 
-    const getTotalPrice = async () => {
-        try {
-            //getCityID
-            data.GetCityByName.city_name = list.CityName
-            console.log(list.CityName);
+    // const getTotalPrice = async () => {
+    //     try {
+    //         //getCityID
+    //         data.GetCityByName.city_name = list.CityName
+    //         console.log(list.CityName);
 
-            let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
-            console.log('0')
-            let resCity = await fetch(query, { method: 'GET' })
-            let resultCity = await resCity.json();
-            console.log('1')
-            //getStorebycityId
-            data.GetStoresByCityID.city_id = resultCity[0].city_id
-            query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
-            let resStoreID = await fetch(query, { method: 'GET' })
-            let resultStoreID = await resStoreID.json();
-            console.log('2')
-            let tempArrayStore = []
+    //         let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
+    //         console.log('0')
+    //         let resCity = await fetch(query, { method: 'GET' })
+    //         let resultCity = await resCity.json();
+    //         console.log('1')
+    //         //getStorebycityId
+    //         data.GetStoresByCityID.city_id = resultCity[0].city_id
+    //         query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+    //         let resStoreID = await fetch(query, { method: 'GET' })
+    //         let resultStoreID = await resStoreID.json();
+    //         console.log('2')
+    //         let tempArrayStore = []
 
-            for (let i = 0; i < resultStoreID.length; i++) {
-                let p = 0;
-                let outOfStock = [];
-                for (let j = 0; j < productCart.length; j++) {
-                    data.GetPriceByProductBarCode.product_barcode = productCart[j].product_barcode
-                    data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
-                    query = queryString.stringifyUrl({ url: "https://cors-anywhere.herokuapp.com/" + api, query: data.GetPriceByProductBarCode })
-                    const res = await fetch(query, { method: 'GET' })
-                    var result = await res.json()
-                    console.log('3')
-                    if (result.error_type === "NO_DATA") {
-                        alert('המוצר ' + productCart[j].product_name + ' לא קיים בחנות זו ')
-                        outOfStock.push(productCart[j])
-                        continue;
+    //         for (let i = 0; i < resultStoreID.length; i++) {
+    //             let p = 0;
+    //             let outOfStock = [];
+    //             for (let j = 0; j < productCart.length; j++) {
+    //                 data.GetPriceByProductBarCode.product_barcode = productCart[j].product_barcode
+    //                 data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
+    //                 query = queryString.stringifyUrl({ url: "https://cors-anywhere.herokuapp.com/" + api, query: data.GetPriceByProductBarCode })
+    //                 const res = await fetch(query, { method: 'GET' })
+    //                 var result = await res.json()
+    //                 console.log('3')
+    //                 if (result.error_type === "NO_DATA") {
+    //                     alert('המוצר ' + productCart[j].product_name + ' לא קיים בחנות זו ')
+    //                     outOfStock.push(productCart[j])
+    //                     continue;
 
-                    }
-                    p += JSON.parse(result[0].store_product_price)
-                }
-                const s = {
-                    OutOfStock: outOfStock,
-                    Store: resultStoreID[i],
-                    TotalPrice: Number(p.toFixed(2))
-                }
-                tempArrayStore.push(s)
-            }
-            SetStores(tempArrayStore)
-            console.log('store', stores)
-            // history.push(`/ListSuperMarket`, { params:tempArrayStore })
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    //                 }
+    //                 p += JSON.parse(result[0].store_product_price)
+    //             }
+    //             const s = {
+    //                 OutOfStock: outOfStock,
+    //                 Store: resultStoreID[i],
+    //                 TotalPrice: Number(p.toFixed(2))
+    //             }
+    //             tempArrayStore.push(s)
+    //         }
+    //         SetStores(tempArrayStore)
+    //         console.log('store', stores)
+    //         // history.push(`/ListSuperMarket`, { params:tempArrayStore })
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     const SearchSubstitute = async (indexS, indexO) => {
+
         console.log(stores[indexS].OutOfStock[indexO])
         let prodSubstitute = stores[indexS].OutOfStock[indexO];
         data.GetProductsByName.product_name = prodSubstitute.product_description
@@ -464,7 +463,6 @@ function AList() {
                 />
             </div>
             <div className="Maincontent">
-               {console.log(productCart)}
                 {location && <Location CloseDialog={CloseDialogLocation} />}
                 {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores}/>}
                 {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}

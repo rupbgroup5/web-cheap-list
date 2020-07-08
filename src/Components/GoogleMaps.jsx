@@ -15,11 +15,11 @@ import { ListObjContext } from "../Contexts/ListDetailsContext";
 //     </InfoWindow>
 // )}
 
-{/* 
+/* 
             <Marker position={{ lat: 32.3480081, lng: 34.9158805 }}
             //onClick={()=>{SetSelectedPark(park)}}
             />
-           */}
+           */
 
 const Map = (props) => {
 

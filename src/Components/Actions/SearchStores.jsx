@@ -123,7 +123,7 @@ export default function SearchStores(props) {
         console.log(error)
       }
     })()
-  },[]);
+  },[api,listObj,productCart,queryString,stores,]);
 
 
   return (
