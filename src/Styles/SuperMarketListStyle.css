@@ -1,37 +1,52 @@
-#productCart-headline {
-    text-align: center;
-    color: blue;
-    text-decoration: underline;
-    margin-top: 1vh;
-}
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
+/* 
+        ↑↑↑↑ fontFamily: 'Amatic SC', ↑↑↑↑
+*/
 
 #productCart-list {
     margin-top: 5vh;
+    margin-bottom: 0vh;
     text-align: right;
     width: 100vw;
-    height: 55vh;
+    height: 65vh;
     box-shadow: 0 0 20px 0px black;
+}
+
+.SwipeableList_swipeableList__1FACG, .SwipeableListItem_content__3wbMa {
+    /* override the original API */
+    background: #f7f7a8;
 }
 
 .swipeLeft-divs, .swipeRight-divs {
     width: 100vw;
-    height: 8vh;
     font-weight: bold;
-    padding-top: 3vh;
+    /* 
+    line-height:
+    usually used for each line hight when have lots of text in an element
+    BUT
+    when have single row it can be used for BOTH
+    1. centerized the text VERTICALY. 
+    2. define the element height.
+
+    (This only works for one line of text !!!).
+     ↓ */
+    line-height: 8vh;
 }
 
 .swipeLeft-divs {
-    background: red;
+    /*from right2left*/
+    background: green;
     text-align: right;
 }
 
 .swipeRight-divs {
-    background: green;
+    /*from left2right*/
+    background: red;
     text-align: left;
 }
 
 #buttons-container {
-    margin-top: 10vh;
+    margin-top: 5vh;
     display: flex;
     justify-content: space-between;
     padding-left: 5vw;
@@ -39,33 +54,23 @@
 }
 
 .list-item {
-    margin-right: 5vw;
-    font-size: large;
-    font-family: cursive;
+    /* text-align: right; */
+    height: 8vh;
+    border-bottom: 2px solid darkorange;
+    width: 100vw;
+    padding-right: 3vw;
+    margin-left: 10vw;
+    margin-right: 10vw;
+    display: flex;
 }
 
-/*
-
-#taken-list, #untaken-list {
-    float: right;
-    margin-top: 2vh;
-    height: 30vh;
-    width: 45vw;
-    font-size: small;
-    border: 3px solid black;
+.product_description {
+    font-size: 2em;
+    font-family: Amatic SC;
+    flex: 1;
+    margin: 0;
 }
 
-#untaken-list {
-    margin-right: 5vw;
+#OVerRide_MuiSvgIcon-root {
+    height: 2em;
 }
-
-h5 {
-    text-align: center;
-    color: blue;
-    text-decoration: underline;
-}
-
-#finishBtn {
-    text-align: center;
-    margin-top: 37vh;
-} */

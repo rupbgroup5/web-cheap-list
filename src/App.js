@@ -5,15 +5,15 @@ import { Switch, Route, withRouter } from 'react-router-dom'
 import './App.css'
 
 //Our Components:
-//import Navbar from './Components/Navbar'
-import MainNavbar from './Components/MainNavBar'
+// import Navbar from './Components/Navbar'
+import MainNabar from './Components/MainNavBar'
 
 //pages:
 import HomePage from './Pages/HomePage'
 import AGroup from './Pages/AGroup'
 import TempPage from './Pages/TempPage'
 import AList from './Pages/AList'
-//import SuperMarketList from './Components/Actions/SuperMarketList'
+import SuperMarketList from './Components/Actions/SuperMarketList'
 import MyCart from './Pages/MyCart.jsx'
 import NotTaken from './Pages/NotTaken'
 
@@ -33,41 +33,32 @@ import PageTitleContextProvider from './Contexts/PageTitleContext'
 function App() {
 
   return (
-  
     <div className="App">
       <IsLocalContextProvider>
         <PageTitleContextProvider>
         <UserIDContextProvider>
-        <GroupDetailsContextProvider>
-          <ListDetailsContextProvider>
-            <ProductsCartContextProvider>
-              <MainNavbar />
-              {/* <Navbar /> */}
-              <Switch>
-                <Route exact path="/" component={HomePage}  /> {/**makes the HomePage homepage even when the url clean */}
-                <Route path="/HomePage/:userIDfromRN" component={HomePage} />
-                <Route path="/TempPage/:id" component={TempPage} />
-                <Route path="/AGroups" component={AGroup}/> {/** /:groupID/:groupName/:userID */}
-                <Route path="/AList" component={AList} />
-                {/* <Route path="/SuperMarketList" component={SuperMarketList} /> */}
-                <Route path="/MyCart" component={MyCart} />
-                <Route path="/NotTaken" component={NotTaken} />
-              </Switch>
-            </ProductsCartContextProvider>
-          </ListDetailsContextProvider>
-        </GroupDetailsContextProvider>
+          <GroupDetailsContextProvider>
+            <ListDetailsContextProvider>
+              <ProductsCartContextProvider>
+                <MainNabar />
+                {/* <Navbar /> */}
+                <Switch>
+                  <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
+                  <Route path="/HomePage/:userIDfromRN" component={HomePage} />
+                  <Route path="/TempPage/:id" component={TempPage} />
+                  <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
+                  <Route path="/AList" component={AList} />
+                  <Route path="/SuperMarketList" component={SuperMarketList} />
+                  <Route path="/MyCart" component={MyCart} />
+                  <Route path="/NotTaken" component={NotTaken} />
+                </Switch>
+              </ProductsCartContextProvider>
+            </ListDetailsContextProvider>
+          </GroupDetailsContextProvider>
         </UserIDContextProvider>
         </PageTitleContextProvider>
-       </IsLocalContextProvider>
-     
+      </IsLocalContextProvider>
     </div>
-
-   
- 
-
-
-
-
   );
 }
 
