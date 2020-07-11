@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Circle from 'react-circle';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
+import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
 
 //SpedDial
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@material-ui/lab/';
@@ -22,6 +23,7 @@ import '../Styles/ProductCartStyle.css'
 import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
+import { PageTitleContext } from "../Contexts/PageTitleContext";
 
 
 
@@ -30,7 +32,7 @@ import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 import Location from '../Components/Actions/Location'
 import SearchStores from '../Components/Actions/SearchStores';
 import SuperMarketList from '../Components/Actions/SuperMarketList';
-import { useCallback } from 'react';
+import SearchProduct from '../Components/Actions/SearchProduct'
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -49,12 +51,14 @@ function AList() {
     const { listObj } = useContext(ListObjContext);
     const { isLocal } = useContext(IsLocalContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
+    const { SetPageTitle } = useContext(PageTitleContext);
 
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
     const [location, SetLocation] = useState(listObj.Latitude === '' ? true : false)
     const [searchStores, SetSearchStores] = useState(false)
-    const [superMarketList ,SetSuperMarketList] = useState(false)
+    const [superMarketList, SetSuperMarketList] = useState(false)
+    const [searchProduct, SetSearchProduct] = useState(false);
 
 
     const [list, SetList] = useState(listObj);
@@ -64,11 +68,12 @@ function AList() {
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
     const [stores, SetStores] = useState([]);
-    const [limit,SetLimit] = useState(list.LimitPrice)
+    const [limit, SetLimit] = useState(list.LimitPrice)
     const [progressBar, SetProgressBar] = useState(0)
     const [implementLimit, SetimplementLimit] = useState(((list.ListEstimatedPrice / list.LimitPrice).toFixed(2)) * 100)
     const [color, SetColor] = useState("#009900")
     const [disableSave, SetDisableSave] = useState(true)
+    
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
@@ -80,7 +85,7 @@ function AList() {
     let tempProduct = "";
     let tempName = "";
     let tempLimit = '';
-   
+
     const updatePercentage = () => {
         setTimeout(() => {
             SetProgressBar(progressBar + 1);
@@ -92,11 +97,11 @@ function AList() {
             SetColor("#ff3300")
         }
     };
-    const updatePercentage2 = () =>{
+    const updatePercentage2 = () => {
         setTimeout(() => {
-            SetProgressBar(progressBar -1);
+            SetProgressBar(progressBar - 1);
         }, 30);
-        if (progressBar <= 50 ) {
+        if (progressBar <= 50) {
             SetColor("#009900")
         }
         if (progressBar > 50) {
@@ -113,10 +118,13 @@ function AList() {
 
     useEffect(() => {
         if (progressBar < implementLimit) updatePercentage();
-         else if(progressBar > implementLimit) updatePercentage2();
+        else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
 
     useEffect(() => {
+
+        localStorage.setItem('listObj', JSON.stringify(listObj));
+
         (async () => {
             try {
                 const res = await fetch(apiAppProduct + listObj.ListID, {
@@ -132,7 +140,8 @@ function AList() {
             }
         }
         )();
-    }, [listObj, apiAppProduct, SetProductCart]);
+        SetPageTitle('סל קניות')
+    }, [listObj, apiAppProduct, SetProductCart, SetPageTitle]);
 
     const editListName = (e) => {
         tempName = "";
@@ -178,17 +187,21 @@ function AList() {
         }
     }
 
-    
-    const handleClickAction = (action) => {
 
-        if (action === 'Location') {
+    const handleClickAction = (action) => {
+        console.log(action);
+
+        if (action === 'מיקום') {
             SetLocation(true)
-        }else if(action ==='SearchStores' ){
+        } else if (action === 'חפש סופרים') {
             SetSearchStores(true)
-        }else if(action === 'SuperMarketList'){
+        } else if (action === 'רשימה בסופר') {
             SetSuperMarketList(true)
         }
-        
+        else if (action === 'חפש מוצר') {
+            SetSearchProduct(true);
+        }
+
     }
 
     const handleLimit = (e) => {
@@ -197,7 +210,7 @@ function AList() {
             limitInput.current.value = ''
         }
         tempLimit = e.target.value
-       
+
     }
 
     const handleClickLimit = async () => {
@@ -207,7 +220,7 @@ function AList() {
             })
             let result = await res.json();
             SetLimit(tempLimit);
-            SetimplementLimit(((list.ListEstimatedPrice / tempLimit ).toFixed(2)) * 100)
+            SetimplementLimit(((list.ListEstimatedPrice / tempLimit).toFixed(2)) * 100)
             console.log(result)
         } catch (error) {
             console.log(error)
@@ -448,6 +461,8 @@ function AList() {
 
     const CloseDialogSMList = () => { SetSuperMarketList(false) }
 
+    const CloseDialogSearchProduct = () => { SetSearchProduct(false) }
+
 
 
     return (
@@ -464,8 +479,9 @@ function AList() {
             </div>
             <div className="Maincontent">
                 {location && <Location CloseDialog={CloseDialogLocation} />}
-                {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores}/>}
+                {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
                 {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
+                {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct} />}
 
 
                 {/* <h3>{list.CityName} </h3> */}
@@ -476,7 +492,6 @@ function AList() {
                 <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
                 <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
                 <button onClick={handleClickChoise}>חפש מוצר</button> */}
-                <h2>סל קניות</h2>
                 {product.map((p, index) =>
                     <div key={index}>
                         <p>
@@ -490,23 +505,26 @@ function AList() {
                 <div id="compareList">
                     {productCart.map((p, index) =>
                         <div key={index} className="product">
-                            <img src={p.product_image} alt=" " />
-                            <br />
-                            {p.product_description} <br /> במחיר {p.estimatedProductPrice}
-                            <br />
-                            <button onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)}>מחק מהרשימה</button>
+                            <div >
+                                <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small' 
+                                style={{ marginBottom: 80, marginLeft: -19, fill: 'darkgray' }} />
+                                <img src={p.product_image} alt=" " />
+                            </div>
+
+                            <div className='product-text'>{p.product_description} <br /> במחיר  ₪{p.estimatedProductPrice} </div>
                         </div>
                     )}
                 </div>
-                <br />
-                {productCart.length - 1 !== 0 ? 'מחיר משוער ' + Number(list.ListEstimatedPrice).toFixed(2) : false}
-                <br /><br />
+                <div className='product-text'>
+                    {/* {productCart.length - 1 !== 0 ? 'סך מחיר משוער: ' + '₪' + Number(list.ListEstimatedPrice).toFixed(2) : false} */}
+                 סך מחיר משוער: <b>₪{Number(list.ListEstimatedPrice).toFixed(2)}</b>
+                </div>
+                <br/>
                 <Circle
                     animate={true} // Boolean: Animated/Static progress
                     animationDuration="0.15s" //String: Length of animation
                     size={100} // Number: Defines the size of the circle.
                     lineWidth={14} // Number: Defines the thickness of the circle's stroke.
-                    //progress={((list.LimitPrice / list.ListEstimatedPrice).toFixed(2))*100} 
                     progress={progressBar} // Number: Update to change the progress and percentage.
                     progressColor={color}  // String: Color of "progress" portion of circle.
                     //bgColor='Moccasin' // String: Color of "empty" portion of circle.
@@ -515,12 +533,15 @@ function AList() {
                         font: 'bold 5rem Helvetica, Arial, sans-serif' // CSSProperties: Custom styling for percentage.
                     }}
                     percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
+
                 />
-                <br /><br />
-                <TextField type={'number'}
+
+                <br/>
+                <TextField
+                    type={'number'}
                     placeholder="הגדר מגבלה חדשה"
                     helperText={`מגבלה נוכחית: ${limit}`}
-                    style={{ width: 150 }}
+                    style={{ width: 150, marginRight: 20 }}
                     onFocus={() => { SetDisableSave(false) }}
                     onInput={handleLimit}
                     inputRef={limitInput}
@@ -631,10 +652,10 @@ const data = {
 }
 
 const actions = [
-    { icon: <LocationOnOutlinedIcon />, name: "Location" },
-    { icon: <AddShoppingCartOutlinedIcon />, name: "AddProduct" },
-    { icon: <SearchOutlinedIcon />, name: "SearchStores" },
-    { icon: <ListAltOutlinedIcon/>, name:'SuperMarketList'}
+    { icon: <LocationOnOutlinedIcon />, name: "מיקום" },
+    { icon: <AddShoppingCartOutlinedIcon />, name: "חפש מוצר" },
+    { icon: <SearchOutlinedIcon />, name: "חפש סופרים" },
+    { icon: <ListAltOutlinedIcon />, name: 'רשימה בסופר' }
 
 ];
 

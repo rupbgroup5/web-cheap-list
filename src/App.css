@@ -1,7 +1,13 @@
 .App {
   text-align: center;
-  direction:rtl
+  direction:rtl;
+  /* height:100vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position:  top center; */
 }
+
+
 
 .App-logo {
   height: 40vmin;

@@ -13,6 +13,7 @@ import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 import swal from 'sweetalert'
 import { withRouter, useParams, useHistory } from 'react-router-dom' 
 
+
 //Styles
 import '../Styles/HomeStyle.css'
 
@@ -28,6 +29,7 @@ import { SendPushAddToGroup } from '../Components/SendPush'
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 import { IsLocalContext } from '../Contexts/IsLocalContext'
 import { UserIDContext } from '../Contexts/UserIDContext'
+import { PageTitleContext } from "../Contexts/PageTitleContext";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -53,10 +55,14 @@ function HomePage() {
   const { SetGroupDetails } = useContext(GroupDetailsContext);
   const {isLocal} = useContext(IsLocalContext);
   const { SetUserID } = useContext(UserIDContext)
+  const { SetPageTitle } = useContext(PageTitleContext);
 
 
 
   let { userIDfromRN } = useParams();
+  if (userIDfromRN === 'undefined') {
+    userIDfromRN = JSON.parse(localStorage.getItem('UserID'))
+  }
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
   const [, triggerComplexItemAction] = useState();
@@ -74,6 +80,11 @@ function HomePage() {
   }
 
   useEffect(() => {
+
+    
+      localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
+    
+
     (async function fetchMyAPI() {
       const res = await fetch(apiAppGroups + userIDfromRN, {
         method: 'GET',
@@ -82,9 +93,11 @@ function HomePage() {
         }),
       })
       let data = await res.json();
-      SetGroups(data)
+      SetGroups(data);
+      SetPageTitle('הקבוצות שלי');
     }());
-  }, [userIDfromRN,apiAppGroups]);
+    SetPageTitle('הקבוצות שלי');
+  }, [userIDfromRN,apiAppGroups,SetPageTitle]);
 
   const AddNewGroup = async (participiants) => {
     let participiantsArr = []
@@ -206,9 +219,7 @@ function HomePage() {
   return (
 
     <div className="container">
-      <div className="header">
-        <h1>הקבוצות שלי</h1>
-      </div>
+      <div className="header"></div>
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>
@@ -220,7 +231,7 @@ function HomePage() {
                 >
                   <ListItemAvatar style={{ marginRight: '5px' }} >
                     <Badge badgeContent={10} color="secondary"  >
-                      <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                      <Avatar  />
                     </Badge>
                   </ListItemAvatar>
                   <ListItem name={g.GroupName} description={GetParticipiants(g)} />

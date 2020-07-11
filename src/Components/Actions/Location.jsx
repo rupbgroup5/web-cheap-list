@@ -254,7 +254,6 @@ export default function Location(props) {
 
   return (
     <div dir='rtl' style={{ alignItems: 'center' }} >
-      {console.log(listObj)}
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
         <AppBar className={classes.appBar}>
           <Toolbar>

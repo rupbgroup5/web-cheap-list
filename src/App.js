@@ -6,9 +6,9 @@ import './App.css'
 
 //Our Components:
 //import Navbar from './Components/Navbar'
-import MainNabar from './Components/MainNavBar'
+import MainNavbar from './Components/MainNavBar'
 
-//pages: 
+//pages:
 import HomePage from './Pages/HomePage'
 import AGroup from './Pages/AGroup'
 import TempPage from './Pages/TempPage'
@@ -24,6 +24,8 @@ import ListDetailsContextProvider from './Contexts/ListDetailsContext'
 import IsLocalContextProvider from './Contexts/IsLocalContext'
 import ProductsCartContextProvider from './Contexts/ProductsCartContext'
 import UserIDContextProvider from './Contexts/UserIDContext'
+import PageTitleContextProvider from './Contexts/PageTitleContext'
+
 
 
 
@@ -31,20 +33,21 @@ import UserIDContextProvider from './Contexts/UserIDContext'
 function App() {
 
   return (
-    
+  
     <div className="App">
       <IsLocalContextProvider>
+        <PageTitleContextProvider>
         <UserIDContextProvider>
         <GroupDetailsContextProvider>
           <ListDetailsContextProvider>
             <ProductsCartContextProvider>
-              <MainNabar />
+              <MainNavbar />
               {/* <Navbar /> */}
               <Switch>
-                <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
+                <Route exact path="/" component={HomePage}  /> {/**makes the HomePage homepage even when the url clean */}
                 <Route path="/HomePage/:userIDfromRN" component={HomePage} />
                 <Route path="/TempPage/:id" component={TempPage} />
-                <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
+                <Route path="/AGroups" component={AGroup}/> {/** /:groupID/:groupName/:userID */}
                 <Route path="/AList" component={AList} />
                 {/* <Route path="/SuperMarketList" component={SuperMarketList} /> */}
                 <Route path="/MyCart" component={MyCart} />
@@ -54,6 +57,7 @@ function App() {
           </ListDetailsContextProvider>
         </GroupDetailsContextProvider>
         </UserIDContextProvider>
+        </PageTitleContextProvider>
        </IsLocalContextProvider>
      
     </div>

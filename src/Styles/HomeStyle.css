@@ -2,6 +2,16 @@
     flex-wrap: wrap;
     margin: 0px 20px;
     margin-top: 20px;
+    
+}
+.Maincontent{
+    margin: 15px 0;
+}
+.header{
+    margin:30px;
+    display: flex;
+    flex-direction: column;
+    
 }
 .footer{
     position: '-webkit-sticky';
@@ -9,8 +19,7 @@
     position: fixed;
     bottom:20px;
     margin-left:300px;
-
-
+    
 }
 #outlined-basic{
     text-align: center;

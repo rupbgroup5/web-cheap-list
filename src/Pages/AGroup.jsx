@@ -30,6 +30,8 @@ import FormDialog from '../Components/FormDialog'
 import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
+import { PageTitleContext } from "../Contexts/PageTitleContext";
+
 
 
 
@@ -66,10 +68,14 @@ const StyledBadge = withStyles((theme) => ({
 
 function AGroup() {
     //Context Api:
-  const { groupDetails } = useContext(GroupDetailsContext);
+  const { groupDetails,SetGroupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
+  const { SetPageTitle } = useContext(PageTitleContext);
+  console.log(groupDetails)
 
+ 
+  console.log(groupDetails)
   const classes = useStyles();
   const history = useHistory();
   const [gName, setName] = useState(groupDetails.GroupName)
@@ -89,7 +95,10 @@ function AGroup() {
 
 
   useEffect(() => {
+    
+    
     (async function fetchMyAPI() {
+     
       try {
         const res = await fetch(apiAppList + groupDetails.GroupID, {
           method: 'GET',
@@ -103,8 +112,8 @@ function AGroup() {
         console.log(error)
       }
     })();
-
-  }, [groupDetails,apiAppList]);
+    SetPageTitle('רשימות הקבוצה')
+  }, [groupDetails,apiAppList,SetPageTitle]);
 
   const AddNewList = (n) => {
     let newList = {
@@ -244,7 +253,7 @@ return (
         inputRef={textInput}
       />
     </div>
-    <div className="Maincontent"   >
+    <div className="Maincontent">
       {
         lists.map((l, index) =>
           <span key={index} onClick={()=> GetIntoList(index)}>

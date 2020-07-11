@@ -1,18 +1,26 @@
+
 .nav{
     width: 100% ;
     height: 50px;
     background-color: rgba(192, 214, 243, 0.466);
+    text-align: 'center';
 }
 
 .nav-Logo{
     float: left;
     position:center;
-    margin-top: 10px;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: x-large;
+    width:50px
+    
 }
 
 .nav-Profile{
     float: right;
-    margin-top: 7px;
+    margin: 4px 0;
+}
+.nav-title{
+    display: inline-flex;
+    margin: 11px;
+    font-size: x-large;
+    font-family: 'Heebo', sans-serif;
+    
 }
