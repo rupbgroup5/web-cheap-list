@@ -224,17 +224,17 @@ function HomePage() {
         {
           groups.map((g, index) =>
             <span key={index} onClick={()=>GetIntoGroup(index)} >
-              <SwipeableList className={classes.root} threshold={0.25} >
-                <SwipeableListItem
+              <SwipeableList className={classes.root} threshold={0.25}  >
+                <SwipeableListItem style={{background:'black'}}
                   swipeRight={SwipeRightContent(g.GroupID, index)}
                   onSwipeProgress={handleSwipeProgress}
                 >
-                  <ListItemAvatar style={{ marginRight: '5px' }} >
+                  <ListItemAvatar style={{ marginRight: '5px' }}  >
                     <Badge badgeContent={10} color="secondary"  >
                       <Avatar  />
                     </Badge>
                   </ListItemAvatar>
-                  <ListItem name={g.GroupName} description={GetParticipiants(g)} />
+                  <ListItem name={g.GroupName} description={GetParticipiants(g)}  />
                 </SwipeableListItem>
               </SwipeableList>
 

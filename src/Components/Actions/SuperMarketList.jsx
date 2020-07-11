@@ -29,14 +29,16 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
     backgroundColor: 'darkgray',
     textAlign: 'center'
-  }
-  ,
+  },
   title: {
     marginLeft: theme.spacing(2),
     flex: 1,
-    fontSize: '8vh',
+    fontSize: '6vh',
     fontFamily: 'Amatic SC',
 
+  },
+  box:{
+    color: 'black'
   }
 }));
 
@@ -218,11 +220,13 @@ const SuperMarketList = (props) => {
         </Toolbar>
       </AppBar>
 
-      <div id="productCart-list">
-        <SwipeableList>
+      <div id="productCart-list" >
+        <SwipeableList className={classes.box} style={{ background:'blue'}}>
+
           {productCart_SMLonly.map((product, index) => {
             return (
-              <SwipeableListItem key={index}
+              <span  key={index}>
+              <SwipeableListItem
                 swipeRight={{
                   content: <div className="swipeRight-divs">לא לקחתי</div>,
                   action: () => MoveItem2NotTaken({ product, index })
@@ -232,8 +236,8 @@ const SuperMarketList = (props) => {
                   action: () => MoveItem2MyCart({ product, index })
                 }}
                 onSwipeProgress={handleSwipeProgress}
-              // threshold={0.25} cant understand what is it... Not helpful nor harmful
-              >
+                // threshold={0.25} cant understand what is it... Not helpful nor harmful
+                >
                 <div className="list-item">
                   <DeleteOutlineIcon onClick={() => MoveItem2NotTaken({ product, index, clicked}) } id='OVerRide_MuiSvgIcon-root' />
                   <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ product, index, clicked}) } id='OVerRide_MuiSvgIcon-root' />
@@ -242,9 +246,9 @@ const SuperMarketList = (props) => {
                   </p>
                 </div>
               </SwipeableListItem>
+                </span>
             )
           })}
-
         </SwipeableList>
       </div>
       <div id="buttons-container">
