@@ -60,7 +60,7 @@
 .list-item {
     /* text-align: right; */
     height: 8vh;
-    border-bottom: 2px solid darkorange;
+    border-bottom: 2px solid #ff8c0038;
     width: 100vw;
     padding-right: 3vw;
     margin-left: 10vw;
