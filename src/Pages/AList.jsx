@@ -24,6 +24,7 @@ import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 import { PageTitleContext } from "../Contexts/PageTitleContext";
+import { GroupDetailsContext } from "../Contexts/GroupDetailsContext";
 
 
 
@@ -48,6 +49,7 @@ function AList() {
     const classes = useStyles();
 
     //Context API
+    const { groupDetails } = useContext(GroupDetailsContext);
     const { listObj } = useContext(ListObjContext);
     const { isLocal } = useContext(IsLocalContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
@@ -121,11 +123,18 @@ function AList() {
         else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
 
-    useEffect(() => {
-
-        localStorage.setItem('listObj', JSON.stringify(listObj));
+    useEffect(() => {;
 
         (async () => {
+            for (let i = 0; i < groupDetails.Participiants.length; i++) {
+                if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
+                    if (groupDetails.Participiants[i].IsAdmin) {
+                        alert('Im  The Admin!')
+                    }else{alert('Im Not The Admin')}
+                }
+                
+            }
+
             try {
                 const res = await fetch(apiAppProduct + listObj.ListID, {
                     method: 'GET',
@@ -138,8 +147,7 @@ function AList() {
             } catch (error) {
                 console.log(error)
             }
-        }
-        )();
+        })();
         SetPageTitle('סל קניות')
     }, [listObj, apiAppProduct, SetProductCart, SetPageTitle]);
 

@@ -36,9 +36,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '6vh',
     fontFamily: 'Amatic SC',
 
-  },
-  box:{
-    color: 'black'
   }
 }));
 
@@ -221,7 +218,7 @@ const SuperMarketList = (props) => {
       </AppBar>
 
       <div id="productCart-list" >
-        <SwipeableList className={classes.box} style={{ background:'blue'}}>
+        <SwipeableList  threshold={0.25}>
 
           {productCart_SMLonly.map((product, index) => {
             return (

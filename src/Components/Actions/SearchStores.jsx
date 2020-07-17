@@ -52,7 +52,8 @@ export default function SearchStores(props) {
 
   const [open, setOpen] = useState(true);
   const [stores, SetStores] = useState([]);
-  const [loading,SetLoading] = useState(true)
+  const [loading, SetLoading] = useState(true)
+  const [clickStore, SetClickStore] = useState(); 
   const queryString = require('query-string');
   let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
 
@@ -77,38 +78,45 @@ export default function SearchStores(props) {
   }
 
   useEffect(() => {
-    (async()=>{
-      try{
-        console.log('useEd');
-               
+    (async () => {
+      try {
+        //GetStores    
         data.GetStoresByCityID.city_id = listObj.CityID
         let query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
         let resStoreID = await fetch(query, { method: 'GET' })
         let resultStoreID = await resStoreID.json();
-        console.log('2', resultStoreID)
         let tempArrayStore = []
-  
         for (let i = 0; i < resultStoreID.length; i++) {
           let p = 0;
           let outOfStock = [];
+          data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
+          let barcodeArr = []
+          //GetPriceByBarcode Per Store
           for (let j = 0; j < productCart.length; j++) {
-            data.GetPriceByProductBarCode.product_barcode = productCart[j].product_barcode
-            data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
-            query = queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
-            //https://cors-anywhere.herokuapp.com/
-            if (j > productCart.length / 2) {
-              query = queryString.stringifyUrl({ url: "https://allow-any-origin.appspot.com/" + api, query: data.GetPriceByProductBarCode })
-            }
-            const res = await fetch(query, { method: 'GET' })
-            var result = await res.json()
-            console.log('3')
-            if (result.error_type === "NO_DATA") {
-              outOfStock.push(productCart[j])
-              continue;
-  
-            }
-            p += JSON.parse(result[0].store_product_price)
+            barcodeArr.push(productCart[j].product_barcode)
           }
+          data.GetPriceByProductBarCode['product_barcode[]'] = barcodeArr
+          query = queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
+
+          //https://cors-anywhere.herokuapp.com/
+          if (i >= resultStoreID.length / 2) {
+            console.log('into if')
+            query = queryString.stringifyUrl({ url: 'https://allow-any-origin.appspot.com/' + api, query: data.GetPriceByProductBarCode })
+          }
+          const res = await fetch(query, { method: 'GET' })
+          var result = await res.json()
+          console.log('fecth', result)
+          if (result.error_type === "NO_DATA") {
+            outOfStock.push(result[i])
+            continue;
+
+          }
+
+          //Sum prices
+          for (let k = 0; k < result.length; k++) {
+            p += JSON.parse(result[k].store_product_price)
+          }
+
           const s = {
             OutOfStock: outOfStock,
             Deatils: resultStoreID[i],
@@ -118,12 +126,11 @@ export default function SearchStores(props) {
         }
         SetStores(tempArrayStore)
         SetLoading(false)
-        console.log('store', stores)
       } catch (error) {
         console.log(error)
       }
     })()
-  },[api,listObj,productCart,queryString,stores,]);
+  }, []);
 
 
   return (
@@ -139,60 +146,70 @@ export default function SearchStores(props) {
         </Toolbar>
       </AppBar>
       <RingLoader
-                css={override}
-                size={80}
-                color={'#36d7af'}
-                loading={loading }
-            />
-      {!loading && <GoogleMaps Stores={stores} />}
+        css={override}
+        size={80}
+        color={'#36d7af'}
+        loading={loading}
+      />
+      {!loading && <span>
+      <GoogleMaps Stores={stores} click={clickStore}/>
+      {/* <div dir='rtl'>
+        {stores.map((s) =>
+        <div key={s.store_id}> 
+        <button  onClick={()=> SetClickStore(s)}>{s.Deatils.store_name}</button>
+        </div>
+        )}
+        </div> */}
+      </span>}
+     
     </Dialog>
   )
 }
 
 const data = {
   TestFunction: {
-      action: "TestFunction"
+    action: "TestFunction"
   },
   GetChains: {
-      action: "GetChains"
+    action: "GetChains"
   },
   GetStoresByChain: {
-      action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
+    action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
   },
   GetStoresByCityID: {
-      action: "GetStoresByCityID", city_id: '', limit: 1
+    action: "GetStoresByCityID", city_id: '', limit: 2
   },
   GetStoresByGPS: {
-      action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
+    action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
   },
   GetProductsByBarCode: {
-      action: "GetProductsByBarCode", product_barcode: '', limit: 3
+    action: "GetProductsByBarCode", product_barcode: '', limit: 3
   },
   GetProductsByID: {
-      action: 'GetProductsByID', product_id: '', limit: 10
+    action: 'GetProductsByID', product_id: '', limit: 10
   },
   GetProductsByName: {
-      action: "GetProductsByName", product_name: "", limit: 5
+    action: "GetProductsByName", product_name: "", limit: 5
   },
   GetPrice: {
-      action: "GetPrice", store_id: '', limit: 10
+    action: "GetPrice", store_id: '', limit: 10
   },
   GetPriceByProductBarCode: {
-      action: "GetPriceByProductBarCode", store_id: '', product_barcode: ''
+    action: "GetPriceByProductBarCode", store_id: '', 'product_barcode[]': []
   },
   GetPriceByProductID: {
-      action: "GetPriceByProductID", store_id: '', product_id: ''
+    action: "GetPriceByProductID", store_id: '', product_id: ''
   },
   GetHistoryByProductBarCode: {
-      action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
+    action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
   },
   GetHistoryByProductID: {
-      action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
+    action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
   },
   GetCities: {
-      action: "GetCities", limit: 10
+    action: "GetCities", limit: 10
   },
   GetCityByName: {
-      action: "GetCityByName", city_name: '', limit: 1
+    action: "GetCityByName", city_name: '', limit: 1
   }
 }

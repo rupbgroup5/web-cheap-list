@@ -68,7 +68,7 @@ const StyledBadge = withStyles((theme) => ({
 
 function AGroup() {
     //Context Api:
-  const { groupDetails,SetGroupDetails } = useContext(GroupDetailsContext);
+  const { groupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetPageTitle } = useContext(PageTitleContext);
