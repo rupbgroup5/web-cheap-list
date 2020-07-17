@@ -51,6 +51,7 @@ const Map = (props) => {
                
                 
             )}
+            
              {props.click !== undefined &&
                     <Marker position={{lat:JSON.parse(props.click.Deatils.store_gps_lat), lng: JSON.parse(props.click.Deatils.store_gps_lng)}}
                     animation={1}
@@ -95,8 +96,8 @@ function GoogleMaps(props) {
                 loadingElement={<div style={{ height: `100%` }} />}
                 containerElement={<div style={{ height: `100%` }} />}
                 mapElement={<div style={{ height: `100%` }} />}
-                Stores={props.Stores}
-                click = {props.click}
+                 Stores={props.Stores}
+                clickStore = {props.clickStore}
             />
         </div>
     )
