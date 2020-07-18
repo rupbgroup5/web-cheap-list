@@ -55,7 +55,7 @@ export default function SearchStores(props) {
   const [loading, SetLoading] = useState(true)
 
   const queryString = require('query-string');
-  let superGetAPI = `https://api.superget.co.il?api_key=${process.env.SUPERGET_KEY}&`
+  let superGetAPI = `https://api.superget.co.il?api_key=${process.env.REACT_APP_SUPERGET_KEY}&`
 
 
   const override = css`
