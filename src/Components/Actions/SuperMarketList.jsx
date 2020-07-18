@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from 'react' //,useContext
+import React, { useState, useEffect, useContext, forwardRef } from 'react' //,useContext
 import { withRouter, useHistory } from 'react-router-dom'
 import Badge from '@material-ui/core/Badge'
 import Button from '@material-ui/core/Button'
@@ -21,8 +21,8 @@ import Slide from '@material-ui/core/Slide'
 
 //Context Api:
 //import { ProductsCartContext } from "../../Contexts/ProductsCartContext"
-
-
+import { SMmoduleContext } from '../../Contexts/SMmoduleContext'
+import * as userActions from '../../Contexts/Reducers/ActionTypes';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '6vh',
     fontFamily: 'Amatic SC',
 
+  },
+  box: {
+    color: 'black'
   }
 }));
 
@@ -46,6 +49,11 @@ const Transition = forwardRef((props, ref) => {
 
 
 const SuperMarketList = (props) => {
+  const [productCart_SMLonly, SetProductCart_SMLonly] = useState([]); //must be empty array first !
+  const [myCartBadge, SetmyCartBadge] = useState();
+  const [notTakenBadge, SetNotTakenBadge] = useState();
+  const { smList, smListdispatch } = useContext(SMmoduleContext);
+
   const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = useState(true);
@@ -57,89 +65,83 @@ const SuperMarketList = (props) => {
   // const { productCart } = useContext(ProductsCartContext);
   //↓↓ -- ↑↑
   //temporary productCart that is not came from Alist just for construction time:
+
+
   const [productCart] = useState([
-    "לחם",
-    "חלב",
-    "חומוס",
-    " גבינה לבנה 5%",
-    "ביצים",
-    "שמן זית",
-    "זיתים",
-    "מרגרינה",
-    "גבינה צהובה",
-    "גיל",
-    "יוגורט",
-    "שוקלד",
-    "אפרסקים",
-    "תפוחים",
-    "אבטיח",
-    "קבבים",
-    "אנטריקוט",
-    "חזה עוף",
-    "ירקות סנפרוסט לתנור",
-    "תבלינים",
+    {
+      product_description: "מלפפונים בחומץ"
+    },
+    {
+      product_description: "תפוחים"
+    }, {
+      product_description: "לחם"
+    },
+    {
+      product_description: "חומוס"
+    },
+    {
+      product_description: "חלב"
+    },
+    {
+      product_description: " גבינה לבנה 5%"
+    },
+    {
+      product_description: "מרגרינה"
+    },
+    {
+      product_description: "זיתים"
+    },
+    {
+      product_description: "ביצים"
+    },
+    {
+      product_description: "שמן זית"
+    },
+    {
+      product_description: "גבינה צהובה"
+    },
+    {
+      product_description: "תפוחים"
+    },
+    {
+      product_description: "גיל"
+    },
+    {
+      product_description: "יוגורט"
+    },
+    {
+      product_description: "אבטיח"
+    }
   ]);
   //-------------------------TEMP-------------------------------- 
   //-------------------------------------------------------------
 
-  //#region  JSON FORMAT
+  // useEffect(() => {
+  //   //when fixing issues take care to take from the context api the names of products only and
+  //   //not the whole json (product.product_description)
+  //   if (localStorage.getItem('SuperMarketList')) { //if the ls is full with something under this key
+  //     SetProductCart_SMLonly(JSON.parse(localStorage.getItem('SuperMarketList')));
+  //   } else {
+  //     SetProductCart_SMLonly(productCart);
+  //     localStorage.setItem('SuperMarketList', JSON.stringify(productCart));
+  //   }
 
-  /**
-   * חומוס אחלה,
-   *  שוקלד השחר,
-   *  אבטיח, אנטריקוט,
-   *  ירקות סנפרוסט לתנור,
-   *  גבינה לבנה 5% תנובה, 
-   * לחם אחיד פרוס,
-   *  גיל,
-   *  קבבים מזרחיים זוגלבק,
-   *  שמן זית עץ הזית
-  
-  const [ productCart ] = useState([
-    {
-      description: 'לחם אחיד פרוס',
-      quantity: 1,
-      q_unit: `יח'`
-    },
-    {
+  //   if (localStorage.getItem('MyCart')) {
+  //     let LS_MyCart = JSON.parse(localStorage.getItem('MyCart'));
+  //     SetmyCartBadge(LS_MyCart.length);
+  //   }
 
-    }
-  ]);
-   */
-  //#endregion
-
-
-
-  const [productCart_SMLonly, SetProductCart_SMLonly] = useState([]); //must be empty array first !
-  const [myCartBadge, SetmyCartBadge] = useState();
-  const [notTakenBadge, SetNotTakenBadge] = useState();
-
-  useEffect(() => {
-
-    //when fixing issues take care to take from the context api the names of products only and
-    //not the whole json (product.product_description)
-    if (localStorage.getItem('SuperMarketList')) { //if the ls is full with something under this key
-      SetProductCart_SMLonly(JSON.parse(localStorage.getItem('SuperMarketList')));
-    } else {
-      SetProductCart_SMLonly(productCart);
-      localStorage.setItem('SuperMarketList', JSON.stringify(productCart));
-    }
-
-    if (localStorage.getItem('MyCart')) {
-      let LS_MyCart = JSON.parse(localStorage.getItem('MyCart'));
-      SetmyCartBadge(LS_MyCart.length);
-    }
-
-    if (localStorage.getItem('NotTaken')) {
-      let LS_NotTaken = JSON.parse(localStorage.getItem('NotTaken'));
-      SetNotTakenBadge(LS_NotTaken.length);
-    }
-  }, [productCart]);
+  //   if (localStorage.getItem('NotTaken')) {
+  //     let LS_NotTaken = JSON.parse(localStorage.getItem('NotTaken'));
+  //     SetNotTakenBadge(LS_NotTaken.length);
+  //   }
+  // }, [productCart]);
 
   const handleClose = () => {
     setOpen(false);
     props.CloseDialog()
   }
+
 
   const MoveItem2MyCart = (p) => {
     if (swipeProgress >= 70 || p.clicked === true) {
@@ -159,12 +161,12 @@ const SuperMarketList = (props) => {
         //then get it and push new item
         tempMyCart = JSON.parse(localStorage.getItem('MyCart'));
         tempMyCart.push(p.product);
-        SetmyCartBadge(tempMyCart.length);
       } else { //not exist
         //then create array with the item in it.
         tempMyCart = [p.product];
       }
 
+      SetmyCartBadge(tempMyCart.length);
       //finnaly update MyCart key in local storage 
       localStorage.setItem('MyCart', JSON.stringify(tempMyCart));
     }
@@ -189,12 +191,12 @@ const SuperMarketList = (props) => {
         //then get it and push new item
         tempNotTaken = JSON.parse(localStorage.getItem('NotTaken'));
         tempNotTaken.push(p.product);
-        SetNotTakenBadge(tempNotTaken.length);
       } else { //not exist
         //then create array with the item in it.
         tempNotTaken = [p.product];
       }
 
+      SetNotTakenBadge(tempNotTaken.length);
       //finnaly update NotTaken key in local storage 
       localStorage.setItem('NotTaken', JSON.stringify(tempNotTaken));
 
@@ -203,8 +205,8 @@ const SuperMarketList = (props) => {
   }
 
 
-  return (
 
+  return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
       <AppBar className={classes.appBar}>
         <Toolbar>
@@ -218,12 +220,12 @@ const SuperMarketList = (props) => {
       </AppBar>
 
       <div id="productCart-list" >
-        <SwipeableList  threshold={0.25}>
+        <SwipeableList className={classes.box} style={{ background: 'blue' }}>
 
-          {productCart_SMLonly.map((product, index) => {
+          {smList.map((product, index) => {
             return (
-              <span  key={index}>
               <SwipeableListItem
+                key={index}
                 swipeRight={{
                   content: <div className="swipeRight-divs">לא לקחתי</div>,
                   action: () => MoveItem2NotTaken({ product, index })
@@ -233,23 +235,21 @@ const SuperMarketList = (props) => {
                   action: () => MoveItem2MyCart({ product, index })
                 }}
                 onSwipeProgress={handleSwipeProgress}
-                // threshold={0.25} cant understand what is it... Not helpful nor harmful
-                >
+              // threshold={0.25} cant understand what is it... Not helpful nor harmful
+              >
                 <div className="list-item">
-                  <DeleteOutlineIcon onClick={() => MoveItem2NotTaken({ product, index, clicked}) } id='OVerRide_MuiSvgIcon-root' />
-                  <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ product, index, clicked}) } id='OVerRide_MuiSvgIcon-root' />
+                  <DeleteOutlineIcon onClick={() => MoveItem2NotTaken({ product, index, clicked })} id='OVerRide_MuiSvgIcon-root' />
+                  <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ product, index, clicked })} id='OVerRide_MuiSvgIcon-root' />
                   <p className='product_description'>
-                    {product}
+                    {product.name}
                   </p>
                 </div>
               </SwipeableListItem>
-                </span>
             )
           })}
         </SwipeableList>
       </div>
       <div id="buttons-container">
-
         <Badge badgeContent={myCartBadge} color="error">
           <Button variant="outlined" color="primary" onClick={() => history.push("/MyCart")}>העגלה שלי</Button>
         </Badge>

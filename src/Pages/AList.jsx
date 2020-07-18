@@ -25,6 +25,8 @@ import { IsLocalContext } from "../Contexts/IsLocalContext";
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 import { PageTitleContext } from "../Contexts/PageTitleContext";
 import { GroupDetailsContext } from "../Contexts/GroupDetailsContext";
+import { SMmoduleContext } from '../Contexts/SMmoduleContext'
+import * as userActions from '../Contexts/Reducers/ActionTypes';
 
 
 
@@ -44,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-
 function AList() {
     const classes = useStyles();
 
@@ -54,6 +55,7 @@ function AList() {
     const { isLocal } = useContext(IsLocalContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
     const { SetPageTitle } = useContext(PageTitleContext);
+    const { smListdispatch } = useContext(SMmoduleContext);
 
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
@@ -204,7 +206,11 @@ function AList() {
         } else if (action === 'חפש סופרים') {
             SetSearchStores(true)
         } else if (action === 'רשימה בסופר') {
-            SetSuperMarketList(true)
+           // smListdispatch({type: userActions.RemoveAll});
+            productCart.forEach((p) => {
+                smListdispatch({ type: userActions.AddItem, newItem: { name: p.product_description } });
+              });
+            SetSuperMarketList(true);
         }
         else if (action === 'חפש מוצר') {
             SetSearchProduct(true);
