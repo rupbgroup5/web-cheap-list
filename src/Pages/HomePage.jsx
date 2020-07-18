@@ -68,7 +68,6 @@ function HomePage() {
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
-  //const isLocal = true
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
@@ -83,8 +82,6 @@ function HomePage() {
 
     
       localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
-    
-
     (async function fetchMyAPI() {
       const res = await fetch(apiAppGroups + userIDfromRN, {
         method: 'GET',
