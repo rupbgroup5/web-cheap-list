@@ -53,7 +53,7 @@ export default function SearchStores(props) {
   const [open, setOpen] = useState(true);
   const [stores, SetStores] = useState([]);
   const [loading, SetLoading] = useState(true)
-  const [clickStore, SetClickStore] = useState(); 
+ 
   const queryString = require('query-string');
   let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
 
@@ -120,7 +120,7 @@ export default function SearchStores(props) {
           const s = {
             OutOfStock: outOfStock,
             Deatils: resultStoreID[i],
-            TotalPrice: Number(p.toFixed(2))
+            TotalPrice: p
           }
           tempArrayStore.push(s)
         }
@@ -151,16 +151,7 @@ export default function SearchStores(props) {
         color={'#36d7af'}
         loading={loading}
       />
-      {!loading && <span>
-      <GoogleMaps Stores={stores} click={clickStore}/>
-      {/* <div dir='rtl'>
-        {stores.map((s) =>
-        <div key={s.store_id}> 
-        <button  onClick={()=> SetClickStore(s)}>{s.Deatils.store_name}</button>
-        </div>
-        )}
-        </div> */}
-      </span>}
+      {!loading && <GoogleMaps Stores={stores} /> }
      
     </Dialog>
   )
