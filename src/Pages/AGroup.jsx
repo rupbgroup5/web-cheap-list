@@ -72,10 +72,7 @@ function AGroup() {
   const { SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetPageTitle } = useContext(PageTitleContext);
-  console.log(groupDetails)
 
- 
-  console.log(groupDetails)
   const classes = useStyles();
   const history = useHistory();
   const [gName, setName] = useState(groupDetails.GroupName)
