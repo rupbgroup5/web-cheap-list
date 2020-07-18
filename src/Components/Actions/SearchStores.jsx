@@ -94,6 +94,7 @@ export default function SearchStores(props) {
         }
         let resStoreID = await fetch(query, { method: 'GET' })
         let resultStoreID = await resStoreID.json()
+        console.log(resultStoreID)
 
         let tempArrayStore = []
         for (let i = 0; i < resultStoreID.length; i++) {
@@ -105,6 +106,7 @@ export default function SearchStores(props) {
           for (let j = 0; j < productCart.length; j++) {
             barcodeArr.push(productCart[j].product_barcode)
           }
+          console.log(barcodeArr)
           data.GetPriceByProductBarCode['product_barcode[]'] = barcodeArr
           query = queryString.stringifyUrl({ url: superGetAPI, query: data.GetPriceByProductBarCode })
 
@@ -134,6 +136,7 @@ export default function SearchStores(props) {
           }
           tempArrayStore.push(s)
         }
+        console.log(tempArrayStore)
         SetStores(tempArrayStore)
         SetLoading(false)
       } catch (error) {

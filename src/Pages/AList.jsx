@@ -90,7 +90,6 @@ function AList() {
     let listID = listObj.ListID
 
     const updatePercentage = () => {
-        console.log('updatePercentage')
         setTimeout(() => {
             SetProgressBar(progressBar + 1);
         }, 30);
@@ -102,7 +101,6 @@ function AList() {
         }
     };
     const updatePercentage2 = () => {
-        console.log('updatePercentage2')
         setTimeout(() => {
             SetProgressBar(progressBar - 1);
         }, 30);
@@ -118,12 +116,10 @@ function AList() {
     }
 
     useEffect(() => {
-        console.log('useEffect1')
         if (implementLimit > 0) updatePercentage();
     }, [implementLimit]);
 
     useEffect(() => {
-        console.log(progressBar)
         if (progressBar < implementLimit) updatePercentage();
         else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
@@ -137,7 +133,6 @@ function AList() {
                         console.log('Im  The Admin!')
                     }else{console.log('Im Not The Admin')}
                 }
-                console.log('useEffect3')
             }
 
             try {
@@ -382,10 +377,6 @@ function AList() {
 
     return (
         <div className="container">
-            {console.log('implment', implementLimit)}
-            {console.log('progress',progressBar)}
-            {console.log('sum',((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)))}
-            {console.log(listObj)}
             <div className="header">
                 <TextField
                     id="outlined-basic"
