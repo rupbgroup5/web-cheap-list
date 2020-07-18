@@ -14,10 +14,13 @@ import RemoveIcon from '@material-ui/icons/Remove';
 
 import { css } from "@emotion/core";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
+import swal from 'sweetalert'
 
 
 //ContextApi
 import { ProductsCartContext } from "../../Contexts/ProductsCartContext";
+import { ListObjContext } from "../../Contexts/ListDetailsContext";
+import { IsLocalContext } from "../../Contexts/IsLocalContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -42,17 +45,13 @@ const Transition = forwardRef((props, ref) => {
 export default function SearchProduct(props) {
   const classes = useStyles();
 
-
-
   //ContextApi
-  const { productCart } = useContext(ProductsCartContext);
+  const { productCart, SetProductCart } = useContext(ProductsCartContext);
+  const { listObj } = useContext(ListObjContext);
+  const { isLocal } = useContext(IsLocalContext);
 
-
-  const [loading,SetLoading] = useState(false)
-  const [product,SetProduct] = useState([]) //temp until api is coming back
-
+  const [loading, SetLoading] = useState(false)
   const [open, setOpen] = useState(true);
-
   const [numItem, SetNumItem] = useState({
     '0': 1,
     '1': 1,
@@ -64,6 +63,20 @@ export default function SearchProduct(props) {
     '7': 1,
     '8': 1
   })
+  const [product, SetProduct] = useState([]);
+
+  const queryString = require('query-string');
+
+  let superGetAPI = `https://api.superget.co.il?api_key=${process.env.REACT_APP_SUPERGET_KEY}&`
+  let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
+  let apiScrapper = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Scraper/"
+  console.log(superGetAPI)
+
+  if (isLocal) {
+    apiAppProduct = "http://localhost:56794/api/AppProduct/";
+    apiScrapper = "http://localhost:56794/api/Scraper/"
+  }
+
 
   const override = css`
   position: absolute;
@@ -75,6 +88,8 @@ export default function SearchProduct(props) {
   height: 100px;
   
  ;`;
+
+  let tempProduct = '';
 
 
 
@@ -90,21 +105,129 @@ export default function SearchProduct(props) {
     }
   }
 
+  const Add2DB = async (p) => {
+
+    let product = {
+      ...p,
+      ListID: listObj.ListID,
+      GroupID: listObj.GroupID
+    }
+    console.log(product)
+    const resDB = await fetch(apiAppProduct, {
+      method: 'POST',
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8'
+      }),
+      body: JSON.stringify(product)
+    })
+    const resultDB = await resDB.json()
+    console.log('result', resultDB)
+    listObj.ListEstimatedPrice += resultDB.estimatedProductPrice
+    //SetList(list)
+    SetProduct([])
+    SetProductCart([...productCart, resultDB])
+    alert('המוצר התווסף בהצלחה')
+  }
+
+  const ConfirmationLimit = (p) => {
+    let tempCheck = listObj.ListEstimatedPrice + p.estimatedProductPrice
+    if (tempCheck > listObj.LimitPrice) {
+      swal({
+        text: "שים לב! חרגת מהמגבלה",
+        buttons: ['בטל', 'המשך בכל זאת'],
+        dangerMode: true,
+      }).then((willContinue) => {
+        if (willContinue) {
+          Add2DB(p)
+        }
+      })
+    } else if (tempCheck > listObj.LimitPrice * 0.7) {
+      alert('שים לב! עברת 70% מהמגבלה')
+      Add2DB(p)
+    }
+    else Add2DB(p)
+  }
+
+  const handleProduct = (e) => { tempProduct = e.target.value }
+
+  const handleClickSearch = async () => {
+    SetLoading(true);
+    try {
+      //GetStores
+      let query;
+      if (listObj.TypeLocation === 'currentLocation') {
+        data.GetStoresByGPS.latitude = JSON.parse(listObj.Latitude)
+        data.GetStoresByGPS.longitude = JSON.parse(listObj.Longitude)
+        data.GetStoresByGPS.km_radius = listObj.KM_radius
+        query = await queryString.stringifyUrl({ url: superGetAPI, query: data.GetStoresByGPS })
+      } else {
+        data.GetStoresByCityID.city_id = listObj.CityID
+        query = await queryString.stringifyUrl({ url: superGetAPI, query: data.GetStoresByCityID })
+      }
+      let resStoreID = await fetch(query, { method: 'GET' })
+      let resultStoreID = await resStoreID.json();
+      console.log('resultStoreId', resultStoreID)
+
+      //get productBarcode
+      data.GetProductsByName.product_name = tempProduct;
+      query = queryString.stringifyUrl({ url: superGetAPI, query: data.GetProductsByName })
+      let resBarcode = await fetch(query, { method: 'GET' })
+      let resultBarcode = await resBarcode.json();
+      console.log('product', resultBarcode)
+
+      let arrayProduct = []
+      for (let i = 0; i < resultBarcode.length; i++) {
+        let price = 0;
+        let count = 0;
+        //Get SRCIMG
+        let resSRC = await fetch( apiScrapper + resultBarcode[i].product_name, { method: 'GET' })
+        let resultSRC = await resSRC.json();
+        //GetPriceByProductBarcode
+        for (let j = 0; j < resultStoreID.length; j++) {
+          data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
+          data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
+          query = await queryString.stringifyUrl({ url: superGetAPI, query: data.GetPriceByProductBarCode })
+          if (j >= resultStoreID.length / 2) {
+            query = await queryString.stringifyUrl({ url: 'https://allow-any-origin.appspot.com/' + superGetAPI, query: data.GetPriceByProductBarCode })
+          }
+          let resPrice = await fetch(query, { method: 'GET' })
+          let resultPrice = await resPrice.json();
+          if (resultPrice.error_type === "NO_DATA") continue;
+
+          price += JSON.parse(resultPrice[0].store_product_price)
+          count++
+        }
+        price = price / count
+
+        
+        let p = {
+          product_barcode: resultBarcode[i].product_barcode,
+          product_name: resultBarcode[i].product_name,
+          product_description: resultBarcode[i].product_description,
+          product_image: resultSRC,
+          manufacturer_name: resultBarcode[i].manufacturer_name,
+          estimatedProductPrice: Number(price.toFixed(2))
+        }
+        arrayProduct.push(p)
+      }
+      SetLoading(false)
+      SetProduct(...product, arrayProduct)
+    } catch (error) {
+      console.log(error)
+    }
+
+
+  }
+
 
 
   const handleClose = () => {
     setOpen(false);
     props.CloseDialog()
+    props.Implment();
   };
 
-  const handleClickSearch = () => {
-  SetLoading(true);
-  setTimeout(() => {
-    SetProduct(productCart)
-    SetLoading(false)
-  }, 5000);
-  
-  }
+
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
@@ -128,8 +251,8 @@ export default function SearchProduct(props) {
       />
       <div className="container">
         <div className="header">
-          <input placeholder='הקלד מוצר לחיפש' dir='rtl' /> <br />
-          <button onClick={ handleClickSearch}>חפש מוצר</button>
+          <input placeholder='הקלד מוצר לחיפש' dir='rtl' onChange={handleProduct} /> <br />
+          <button onClick={handleClickSearch}>חפש מוצר</button>
         </div>
         <div className="Maincontent">
 
@@ -148,7 +271,7 @@ export default function SearchProduct(props) {
                     <RemoveIcon style={{ height: '0.7em' }} onClick={() => RemoveItem(index)} />
                     <br />
 
-                    <Button ovariant="primary" color='primary' >הוסף מוצר</Button>
+                    <Button ovariant="primary" color='primary' onClick={()=>ConfirmationLimit(p)} >הוסף מוצר</Button>
                   </Card.Body>
                   <br />
                 </Card>
@@ -162,3 +285,53 @@ export default function SearchProduct(props) {
     </Dialog>
   )
 }
+
+const data = {
+  TestFunction: {
+    action: "TestFunction"
+  },
+  GetChains: {
+    action: "GetChains"
+  },
+  GetStoresByChain: {
+    action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
+  },
+  GetStoresByCityID: {
+    action: "GetStoresByCityID", city_id: '', limit: 3
+  },
+  GetStoresByGPS: {
+    action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 3
+  },
+  GetProductsByBarCode: {
+    action: "GetProductsByBarCode", product_barcode: '', limit: 10
+  },
+  GetProductsByID: {
+    action: 'GetProductsByID', product_id: '', limit: 10
+  },
+  GetProductsByName: {
+    action: "GetProductsByName", product_name: "", limit: 1
+  },
+  GetPrice: {
+    action: "GetPrice", store_id: '', limit: 10
+  },
+  GetPriceByProductBarCode: {
+    action: "GetPriceByProductBarCode", store_id: '', product_barcode: ''
+  },
+  GetPriceByProductID: {
+    action: "GetPriceByProductID", store_id: '', product_id: ''
+  },
+  GetHistoryByProductBarCode: {
+    action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
+  },
+  GetHistoryByProductID: {
+    action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
+  },
+  GetCities: {
+    action: "GetCities", limit: 10
+  },
+  GetCityByName: {
+    action: "GetCityByName", city_name: '', limit: 1
+  }
+}
+
+

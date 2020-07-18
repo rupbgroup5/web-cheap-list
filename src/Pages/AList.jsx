@@ -65,16 +65,14 @@ function AList() {
     const [searchProduct, SetSearchProduct] = useState(false);
 
 
-    const [list, SetList] = useState(listObj);
-    const [listName, SetListName] = useState(list.ListName)
     const textInput = useRef(null)
     const limitInput = useRef(null)
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
     const [stores, SetStores] = useState([]);
-    const [limit, SetLimit] = useState(list.LimitPrice)
+    const [limit, SetLimit] = useState(listObj.LimitPrice)
     const [progressBar, SetProgressBar] = useState(0)
-    const [implementLimit, SetimplementLimit] = useState(((list.ListEstimatedPrice / list.LimitPrice).toFixed(2)) * 100)
+    const [implementLimit, SetimplementLimit] = useState(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)
     const [color, SetColor] = useState("#009900")
     const [disableSave, SetDisableSave] = useState(true)
     
@@ -89,8 +87,10 @@ function AList() {
     let tempProduct = "";
     let tempName = "";
     let tempLimit = '';
+    let listID = listObj.ListID
 
     const updatePercentage = () => {
+        console.log('updatePercentage')
         setTimeout(() => {
             SetProgressBar(progressBar + 1);
         }, 30);
@@ -102,6 +102,7 @@ function AList() {
         }
     };
     const updatePercentage2 = () => {
+        console.log('updatePercentage2')
         setTimeout(() => {
             SetProgressBar(progressBar - 1);
         }, 30);
@@ -117,24 +118,26 @@ function AList() {
     }
 
     useEffect(() => {
+        console.log('useEffect1')
         if (implementLimit > 0) updatePercentage();
     }, [implementLimit]);
 
     useEffect(() => {
+        console.log(progressBar)
         if (progressBar < implementLimit) updatePercentage();
         else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
 
-    useEffect(() => {;
-
+    useEffect(() => {
+        
         (async () => {
             for (let i = 0; i < groupDetails.Participiants.length; i++) {
                 if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
                     if (groupDetails.Participiants[i].IsAdmin) {
-                        alert('Im  The Admin!')
-                    }else{alert('Im Not The Admin')}
+                        console.log('Im  The Admin!')
+                    }else{console.log('Im Not The Admin')}
                 }
-                
+                console.log('useEffect3')
             }
 
             try {
@@ -151,15 +154,14 @@ function AList() {
             }
         })();
         SetPageTitle('סל קניות')
-    }, [listObj, apiAppProduct, SetProductCart, SetPageTitle]);
+    }, [apiAppProduct]);
 
     const editListName = (e) => {
         tempName = "";
         tempName = e.target.value
     }
 
-    const Confirmation = () => {
-        console.log('is ', tempName)
+    const ConfirmationEditName = () => {
         if (tempName !== "") {
             swal({
                 title: "שינוי שם הרשימה",
@@ -170,7 +172,7 @@ function AList() {
                     if (userInput) {
                         console.log(tempName)
                         let l = {
-                            ListID: list.ListID,
+                            ListID: listObj.ListID,
                             ListName: tempName
                         }
                         fetch(apiAppList, {
@@ -182,8 +184,8 @@ function AList() {
                         }).then(res => { return res.json(); })
                             .then(
                                 (result) => {
-                                    SetListName(tempName)
-                                    list.ListName = listName
+                                   
+                                    listObj.ListName = tempName
                                     console.log('The name of ', result, ' id was changed')
                                     swal('שם הקבוצה שונה');
                                 },
@@ -228,127 +230,25 @@ function AList() {
     }
 
     const handleClickLimit = async () => {
+
         try {
-            const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + list.ListID, {
+            const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + listObj.ListID, {
                 method: 'PUT',
             })
             let result = await res.json();
             SetLimit(tempLimit);
-            SetimplementLimit(((list.ListEstimatedPrice / tempLimit).toFixed(2)) * 100)
+            SetimplementLimit(((listObj.ListEstimatedPrice / tempLimit).toFixed(2)) * 100)
             console.log(result)
         } catch (error) {
             console.log(error)
         }
     }
 
-    //const handleProduct = (e) => { tempProduct = e.target.value }
-
-    // const handleClickChoise = async () => {
-    //     if (list.CityName !== null && tempProduct !== '') {
-    //         try {
-    //             //get cityID
-    //             data.GetCityByName.city_name = list.CityName
-    //             let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
-    //             let resCity = await fetch(query, { method: 'GET' })
-    //             let resultCity = await resCity.json();
-    //             console.log('resultCity', resultCity)
-    //             //get productBarcode
-    //             data.GetProductsByName.product_name = tempProduct;
-    //             query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
-    //             let resBarcode = await fetch(query, { method: 'GET' })
-    //             let resultBarcode = await resBarcode.json();
-    //             console.log('product', resultBarcode)
-    //             //getStoreByCityID
-    //             data.GetStoresByCityID.city_id = resultCity[0].city_id
-    //             query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
-    //             let resStoreID = await fetch(query, { method: 'GET' })
-    //             let resultStoreID = await resStoreID.json()
-    //             let arrayProduct = []
-    //             for (let i = 0; i < resultBarcode.length; i++) {
-    //                 let price = 0;
-    //                 let count = 0;
-    //                 for (let j = 0; j < resultStoreID.length; j++) {
-    //                     data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
-    //                     data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
-    //                     query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
-    //                     let resPrice = await fetch(query, { method: 'GET' })
-    //                     let resultPrice = await resPrice.json();
-    //                     if (resultPrice.error_type === "NO_DATA") {
-    //                         console.log('err')
-    //                         continue;
-    //                     }
-    //                     price += JSON.parse(resultPrice[0].store_product_price)
-    //                     count++
-    //                 }
-    //                 price = price / count
-
-    //                 console.log('my price', price)
-    //                 //Get SRCIMG
-    //                 let resSRC = await fetch("http://localhost:56794/api/Scraper/" + resultBarcode[i].product_name, { method: 'GET' })
-    //                 let resultSRC = await resSRC.json();
-    //                 let p = {
-    //                     product_barcode: resultBarcode[i].product_barcode,
-    //                     product_name: resultBarcode[i].product_name,
-    //                     product_description: resultBarcode[i].product_description,
-    //                     product_image: resultSRC,
-    //                     manufacturer_name: resultBarcode[i].manufacturer_name,
-    //                     estimatedProductPrice: Number(price.toFixed(2))
-    //                 }
-    //                 arrayProduct.push(p)
-    //             }
-    //             SetProduct(...product, arrayProduct)
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     } else alert('מלא את השדות תחילה')
+  
 
 
-    // }
 
-    const ConfirmationLimit = (index) => {
-        console.log(list.ListEstimatedPrice, product[index].estimatedProductPrice)
-        let tempCheck = list.ListEstimatedPrice + product[index].estimatedProductPrice
-        console.log('temp', tempCheck)
-        console.log(list.ListEstimatedPrice, product[index].estimatedProductPrice)
-        if (tempCheck > list.LimitPrice) {
-            swal({
-                text: "שים לב! חרגת מהמגבלה",
-                buttons: ['בטל', 'המשך בכל זאת'],
-                dangerMode: true,
-            }).then((willContinue) => {
-                if (willContinue) {
-                    Add2DB(index)
-                }
-            })
-        } else if (tempCheck > list.LimitPrice * 0.7) {
-            alert('שים לב! עברת 70% מהמגבלה')
-            Add2DB(index)
-        }
-        else Add2DB(index)
-    }
-
-    const Add2DB = async (index) => {
-
-        let p = {
-            ...product[index],
-            ListID: list.ListID,
-            GroupID: list.GroupID
-        }
-        const resDB = await fetch(apiAppProduct, {
-            method: 'POST',
-            headers: new Headers({
-                'Content-type': 'application/json; charset=UTF-8'
-            }),
-            body: JSON.stringify(p)
-        })
-        const resultDB = await resDB.json()
-        console.log('result', resultDB)
-        list.ListEstimatedPrice += resultDB.estimatedProductPrice
-        SetList(list)
-        SetProduct([])
-        SetProductCart([...productCart, resultDB])
-        alert('המוצר התווסף בהצלחה')
-    }
+    
 
     // const getTotalPrice = async () => {
     //     try {
@@ -450,9 +350,10 @@ function AList() {
                         .then(
                             (result) => {
                                 console.log('The ', result, ' was successfully deleted!')
-                                list.ListEstimatedPrice -= productCart[index].estimatedProductPrice.toFixed(2)
+                                listObj.ListEstimatedPrice -= productCart[index].estimatedProductPrice.toFixed(2)
                                 productCart.splice(index, 1)
                                 SetProductCart([...productCart])
+                                SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)
                                 swal("המוצר נמחק ")
                             },
                             (error) => {
@@ -481,13 +382,17 @@ function AList() {
 
     return (
         <div className="container">
+            {console.log('implment', implementLimit)}
+            {console.log('progress',progressBar)}
+            {console.log('sum',((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)))}
+            {console.log(listObj)}
             <div className="header">
                 <TextField
                     id="outlined-basic"
                     variant="outlined"
                     onInput={editListName}
-                    placeholder={listName}
-                    onBlur={Confirmation}
+                    placeholder={listObj.ListName}
+                    onBlur={ConfirmationEditName}
                     inputRef={textInput}
                 />
             </div>
@@ -495,7 +400,8 @@ function AList() {
                 {location && <Location CloseDialog={CloseDialogLocation} />}
                 {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
                 {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
-                {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct} />}
+                {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct} 
+                Implment={()=>SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)} />}
 
 
                 {/* <h3>{list.CityName} </h3> */}
@@ -506,7 +412,7 @@ function AList() {
                 <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
                 <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
                 <button onClick={handleClickChoise}>חפש מוצר</button> */}
-                {product.map((p, index) =>
+                {/* {product.map((p, index) =>
                     <div key={index}>
                         <p>
                             {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
@@ -514,7 +420,7 @@ function AList() {
                             <button onClick={ConfirmationLimit(index)}>הוסף לרשימה</button>
                         </p>
                     </div>
-                )}
+                )} */}
 
                 <div id="compareList">
                     {productCart.map((p, index) =>
@@ -531,7 +437,7 @@ function AList() {
                 </div>
                 <div className='product-text'>
                     {/* {productCart.length - 1 !== 0 ? 'סך מחיר משוער: ' + '₪' + Number(list.ListEstimatedPrice).toFixed(2) : false} */}
-                 סך מחיר משוער: <b>₪{Number(list.ListEstimatedPrice).toFixed(2)}</b>
+                 סך מחיר משוער: <b>₪{Number(listObj.ListEstimatedPrice).toFixed(2)}</b>
                 </div>
                 <br/>
                 <Circle
@@ -572,9 +478,6 @@ function AList() {
                     שמור
                 </Button>
 
-                <br /> <br />
-                {/* <button onClick={getTotalPrice}>חפש סופרים בסביבתך</button> <br /><br /> */}
-                {/* <b><u>רשימת הסופרים</u></b> */}
                 {stores.map((s, indexS) =>
                     <div key={indexS}>
                         <div>
@@ -617,53 +520,7 @@ function AList() {
 
 export default withRouter(AList)
 
-const data = {
-    TestFunction: {
-        action: "TestFunction"
-    },
-    GetChains: {
-        action: "GetChains"
-    },
-    GetStoresByChain: {
-        action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
-    },
-    GetStoresByCityID: {
-        action: "GetStoresByCityID", city_id: '', limit: 3
-    },
-    GetStoresByGPS: {
-        action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
-    },
-    GetProductsByBarCode: {
-        action: "GetProductsByBarCode", product_barcode: '', limit: 3
-    },
-    GetProductsByID: {
-        action: 'GetProductsByID', product_id: '', limit: 10
-    },
-    GetProductsByName: {
-        action: "GetProductsByName", product_name: "", limit: 5
-    },
-    GetPrice: {
-        action: "GetPrice", store_id: '', limit: 10
-    },
-    GetPriceByProductBarCode: {
-        action: "GetPriceByProductBarCode", store_id: '', product_barcode: ''
-    },
-    GetPriceByProductID: {
-        action: "GetPriceByProductID", store_id: '', product_id: ''
-    },
-    GetHistoryByProductBarCode: {
-        action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
-    },
-    GetHistoryByProductID: {
-        action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
-    },
-    GetCities: {
-        action: "GetCities", limit: 10
-    },
-    GetCityByName: {
-        action: "GetCityByName", city_name: '', limit: 1
-    }
-}
+
 
 const actions = [
     { icon: <LocationOnOutlinedIcon />, name: "מיקום" },
@@ -673,6 +530,52 @@ const actions = [
 
 ];
 
-
+const data = {
+    TestFunction: {
+      action: "TestFunction"
+    },
+    GetChains: {
+      action: "GetChains"
+    },
+    GetStoresByChain: {
+      action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
+    },
+    GetStoresByCityID: {
+      action: "GetStoresByCityID", city_id: '', limit: 10
+    },
+    GetStoresByGPS: {
+      action: "GetStoresByGPS", latitude: '', longitude: '', km_radius: '', order:1, limit: 10
+    },
+    GetProductsByBarCode: {
+      action: "GetProductsByBarCode", product_barcode: '', limit: 3
+    },
+    GetProductsByID: {
+      action: 'GetProductsByID', product_id: '', limit: 10
+    },
+    GetProductsByName: {
+      action: "GetProductsByName", product_name: "", limit: 5
+    },
+    GetPrice: {
+      action: "GetPrice", store_id: '', limit: 10
+    },
+    GetPriceByProductBarCode: {
+      action: "GetPriceByProductBarCode", store_id: '', 'product_barcode[]': []
+    },
+    GetPriceByProductID: {
+      action: "GetPriceByProductID", store_id: '', product_id: ''
+    },
+    GetHistoryByProductBarCode: {
+      action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
+    },
+    GetHistoryByProductID: {
+      action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
+    },
+    GetCities: {
+      action: "GetCities", limit: 10
+    },
+    GetCityByName: {
+      action: "GetCityByName", city_name: '', limit: 1
+    }
+  }
 
 

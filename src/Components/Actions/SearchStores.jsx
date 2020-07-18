@@ -55,7 +55,7 @@ export default function SearchStores(props) {
   const [loading, SetLoading] = useState(true)
 
   const queryString = require('query-string');
-  let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
+  let superGetAPI = `https://api.superget.co.il?api_key=${process.env.SUPERGET_KEY}&`
 
 
   const override = css`
@@ -87,17 +87,14 @@ export default function SearchStores(props) {
           data.GetStoresByGPS.latitude = JSON.parse(listObj.Latitude)
           data.GetStoresByGPS.longitude = JSON.parse(listObj.Longitude)
           data.GetStoresByGPS.km_radius = listObj.KM_radius
-          query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByGPS })
+          query = await queryString.stringifyUrl({ url: superGetAPI, query: data.GetStoresByGPS })
         } else {
           data.GetStoresByCityID.city_id = listObj.CityID
-          query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+          query = await queryString.stringifyUrl({ url: superGetAPI, query: data.GetStoresByCityID })
         }
-
-        console.log('query' , query)
-
         let resStoreID = await fetch(query, { method: 'GET' })
-        let resultStoreID = await resStoreID.json();
-        console.log('resultStoreId',resultStoreID )
+        let resultStoreID = await resStoreID.json()
+
         let tempArrayStore = []
         for (let i = 0; i < resultStoreID.length; i++) {
           let p = 0;
@@ -109,12 +106,12 @@ export default function SearchStores(props) {
             barcodeArr.push(productCart[j].product_barcode)
           }
           data.GetPriceByProductBarCode['product_barcode[]'] = barcodeArr
-          query = queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
+          query = queryString.stringifyUrl({ url: superGetAPI, query: data.GetPriceByProductBarCode })
 
           //https://cors-anywhere.herokuapp.com/
           if (i >= resultStoreID.length / 2) {
             console.log('into if')
-            query = queryString.stringifyUrl({ url: 'https://allow-any-origin.appspot.com/' + api, query: data.GetPriceByProductBarCode })
+            query = queryString.stringifyUrl({ url: 'https://allow-any-origin.appspot.com/' + superGetAPI, query: data.GetPriceByProductBarCode })
           }
           const res = await fetch(query, { method: 'GET' })
           var result = await res.json()
