@@ -116,16 +116,6 @@ const SuperMarketList = (props) => {
   //-------------------------TEMP-------------------------------- 
   //-------------------------------------------------------------
 
-  useEffect(() => {
-    (()=>{
-      productCart.forEach((p) => {
-        smListdispatch({ type: userActions.AddItem, newItem: { name: p.product_description } });
-      });
-      console.log('done filling');
-    })();
-  }, []);
-
-
   // useEffect(() => {
   //   //when fixing issues take care to take from the context api the names of products only and
   //   //not the whole json (product.product_description)
@@ -215,10 +205,6 @@ const SuperMarketList = (props) => {
   }
 
 
-  const temp = () => {
-    smListdispatch({ type: userActions.AddItem, newItem: { name: 'חלב' } });
-    console.log(smList);
-  }
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
@@ -264,8 +250,6 @@ const SuperMarketList = (props) => {
         </SwipeableList>
       </div>
       <div id="buttons-container">
-        <button onClick={temp}>temp</button>
-
         <Badge badgeContent={myCartBadge} color="error">
           <Button variant="outlined" color="primary" onClick={() => history.push("/MyCart")}>העגלה שלי</Button>
         </Badge>
