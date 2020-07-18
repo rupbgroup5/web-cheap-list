@@ -174,14 +174,24 @@ export default function SearchProduct(props) {
       let resBarcode = await fetch(query, { method: 'GET' })
       let resultBarcode = await resBarcode.json();
       console.log('product', resultBarcode)
-
       let arrayProduct = []
+      //GetNameProduct
+      let productsNamesArr = []
+      for (let i = 0; i < resultBarcode.length; i++) {
+        productsNamesArr.push(resultBarcode[i].product_name)
+      }
+      //Get SRCIMG
+      const resSRC = await fetch(apiScrapper, {
+        method: 'POST',
+        headers: new Headers({
+          'Content-type': 'application/json; charset=UTF-8'
+        }),
+        body: JSON.stringify(productsNamesArr)
+      })
+      let resultSRC = await resSRC.json();
       for (let i = 0; i < resultBarcode.length; i++) {
         let price = 0;
         let count = 0;
-        //Get SRCIMG
-        let resSRC = await fetch( apiScrapper + resultBarcode[i].product_name, { method: 'GET' })
-        let resultSRC = await resSRC.json();
         //GetPriceByProductBarcode
         for (let j = 0; j < resultStoreID.length; j++) {
           data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
@@ -199,12 +209,12 @@ export default function SearchProduct(props) {
         }
         price = price / count
 
-        
+
         let p = {
           product_barcode: resultBarcode[i].product_barcode,
           product_name: resultBarcode[i].product_name,
           product_description: resultBarcode[i].product_description,
-          product_image: resultSRC,
+          product_image: resultSRC[i],
           manufacturer_name: resultBarcode[i].manufacturer_name,
           estimatedProductPrice: Number(price.toFixed(2))
         }
@@ -271,7 +281,7 @@ export default function SearchProduct(props) {
                     <RemoveIcon style={{ height: '0.7em' }} onClick={() => RemoveItem(index)} />
                     <br />
 
-                    <Button ovariant="primary" color='primary' onClick={()=>ConfirmationLimit(p)} >הוסף מוצר</Button>
+                    <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p)} >הוסף מוצר</Button>
                   </Card.Body>
                   <br />
                 </Card>
@@ -309,7 +319,7 @@ const data = {
     action: 'GetProductsByID', product_id: '', limit: 10
   },
   GetProductsByName: {
-    action: "GetProductsByName", product_name: "", limit: 1
+    action: "GetProductsByName", product_name: "", limit: 5
   },
   GetPrice: {
     action: "GetPrice", store_id: '', limit: 10
