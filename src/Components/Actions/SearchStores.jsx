@@ -53,7 +53,7 @@ export default function SearchStores(props) {
   const [open, setOpen] = useState(true);
   const [stores, SetStores] = useState([]);
   const [loading, SetLoading] = useState(true)
- 
+
   const queryString = require('query-string');
   let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
 
@@ -79,12 +79,25 @@ export default function SearchStores(props) {
 
   useEffect(() => {
     (async () => {
+      console.log(listObj)
       try {
-        //GetStores    
-        data.GetStoresByCityID.city_id = listObj.CityID
-        let query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+        //GetStores
+        let query;
+        if (listObj.TypeLocation === 'currentLocation') {
+          data.GetStoresByGPS.latitude = JSON.parse(listObj.Latitude)
+          data.GetStoresByGPS.longitude = JSON.parse(listObj.Longitude)
+          data.GetStoresByGPS.km_radius = listObj.KM_radius
+          query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByGPS })
+        } else {
+          data.GetStoresByCityID.city_id = listObj.CityID
+          query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
+        }
+
+        console.log('query' , query)
+
         let resStoreID = await fetch(query, { method: 'GET' })
         let resultStoreID = await resStoreID.json();
+        console.log('resultStoreId',resultStoreID )
         let tempArrayStore = []
         for (let i = 0; i < resultStoreID.length; i++) {
           let p = 0;
@@ -120,7 +133,7 @@ export default function SearchStores(props) {
           const s = {
             OutOfStock: outOfStock,
             Deatils: resultStoreID[i],
-            TotalPrice: p
+            TotalPrice: Number(p.toFixed(2))
           }
           tempArrayStore.push(s)
         }
@@ -151,8 +164,8 @@ export default function SearchStores(props) {
         color={'#36d7af'}
         loading={loading}
       />
-      {!loading && <GoogleMaps Stores={stores} /> }
-     
+      {!loading && <GoogleMaps Stores={stores} />}
+
     </Dialog>
   )
 }
@@ -168,10 +181,10 @@ const data = {
     action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
   },
   GetStoresByCityID: {
-    action: "GetStoresByCityID", city_id: '', limit: 2
+    action: "GetStoresByCityID", city_id: '', limit: 10
   },
   GetStoresByGPS: {
-    action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
+    action: "GetStoresByGPS", latitude: '', longitude: '', km_radius: '', order:1, limit: 10
   },
   GetProductsByBarCode: {
     action: "GetProductsByBarCode", product_barcode: '', limit: 3

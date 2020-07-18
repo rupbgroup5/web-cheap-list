@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect, useContext } from 'react';
+import React, { useState, forwardRef, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -18,7 +18,6 @@ import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 
 //ContextApi
 import { ProductsCartContext } from "../../Contexts/ProductsCartContext";
-import { UserIDContext } from '../../Contexts/UserIDContext';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,7 +45,7 @@ export default function SearchProduct(props) {
 
 
   //ContextApi
-  const { productCart, SetProductCart } = useContext(ProductsCartContext);
+  const { productCart } = useContext(ProductsCartContext);
 
 
   const [loading,SetLoading] = useState(false)
