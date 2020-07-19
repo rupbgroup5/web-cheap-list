@@ -1,28 +1,27 @@
-import * as userActions from './ActionTypes'
-let lastId = 0;
+import { AddItem, RemoveItem, RemoveAll } from './ActionTypes'
+let lastId = 0
 
 // remmeber ! state is coming from the context api and 
 //when using the reducer outside you pass the action object alone 
 
-export const smListReducer = (state, action) => {
+export const SuperMarketModuleReducer = (state, action) => {
 
-    //  const {} = userActions;
     switch (action.type) {
-        case userActions.AddItem:
+        case AddItem:
             // calling it will be:
-            //smListdispatch({ type: userActions.AddItem , newItem: {name: 'חלב'}});
+            //someDispatchFunction({ type: userActions.AddItem , newItem: {name: 'חלב'}});
             return [
                 ...state,
                 {
-                    id: ++lastId,
+                    id: Date.now() + (Math.floor(Math.random() * 100) + 1) * (Math.floor(Math.random() * 100) + 1),
                     name: action.newItem.name
                 }
             ]
-        case userActions.RemoveItem:
+        case RemoveItem:
             // calling it will be:
-            //smListdispatch({ type: userActions.RemoveItem , id2remove: 2 });
+            //someDispatchFunction({ type: userActions.RemoveItem , id2remove: 2 });
             return state.filter((item) => item.id !== action.id2remove);
-        case userActions.RemoveAll:
+        case RemoveAll:
             return state = [];
         default:
             return state;

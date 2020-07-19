@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, forwardRef } from 'react' //,useContext
+import React, { useState, useEffect, useContext, forwardRef } from 'react' 
 import { withRouter, useHistory } from 'react-router-dom'
 import Badge from '@material-ui/core/Badge'
 import Button from '@material-ui/core/Button'
@@ -20,9 +20,8 @@ import CloseIcon from '@material-ui/icons/Close'
 import Slide from '@material-ui/core/Slide'
 
 //Context Api:
-//import { ProductsCartContext } from "../../Contexts/ProductsCartContext"
 import { SMmoduleContext } from '../../Contexts/SMmoduleContext'
-import * as userActions from '../../Contexts/Reducers/ActionTypes';
+import { RemoveItem, AddItem } from '../../Contexts/Reducers/ActionTypes'
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -46,165 +45,40 @@ const Transition = forwardRef((props, ref) => {
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-
-
 const SuperMarketList = (props) => {
-  const [productCart_SMLonly, SetProductCart_SMLonly] = useState([]); //must be empty array first !
   const [myCartBadge, SetmyCartBadge] = useState();
   const [notTakenBadge, SetNotTakenBadge] = useState();
-  const { smList, smListdispatch } = useContext(SMmoduleContext);
-
+  const { smList, smListdispatch,
+          myCartList, MyCartListDispatch,
+          notTakenList, NotTakenListDispatch } = useContext(SMmoduleContext);
   const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = useState(true);
   const [swipeProgress, handleSwipeProgress] = useState();
-  const clicked = true;
 
-  //-------------------------------------------------------------
-  //-------------------------TEMP-------------------------------- 
-  // const { productCart } = useContext(ProductsCartContext);
-  //↓↓ -- ↑↑
-  //temporary productCart that is not came from Alist just for construction time:
+ useEffect(() => {
+  SetmyCartBadge(myCartList.length);
+ }, [myCartList]);
 
-
-  const [productCart] = useState([
-    {
-      product_description: "מלפפונים בחומץ"
-    },
-    {
-      product_description: "תפוחים"
-    }, {
-      product_description: "לחם"
-    },
-    {
-      product_description: "חומוס"
-    },
-    {
-      product_description: "חלב"
-    },
-    {
-      product_description: " גבינה לבנה 5%"
-    },
-    {
-      product_description: "מרגרינה"
-    },
-    {
-      product_description: "זיתים"
-    },
-    {
-      product_description: "ביצים"
-    },
-    {
-      product_description: "שמן זית"
-    },
-    {
-      product_description: "גבינה צהובה"
-    },
-    {
-      product_description: "תפוחים"
-    },
-    {
-      product_description: "גיל"
-    },
-    {
-      product_description: "יוגורט"
-    },
-    {
-      product_description: "אבטיח"
-    }
-  ]);
-  //-------------------------TEMP-------------------------------- 
-  //-------------------------------------------------------------
-
-  // useEffect(() => {
-  //   //when fixing issues take care to take from the context api the names of products only and
-  //   //not the whole json (product.product_description)
-  //   if (localStorage.getItem('SuperMarketList')) { //if the ls is full with something under this key
-  //     SetProductCart_SMLonly(JSON.parse(localStorage.getItem('SuperMarketList')));
-  //   } else {
-  //     SetProductCart_SMLonly(productCart);
-  //     localStorage.setItem('SuperMarketList', JSON.stringify(productCart));
-  //   }
-
-  //   if (localStorage.getItem('MyCart')) {
-  //     let LS_MyCart = JSON.parse(localStorage.getItem('MyCart'));
-  //     SetmyCartBadge(LS_MyCart.length);
-  //   }
-
-  //   if (localStorage.getItem('NotTaken')) {
-  //     let LS_NotTaken = JSON.parse(localStorage.getItem('NotTaken'));
-  //     SetNotTakenBadge(LS_NotTaken.length);
-  //   }
-  // }, [productCart]);
-
-  const handleClose = () => {
-    setOpen(false);
-    props.CloseDialog()
-  }
-
+ useEffect(() => {
+  SetNotTakenBadge(notTakenList.length);
+ }, [notTakenList]);
 
   const MoveItem2MyCart = (p) => {
     if (swipeProgress >= 70 || p.clicked === true) {
-
-      //delete item from rendered productCart_SMLonly
-      productCart_SMLonly.splice(p.index, 1);
-      SetProductCart_SMLonly([...productCart_SMLonly]);
-
-      //delete item from LS_superMarketList
-      let LS_superMarketList = JSON.parse(localStorage.getItem('SuperMarketList'));
-      LS_superMarketList.splice(p.index, 1);
-      localStorage.setItem('SuperMarketList', JSON.stringify(LS_superMarketList));
-
-      //check if MyCart is exist
-      let tempMyCart;
-      if (localStorage.getItem('MyCart')) { //exist
-        //then get it and push new item
-        tempMyCart = JSON.parse(localStorage.getItem('MyCart'));
-        tempMyCart.push(p.product);
-      } else { //not exist
-        //then create array with the item in it.
-        tempMyCart = [p.product];
-      }
-
-      SetmyCartBadge(tempMyCart.length);
-      //finnaly update MyCart key in local storage 
-      localStorage.setItem('MyCart', JSON.stringify(tempMyCart));
+      smListdispatch({ type: RemoveItem , id2remove: p.id });
+      MyCartListDispatch({type: AddItem, newItem: {name: p.name} });
     }
-
   }
 
   const MoveItem2NotTaken = (p) => {
     if (swipeProgress >= 70 || p.clicked === true) {
-
-      //delete item from rendered productCart_SMLonly
-      productCart_SMLonly.splice(p.index, 1);
-      SetProductCart_SMLonly([...productCart_SMLonly]);
-
-      //delete item from LS_superMarketList
-      let LS_superMarketList = JSON.parse(localStorage.getItem('SuperMarketList'));
-      LS_superMarketList.splice(p.index, 1);
-      localStorage.setItem('SuperMarketList', JSON.stringify(LS_superMarketList));
-
-      //check if NotTaken is exist
-      let tempNotTaken;
-      if (localStorage.getItem('NotTaken')) { //exist
-        //then get it and push new item
-        tempNotTaken = JSON.parse(localStorage.getItem('NotTaken'));
-        tempNotTaken.push(p.product);
-      } else { //not exist
-        //then create array with the item in it.
-        tempNotTaken = [p.product];
-      }
-
-      SetNotTakenBadge(tempNotTaken.length);
-      //finnaly update NotTaken key in local storage 
-      localStorage.setItem('NotTaken', JSON.stringify(tempNotTaken));
-
+      smListdispatch({ type: RemoveItem , id2remove: p.id });
+      NotTakenListDispatch({type: AddItem, newItem: {name: p.name} });
     }
-
   }
 
-
+  const handleClose = () => { setOpen(false); props.CloseDialog() }
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
@@ -222,24 +96,24 @@ const SuperMarketList = (props) => {
       <div id="productCart-list" >
         <SwipeableList className={classes.box} style={{ background: 'blue' }}>
 
-          {smList.map((product, index) => {
+          {smList.map((product) => {
             return (
               <SwipeableListItem
-                key={index}
+                key={product.id}
                 swipeRight={{
                   content: <div className="swipeRight-divs">לא לקחתי</div>,
-                  action: () => MoveItem2NotTaken({ product, index })
+                  action: () => MoveItem2NotTaken(product)
                 }}
                 swipeLeft={{
                   content: <div className="swipeLeft-divs">הכנס לעגלה שלי</div>,
-                  action: () => MoveItem2MyCart({ product, index })
+                  action: () => MoveItem2MyCart(product)
                 }}
                 onSwipeProgress={handleSwipeProgress}
               // threshold={0.25} cant understand what is it... Not helpful nor harmful
               >
                 <div className="list-item">
-                  <DeleteOutlineIcon onClick={() => MoveItem2NotTaken({ product, index, clicked })} id='OVerRide_MuiSvgIcon-root' />
-                  <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ product, index, clicked })} id='OVerRide_MuiSvgIcon-root' />
+                  <DeleteOutlineIcon onClick={() => MoveItem2NotTaken({ ...product, clicked: true })} id='OVerRide_MuiSvgIcon-root' />
+                  <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ ...product, clicked: true })} id='OVerRide_MuiSvgIcon-root' />
                   <p className='product_description'>
                     {product.name}
                   </p>
