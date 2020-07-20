@@ -90,7 +90,6 @@ function AList() {
     let tempProduct = "";
     let tempName = "";
     let tempLimit = '';
-    let listID = listObj.ListID
 
     const updatePercentage = () => {
         setTimeout(() => {
@@ -202,7 +201,6 @@ function AList() {
 
 
     const handleClickAction = (action) => {
-        console.log(action);
 
         if (action === 'מיקום') {
             SetLocation(true)
