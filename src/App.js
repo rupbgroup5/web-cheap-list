@@ -6,6 +6,7 @@ import './App.css'
 
 //Our Components:
 import MainNabar from './Components/MainNavBar'
+import ErrorMessage from './Components/ErrorMessage'
 
 //pages:
 import HomePage from './Pages/HomePage'
@@ -55,6 +56,7 @@ function App() {
                       <Route path="/SuperMarketList" component={SuperMarketList} />
                       <Route path="/MyCart" component={MyCart} />
                       <Route path="/NotTaken" component={NotTaken} />
+                      <Route path="/ErrorMessage" component={ErrorMessage} />
                     </Switch>
                   </ProductsCartContextProvider>
                 </ListDetailsContextProvider>
