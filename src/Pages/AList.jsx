@@ -83,6 +83,10 @@ function AList() {
         apiAppList = "http://localhost:56794/api/AppList/"
     }
 
+    if (listObj === 'undefined') {
+        listObj = JSON.parse(localStorage.getItem('listObj'))
+      }
+
     let tempProduct = "";
     let tempName = "";
     let tempLimit = '';
@@ -123,8 +127,11 @@ function AList() {
         else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
 
+
+
     useEffect(() => {
-        
+        localStorage.setItem('listObj', JSON.stringify(listObj));
+
         (async () => {
             for (let i = 0; i < groupDetails.Participiants.length; i++) {
                 if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
