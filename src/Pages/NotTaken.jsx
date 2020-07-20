@@ -1,22 +1,31 @@
-import React, { useState, useEffect, forwardRef } from 'react'
+//React
+import React, { useState, forwardRef, useContext } from 'react'
 import { withRouter, useHistory } from 'react-router-dom'
-import Button from '@material-ui/core/Button'
 import '../Styles/SuperMarketListStyle.css'
+
+//swipeable-list
 import {
   SwipeableList,
   SwipeableListItem
 } from '@sandstreamdev/react-swipeable-list'
 import '@sandstreamdev/react-swipeable-list/dist/styles.css'
+
+//material-ui
+import Button from '@material-ui/core/Button'
 import ListIcon from '@material-ui/icons/List'
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart'
-import { makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
+import { makeStyles } from '@material-ui/core/styles'
+import Dialog from '@material-ui/core/Dialog'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import Typography from '@material-ui/core/Typography'
+import CloseIcon from '@material-ui/icons/Close'
+import Slide from '@material-ui/core/Slide'
+
+//context api
+import { SMmoduleContext } from '../Contexts/SMmoduleContext'
+import { RemoveItem, AddItem } from '../Contexts/Reducers/ActionTypes'
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -43,73 +52,28 @@ const NotTaken = (props) => {
   const history = useHistory();
   const [open, setOpen] = useState(true);
   const [swipeProgress, handleSwipeProgress] = useState();
-  const [notTakenList, SetnotTakenList] = useState([]);
-  const clicked = true;
+  const { notTakenList, NotTakenListDispatch,
+          MyCartListDispatch, smListdispatch } = useContext(SMmoduleContext);
 
-  useEffect(() => {
-    if (localStorage.getItem('NotTaken')) { //if the ls is full with something under this key
-      SetnotTakenList(JSON.parse(localStorage.getItem('NotTaken')));
-    } else {
-      SetnotTakenList([]);
-      localStorage.setItem('NotTaken', JSON.stringify([]));
-    }
-  }, []);
 
   const moveItemBack2SuperMarketList = (p) => {
 
     if (swipeProgress >= 70 || p.clicked === true) {
-      //delete item from rendered notTakenList
-      notTakenList.splice(p.index, 1);
-      SetnotTakenList([...notTakenList]);
-
-      //delete item from LS_NotTaken
-      let LS_NotTaken = JSON.parse(localStorage.getItem('NotTaken'));
-      LS_NotTaken.splice(p.index, 1);
-      localStorage.setItem('NotTaken', JSON.stringify(LS_NotTaken));
-
-      //get SuperMarketList from ls, push item to temp array and update the ls SuperMarketList
-      let tempSuperMarketList = JSON.parse(localStorage.getItem('SuperMarketList'));
-      tempSuperMarketList.push(p.product);
-      localStorage.setItem('SuperMarketList', JSON.stringify(tempSuperMarketList));
-
+      NotTakenListDispatch({ type: RemoveItem , id2remove: p.id });
+      smListdispatch({type: AddItem, newItem: {name: p.name} });
     }
 
   }
 
   const MoveItem2MyCart = (p) => {
     if (swipeProgress >= 70 || p.clicked === true) {
-
-      //delete item from rendered productCart_SMLonly
-      notTakenList.splice(p.index, 1);
-      SetnotTakenList([...notTakenList]);
-
-      //delete item from LS_NotTaken
-      let LS_NotTaken = JSON.parse(localStorage.getItem('NotTaken'));
-      LS_NotTaken.splice(p.index, 1);
-      localStorage.setItem('NotTaken', JSON.stringify(LS_NotTaken));
-
-      //check if MyCart is exist
-      let tempMyCart;
-      if (localStorage.getItem('MyCart')) { //exist
-        //then get it and push new item
-        tempMyCart = JSON.parse(localStorage.getItem('MyCart'));
-        tempMyCart.push(p.product);
-        //  SetmyCartBadge(tempMyCart.length);
-      } else { //not exist
-        //then create array with the item in it.
-        tempMyCart = [p.product];
-      }
-
-      //finnaly update MyCart key in local storage 
-      localStorage.setItem('MyCart', JSON.stringify(tempMyCart));
+      NotTakenListDispatch({ type: RemoveItem , id2remove: p.id });
+      MyCartListDispatch({type: AddItem, newItem: {name: p.name} });
     }
 
   }
 
-  const handleClose = () => {
-    setOpen(false);
-    props.CloseDialog()
-  }
+  const handleClose = () => { setOpen(false); props.CloseDialog() }
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
@@ -126,27 +90,26 @@ const NotTaken = (props) => {
       <div>
         <div id="productCart-list">
           <SwipeableList>
-            {notTakenList
-              .map((product, index) => {
+            {notTakenList.map((product) => {
                 return (
-                  <SwipeableListItem key={index}
+                  <SwipeableListItem key={product.id}
                     swipeRight={{
                       content: <div className="swipeRight-divs"> החזר לרשימת הקניות </div>,
-                      action: () => moveItemBack2SuperMarketList({ product, index })
+                      action: () => moveItemBack2SuperMarketList(product)
                     }}
                     swipeLeft={{
                       content: <div className="swipeLeft-divs">התבלבלתי העבר לעגלה שלי</div>,
-                      action: () => MoveItem2MyCart({ product, index })
+                      action: () => MoveItem2MyCart(product)
 
                     }}
                     onSwipeProgress={handleSwipeProgress}
                   >
                     <div className="list-item">
 
-                      <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ product, index, clicked}) } id='OVerRide_MuiSvgIcon-root' />
-                      <ListIcon onClick={() => moveItemBack2SuperMarketList({ product, index, clicked}) } id='OVerRide_MuiSvgIcon-root' />
+                      <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ ...product, clicked: true }) } id='OVerRide_MuiSvgIcon-root' />
+                      <ListIcon onClick={() => moveItemBack2SuperMarketList({  ...product, clicked: true }) } id='OVerRide_MuiSvgIcon-root' />
                       <p className='product_description'>
-                        {product}
+                        {product.name}
                       </p>
                     </div>
                   </SwipeableListItem>

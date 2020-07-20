@@ -1,12 +1,12 @@
 import React, { createContext, useReducer, useEffect } from 'react'
-import { smListReducer } from './Reducers/smListReducer'
+import { SuperMarketModuleReducer } from './Reducers/SuperMarketModuleReducer'
 
 
 export const SMmoduleContext = createContext();
 
 const SMmoduleContextProvider = (props) => {
 
-    const [smList, smListdispatch] = useReducer(smListReducer, [], () => {
+    const [smList, smListdispatch] = useReducer(SuperMarketModuleReducer, [], () => {
 
         const localSmListData = localStorage.getItem('smList');
         return localSmListData ? JSON.parse(localSmListData) : [];
@@ -18,16 +18,34 @@ const SMmoduleContextProvider = (props) => {
 
     }, [smList]);
 
-    // const [myCartList, Set_myCartList] = useState([]);
-    // const [notTakenList, Set_notTakenList] = useState([]);
+    const [myCartList, MyCartListDispatch] = useReducer(SuperMarketModuleReducer, [], () => {
+        const localMyCartListData = localStorage.getItem('myCartList');
+        return localMyCartListData ? JSON.parse(localMyCartListData) : [];
+    });
 
-    // const SM_ModuleDestructor = {
-    //     smList, smListdispatch
-    // };
+    useEffect(() => {
+        localStorage.setItem('myCartList', JSON.stringify(myCartList));
+    }, [myCartList]);
+
+    const [notTakenList, NotTakenListDispatch] = useReducer(SuperMarketModuleReducer, [], () => {
+        const localnotTakenListData = localStorage.getItem('notTakenList');
+        return localnotTakenListData ? JSON.parse(localnotTakenListData) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('notTakenList', JSON.stringify(notTakenList));
+    }, [notTakenList]);
+
+
+    const SM_MODULE_DESTRUCTOR = {
+        smList, smListdispatch,
+        myCartList, MyCartListDispatch,
+        notTakenList, NotTakenListDispatch
+    }
 
 
     return (
-        <SMmoduleContext.Provider value={{ smList, smListdispatch }}>
+        <SMmoduleContext.Provider value={SM_MODULE_DESTRUCTOR}>
             {props.children}
         </SMmoduleContext.Provider>
     );

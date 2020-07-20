@@ -79,8 +79,6 @@ function HomePage() {
   }
 
   useEffect(() => {
-
-    
       localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
     (async function fetchMyAPI() {
       const res = await fetch(apiAppGroups + userIDfromRN, {

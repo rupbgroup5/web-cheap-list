@@ -26,7 +26,7 @@ import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 import { PageTitleContext } from "../Contexts/PageTitleContext";
 import { GroupDetailsContext } from "../Contexts/GroupDetailsContext";
 import { SMmoduleContext } from '../Contexts/SMmoduleContext'
-import * as userActions from '../Contexts/Reducers/ActionTypes';
+import * as systemAction from '../Contexts/Reducers/ActionTypes';
 
 
 
@@ -55,8 +55,7 @@ function AList() {
     const { isLocal } = useContext(IsLocalContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
     const { SetPageTitle } = useContext(PageTitleContext);
-    const { smListdispatch } = useContext(SMmoduleContext);
-
+    const { smListdispatch, MyCartListDispatch, NotTakenListDispatch } = useContext(SMmoduleContext);
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
     const [location, SetLocation] = useState(listObj.Latitude === '' ? true : false)
@@ -83,6 +82,10 @@ function AList() {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
     }
+
+    if (listObj === 'undefined') {
+        listObj = JSON.parse(localStorage.getItem('listObj'))
+      }
 
     let tempProduct = "";
     let tempName = "";
@@ -123,8 +126,11 @@ function AList() {
         else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
 
+
+
     useEffect(() => {
-        
+        localStorage.setItem('listObj', JSON.stringify(listObj));
+
         (async () => {
             for (let i = 0; i < groupDetails.Participiants.length; i++) {
                 if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
@@ -201,9 +207,12 @@ function AList() {
         } else if (action === 'חפש סופרים') {
             SetSearchStores(true)
         } else if (action === 'רשימה בסופר') {
-            smListdispatch({type: userActions.RemoveAll});
+            const systemClear = {type: systemAction.RemoveAll};
+            smListdispatch(systemClear);
+            NotTakenListDispatch(systemClear);
+            MyCartListDispatch(systemClear);
             productCart.forEach((p) => {
-                smListdispatch({ type: userActions.AddItem, newItem: { name: p.product_description } });
+                smListdispatch({ type: systemAction.AddItem, newItem: { name: p.product_description } });
               });
             SetSuperMarketList(true);
         }

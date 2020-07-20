@@ -68,14 +68,13 @@ const StyledBadge = withStyles((theme) => ({
 
 function AGroup() {
     //Context Api:
-  const { groupDetails } = useContext(GroupDetailsContext);
+  const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetPageTitle } = useContext(PageTitleContext);
 
   const classes = useStyles();
   const history = useHistory();
-  const [gName, setName] = useState(groupDetails.GroupName)
   const [lists, SetLists] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
@@ -91,9 +90,16 @@ function AGroup() {
 
 
 
+
   useEffect(() => {
-    
-    
+
+
+   
+     if (!groupDetails) {
+    let temp = JSON.parse(localStorage.getItem('groupDetails'))
+    SetGroupDetails(temp);
+    console.log(temp);
+  }
     (async function fetchMyAPI() {
      
       try {
@@ -105,12 +111,15 @@ function AGroup() {
         })
         let data = await res.json();
         SetLists(data)
+        localStorage.setItem('groupDetails', JSON.stringify(groupDetails));
       } catch (error) {
         console.log(error)
       }
     })();
     SetPageTitle('רשימות הקבוצה')
   }, [groupDetails,apiAppList,SetPageTitle]);
+
+ 
 
   const AddNewList = (n) => {
     let newList = {
@@ -223,7 +232,7 @@ const Confirmation = () => {
           }).then(res => { return res.json(); })
             .then(
               (result) => {
-                setName(tempName)
+                SetGroupDetails({...groupDetails, GroupName: tempName});
                 console.log('The name of ', result, ' id was changed')
                 swal('שם הקבוצה שונה');
               },
@@ -245,7 +254,7 @@ return (
         id="outlined-basic"
         variant="outlined"
         onInput={editGroupName}
-        placeholder={gName}
+        placeholder={groupDetails.GroupName}
         onBlur={Confirmation}
         inputRef={textInput}
       />
