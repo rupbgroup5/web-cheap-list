@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom'
+import { withRouter, useHistory } from 'react-router-dom'
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
@@ -28,19 +28,22 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const ErrorMessage = () => {
-    const classes = useStyles();
 
+const ErrorMessage = () => {
+    const history = useHistory();
+    const classes = useStyles();
     return (
         <div className={classes.root}>
             <SnackbarContent
                 message={
                     <p className={classes.errP}>נראה שארעה תקלה אנא נסו שוב מאוחר יותר
-                    < img src="https://as2.ftcdn.net/jpg/03/04/67/27/500_F_304672710_8DWlfHoh8T9zNFbx7rRZPmUzteYfcBVa.jpg" className={classes.errImg} />
+                    < img src="https://as2.ftcdn.net/jpg/03/04/67/27/500_F_304672710_8DWlfHoh8T9zNFbx7rRZPmUzteYfcBVa.jpg"
+                            className={classes.errImg}
+                        />
                     </p>
                 }
                 action={
-                    <Button color="secondary" size="small">חזרה לדף הבית</Button>
+                    <Button color="secondary" size="small" onClick={() => { history.push("/") }}>חזרה לדף הבית</Button>
                 }
             />
         </div>
