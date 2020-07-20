@@ -21,6 +21,7 @@ import swal from 'sweetalert'
 import { ProductsCartContext } from "../../Contexts/ProductsCartContext";
 import { ListObjContext } from "../../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../../Contexts/IsLocalContext";
+import { createBootstrapComponent } from 'react-bootstrap/esm/ThemeProvider';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -189,6 +190,7 @@ export default function SearchProduct(props) {
         body: JSON.stringify(productsNamesArr)
       })
       let resultSRC = await resSRC.json();
+      console.log(resultSRC)
       for (let i = 0; i < resultBarcode.length; i++) {
         let price = 0;
         let count = 0;

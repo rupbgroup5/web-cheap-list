@@ -87,7 +87,6 @@ function AList() {
     let tempProduct = "";
     let tempName = "";
     let tempLimit = '';
-    let listID = listObj.ListID
 
     const updatePercentage = () => {
         setTimeout(() => {
@@ -196,14 +195,13 @@ function AList() {
 
 
     const handleClickAction = (action) => {
-        console.log(action);
 
         if (action === 'מיקום') {
             SetLocation(true)
         } else if (action === 'חפש סופרים') {
             SetSearchStores(true)
         } else if (action === 'רשימה בסופר') {
-           // smListdispatch({type: userActions.RemoveAll});
+            smListdispatch({type: userActions.RemoveAll});
             productCart.forEach((p) => {
                 smListdispatch({ type: userActions.AddItem, newItem: { name: p.product_description } });
               });
