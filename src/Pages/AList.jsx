@@ -50,15 +50,15 @@ function AList() {
     const classes = useStyles();
 
     //Context API
-    const { groupDetails } = useContext(GroupDetailsContext);
-    const { listObj } = useContext(ListObjContext);
+    const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
+    const { listObj, SetListObj } = useContext(ListObjContext);
     const { isLocal } = useContext(IsLocalContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
     const { SetPageTitle } = useContext(PageTitleContext);
     const { smListdispatch, MyCartListDispatch, NotTakenListDispatch } = useContext(SMmoduleContext);
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
-    const [location, SetLocation] = useState(listObj.Latitude === '' ? true : false)
+    const [location, SetLocation] = useState()
     const [searchStores, SetSearchStores] = useState(false)
     const [superMarketList, SetSuperMarketList] = useState(false)
     const [searchProduct, SetSearchProduct] = useState(false);
@@ -69,12 +69,12 @@ function AList() {
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
     const [stores, SetStores] = useState([]);
-    const [limit, SetLimit] = useState(listObj.LimitPrice)
+    const [limit, SetLimit] = useState()
     const [progressBar, SetProgressBar] = useState(0)
-    const [implementLimit, SetimplementLimit] = useState(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)
+    const [implementLimit, SetimplementLimit] = useState()
     const [color, SetColor] = useState("#009900")
     const [disableSave, SetDisableSave] = useState(true)
-    
+
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
@@ -83,9 +83,6 @@ function AList() {
         apiAppList = "http://localhost:56794/api/AppList/"
     }
 
-    if (listObj === 'undefined') {
-        listObj = JSON.parse(localStorage.getItem('listObj'))
-      }
 
     let tempProduct = "";
     let tempName = "";
@@ -129,39 +126,52 @@ function AList() {
 
 
     useEffect(() => {
-        localStorage.setItem('listObj', JSON.stringify(listObj));
-
         (async () => {
-            for (let i = 0; i < groupDetails.Participiants.length; i++) {
-                if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
-                    if (groupDetails.Participiants[i].IsAdmin) {
-                        console.log('Im  The Admin!')
-                    }else{console.log('Im Not The Admin')}
+            if (!groupDetails) {
+                SetListObj(JSON.parse(localStorage.getItem('listObj')))
+                SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
+            }
+            if (groupDetails) {
+                ActivateStateListObj()
+                for (let i = 0; i < groupDetails.Participiants.length; i++) {
+                    if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
+                        if (groupDetails.Participiants[i].IsAdmin) {
+                            console.log('Im  The Admin!')
+                        } else { console.log('Im Not The Admin') }
+                    }
+                }
+                try {
+                    const res = await fetch(apiAppProduct + listObj.ListID, {
+                        method: 'GET',
+                        headers: new Headers({
+                            'Content-Type': 'application/json; charset=UTF-8',
+                        }),
+                    })
+                    let result = await res.json();
+                    SetProductCart(result)
+                    localStorage.setItem('listObj', JSON.stringify(listObj));
+                } catch (error) {
+                    console.log(error)
                 }
             }
-
-            try {
-                const res = await fetch(apiAppProduct + listObj.ListID, {
-                    method: 'GET',
-                    headers: new Headers({
-                        'Content-Type': 'application/json; charset=UTF-8',
-                    }),
-                })
-                let result = await res.json();
-                SetProductCart(result)
-            } catch (error) {
-                console.log(error)
-            }
+           
         })();
         SetPageTitle('סל קניות')
-    }, [apiAppProduct]);
+        
+    }, [apiAppProduct, groupDetails]);
+
+    const ActivateStateListObj = () => {
+        SetLocation(listObj.Latitude === '' ? true : false)
+        SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)
+        SetLimit(listObj.LimitPrice)
+    }
 
     const editListName = (e) => {
         tempName = "";
         tempName = e.target.value
     }
 
-    const ConfirmationEditName = () => {
+    const ConfirmationEditListName = () => {
         if (tempName !== "") {
             swal({
                 title: "שינוי שם הרשימה",
@@ -184,8 +194,8 @@ function AList() {
                         }).then(res => { return res.json(); })
                             .then(
                                 (result) => {
-                                   
-                                    listObj.ListName = tempName
+
+                                    SetListObj({ ...listObj, ListName: tempName })
                                     console.log('The name of ', result, ' id was changed')
                                     swal('שם הקבוצה שונה');
                                 },
@@ -207,13 +217,13 @@ function AList() {
         } else if (action === 'חפש סופרים') {
             SetSearchStores(true)
         } else if (action === 'רשימה בסופר') {
-            const systemClear = {type: systemAction.RemoveAll};
+            const systemClear = { type: systemAction.RemoveAll };
             smListdispatch(systemClear);
             NotTakenListDispatch(systemClear);
             MyCartListDispatch(systemClear);
             productCart.forEach((p) => {
                 smListdispatch({ type: systemAction.AddItem, newItem: { name: p.product_description } });
-              });
+            });
             SetSuperMarketList(true);
         }
         else if (action === 'חפש מוצר') {
@@ -246,11 +256,11 @@ function AList() {
         }
     }
 
-  
 
 
 
-    
+
+
 
     // const getTotalPrice = async () => {
     //     try {
@@ -383,135 +393,138 @@ function AList() {
 
 
     return (
-        <div className="container">
-            <div className="header">
-                <TextField
-                    id="outlined-basic"
-                    variant="outlined"
-                    onInput={editListName}
-                    placeholder={listObj.ListName}
-                    onBlur={ConfirmationEditName}
-                    inputRef={textInput}
-                />
-            </div>
-            <div className="Maincontent">
-                {location && <Location CloseDialog={CloseDialogLocation} />}
-                {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
-                {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
-                {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct} 
-                Implment={()=>SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)} />}
+        <span>
+            {listObj &&
+                <div className="container">
+                    <div className="header">
+                        <TextField
+                            id="outlined-basic"
+                            variant="outlined"
+                            onInput={editListName}
+                            placeholder={listObj.ListName}
+                            onBlur={ConfirmationEditListName}
+                            inputRef={textInput}
+                        />
+                    </div>
+                    <div className="Maincontent">
+                        {location && <Location CloseDialog={CloseDialogLocation} />}
+                        {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
+                        {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
+                        {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct}
+                            Implment={() => SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)} />}
 
 
-                {/* <h3>{list.CityName} </h3> */}
-                {/* <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp; */}
-                {/* <button onClick={handleClickCity}>הגדר עיר לחיפוש </button> */}
-                {/* <h3>{list.LimitPrice}</h3>
+                        {/* <h3>{list.CityName} </h3> */}
+                        {/* <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp; */}
+                        {/* <button onClick={handleClickCity}>הגדר עיר לחיפוש </button> */}
+                        {/* <h3>{list.LimitPrice}</h3>
                 <input type={'number'} placeholder='הזן מגבלה חדשה' onChange={handleLimit}></input> &nbsp;
                 <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
                 <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
                 <button onClick={handleClickChoise}>חפש מוצר</button> */}
-                {/* {product.map((p, index) =>
+                        {/* {product.map((p, index) =>
                     <div key={index}>
-                        <p>
-                            {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
-                            <img src={p.product_image} alt="" />
-                            <button onClick={ConfirmationLimit(index)}>הוסף לרשימה</button>
-                        </p>
+                    <p>
+                    {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
+                    <img src={p.product_image} alt="" />
+                    <button onClick={ConfirmationLimit(index)}>הוסף לרשימה</button>
+                    </p>
                     </div>
                 )} */}
 
-                <div id="compareList">
-                    {productCart.map((p, index) =>
-                        <div key={index} className="product">
-                            <div >
-                                <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small' 
-                                style={{ marginBottom: 80, marginLeft: -19, fill: 'darkgray' }} />
-                                <img src={p.product_image} alt=" " />
-                            </div>
+                        <div id="compareList">
+                            {productCart.map((p, index) =>
+                                <div key={index} className="product">
+                                    <div >
+                                        <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small'
+                                            style={{ marginBottom: 80, marginLeft: -19, fill: 'darkgray' }} />
+                                        <img src={p.product_image} alt=" " />
+                                    </div>
 
-                            <div className='product-text'>{p.product_description} <br /> במחיר  ₪{p.estimatedProductPrice} </div>
-                        </div>
-                    )}
-                </div>
-                <div className='product-text'>
-                    {/* {productCart.length - 1 !== 0 ? 'סך מחיר משוער: ' + '₪' + Number(list.ListEstimatedPrice).toFixed(2) : false} */}
-                 סך מחיר משוער: <b>₪{Number(listObj.ListEstimatedPrice).toFixed(2)}</b>
-                </div>
-                <br/>
-                <Circle
-                    animate={true} // Boolean: Animated/Static progress
-                    animationDuration="0.15s" //String: Length of animation
-                    size={100} // Number: Defines the size of the circle.
-                    lineWidth={14} // Number: Defines the thickness of the circle's stroke.
-                    progress={progressBar} // Number: Update to change the progress and percentage.
-                    progressColor={color}  // String: Color of "progress" portion of circle.
-                    //bgColor='Moccasin' // String: Color of "empty" portion of circle.
-                    textColor={color} // String: Color of percentage text color.
-                    textStyle={{
-                        font: 'bold 5rem Helvetica, Arial, sans-serif' // CSSProperties: Custom styling for percentage.
-                    }}
-                    percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
-
-                />
-
-                <br/>
-                <TextField
-                    type={'number'}
-                    placeholder="הגדר מגבלה חדשה"
-                    helperText={`מגבלה נוכחית: ${limit}`}
-                    style={{ width: 150, marginRight: 20 }}
-                    onFocus={() => { SetDisableSave(false) }}
-                    onInput={handleLimit}
-                    inputRef={limitInput}
-                    onBlur={() => { tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false) }}
-                />
-                <Button
-                    color='primary'
-                    size="small"
-                    className={classes.button}
-                    startIcon={<SaveIcon style={{ marginLeft: 3 }} />}
-                    disabled={disableSave}
-                    onClick={handleClickLimit}
-                >
-                    שמור
-                </Button>
-
-                {stores.map((s, indexS) =>
-                    <div key={indexS}>
-                        <div>
-                            <b>{s.Store.store_name}</b> ברחוב {s.Store.store_address} <b>:עלות סל הקניות הוא </b> {s.TotalPrice} <br />
-                            <u><small>המוצרים שחסרים הם</small></u>
-                            {s.OutOfStock.map((o, indexO) =>
-                                <p key={indexO}>
-                                    <span>{o.product_name},</span>
-                                    <button onClick={() => SearchSubstitute(indexS, indexO)} >חפש מוצר תחליפי</button>
-                                </p>
+                                    <div className='product-text'>{p.product_description} <br /> במחיר  ₪{p.estimatedProductPrice} </div>
+                                </div>
                             )}
                         </div>
-                    </div>
-                )}
-            </div>
-            <div className="footer" >
-                <SpeedDial
-                    ariaLabel="SpeedDial"
-                    icon={<SpeedDialIcon />}
-                    onClose={handleClose}
-                    onOpen={handleOpen}
-                    open={openSpeedDial}
-                    direction="up"
-                >
-                    {actions.map((action) => (
-                        <SpeedDialAction
-                            key={action.name}
-                            icon={action.icon}
-                            tooltipTitle={action.name}
-                            onClick={() => handleClickAction(action.name)}
-                        />
-                    ))}
-                </SpeedDial>
+                        <div className='product-text'>
+                            {/* {productCart.length - 1 !== 0 ? 'סך מחיר משוער: ' + '₪' + Number(list.ListEstimatedPrice).toFixed(2) : false} */}
+                 סך מחיר משוער: <b>₪{Number(listObj.ListEstimatedPrice).toFixed(2)}</b>
+                        </div>
+                        <br />
+                        <Circle
+                            animate={true} // Boolean: Animated/Static progress
+                            animationDuration="0.15s" //String: Length of animation
+                            size={100} // Number: Defines the size of the circle.
+                            lineWidth={14} // Number: Defines the thickness of the circle's stroke.
+                            progress={progressBar} // Number: Update to change the progress and percentage.
+                            progressColor={color}  // String: Color of "progress" portion of circle.
+                            //bgColor='Moccasin' // String: Color of "empty" portion of circle.
+                            textColor={color} // String: Color of percentage text color.
+                            textStyle={{
+                                font: 'bold 5rem Helvetica, Arial, sans-serif' // CSSProperties: Custom styling for percentage.
+                            }}
+                            percentSpacing={10} // Number: Adjust spacing of "%" symbol and number.
 
-            </div>
-        </div>
+                        />
+
+                        <br />
+                        <TextField
+                            type={'number'}
+                            placeholder="הגדר מגבלה חדשה"
+                            helperText={`מגבלה נוכחית: ${limit}`}
+                            style={{ width: 150, marginRight: 20 }}
+                            onFocus={() => { SetDisableSave(false) }}
+                            onInput={handleLimit}
+                            inputRef={limitInput}
+                            onBlur={() => { tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false) }}
+                        />
+                        <Button
+                            color='primary'
+                            size="small"
+                            className={classes.button}
+                            startIcon={<SaveIcon style={{ marginLeft: 3 }} />}
+                            disabled={disableSave}
+                            onClick={handleClickLimit}
+                        >
+                            שמור
+                </Button>
+
+                        {stores.map((s, indexS) =>
+                            <div key={indexS}>
+                                <div>
+                                    <b>{s.Store.store_name}</b> ברחוב {s.Store.store_address} <b>:עלות סל הקניות הוא </b> {s.TotalPrice} <br />
+                                    <u><small>המוצרים שחסרים הם</small></u>
+                                    {s.OutOfStock.map((o, indexO) =>
+                                        <p key={indexO}>
+                                            <span>{o.product_name},</span>
+                                            <button onClick={() => SearchSubstitute(indexS, indexO)} >חפש מוצר תחליפי</button>
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="footer" >
+                        <SpeedDial
+                            ariaLabel="SpeedDial"
+                            icon={<SpeedDialIcon />}
+                            onClose={handleClose}
+                            onOpen={handleOpen}
+                            open={openSpeedDial}
+                            direction="up"
+                        >
+                            {actions.map((action) => (
+                                <SpeedDialAction
+                                    key={action.name}
+                                    icon={action.icon}
+                                    tooltipTitle={action.name}
+                                    onClick={() => handleClickAction(action.name)}
+                                />
+                            ))}
+                        </SpeedDial>
+
+                    </div>
+                </div>}
+        </span>
     )
 
 }
@@ -530,50 +543,50 @@ const actions = [
 
 const data = {
     TestFunction: {
-      action: "TestFunction"
+        action: "TestFunction"
     },
     GetChains: {
-      action: "GetChains"
+        action: "GetChains"
     },
     GetStoresByChain: {
-      action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
+        action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
     },
     GetStoresByCityID: {
-      action: "GetStoresByCityID", city_id: '', limit: 10
+        action: "GetStoresByCityID", city_id: '', limit: 10
     },
     GetStoresByGPS: {
-      action: "GetStoresByGPS", latitude: '', longitude: '', km_radius: '', order:1, limit: 10
+        action: "GetStoresByGPS", latitude: '', longitude: '', km_radius: '', order: 1, limit: 10
     },
     GetProductsByBarCode: {
-      action: "GetProductsByBarCode", product_barcode: '', limit: 3
+        action: "GetProductsByBarCode", product_barcode: '', limit: 3
     },
     GetProductsByID: {
-      action: 'GetProductsByID', product_id: '', limit: 10
+        action: 'GetProductsByID', product_id: '', limit: 10
     },
     GetProductsByName: {
-      action: "GetProductsByName", product_name: "", limit: 5
+        action: "GetProductsByName", product_name: "", limit: 5
     },
     GetPrice: {
-      action: "GetPrice", store_id: '', limit: 10
+        action: "GetPrice", store_id: '', limit: 10
     },
     GetPriceByProductBarCode: {
-      action: "GetPriceByProductBarCode", store_id: '', 'product_barcode[]': []
+        action: "GetPriceByProductBarCode", store_id: '', 'product_barcode[]': []
     },
     GetPriceByProductID: {
-      action: "GetPriceByProductID", store_id: '', product_id: ''
+        action: "GetPriceByProductID", store_id: '', product_id: ''
     },
     GetHistoryByProductBarCode: {
-      action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
+        action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
     },
     GetHistoryByProductID: {
-      action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
+        action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
     },
     GetCities: {
-      action: "GetCities", limit: 10
+        action: "GetCities", limit: 10
     },
     GetCityByName: {
-      action: "GetCityByName", city_name: '', limit: 1
+        action: "GetCityByName", city_name: '', limit: 1
     }
-  }
+}
 
 

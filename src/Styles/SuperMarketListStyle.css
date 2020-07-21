@@ -15,9 +15,10 @@
 #productCart-list>.SwipeableList_swipeableList__1FACG .SwipeableListItem_content__3wbMa {
     /* override the original API */
     background: #ffffff00;
+    background: #f3f3bb;
 }
 
-.SwipeableList_swipeableList__1FACG {
+#productCart-list> .SwipeableList_swipeableList__1FACG {
     background: #f3f3bb;
 }
 

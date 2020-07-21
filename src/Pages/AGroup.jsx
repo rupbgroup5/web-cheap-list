@@ -67,12 +67,11 @@ const StyledBadge = withStyles((theme) => ({
 
 
 function AGroup() {
-    //Context Api:
+  //Context Api:
   const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetPageTitle } = useContext(PageTitleContext);
-
   const classes = useStyles();
   const history = useHistory();
   const [lists, SetLists] = useState([]);
@@ -86,40 +85,38 @@ function AGroup() {
     apiAppGroups = "http://localhost:56794/api/AppGroups/";
     apiAppList = "http://localhost:56794/api/AppList/";
   }
-
+  let group = JSON.parse(localStorage.getItem('groupDeatils'))
 
 
 
 
   useEffect(() => {
-
-
-   
-     if (!groupDetails) {
-    let temp = JSON.parse(localStorage.getItem('groupDetails'))
-    SetGroupDetails(temp);
-    console.log(temp);
-  }
     (async function fetchMyAPI() {
-     
-      try {
-        const res = await fetch(apiAppList + groupDetails.GroupID, {
-          method: 'GET',
-          headers: new Headers({
-            'Content-Type': 'application/json; charset=UTF-8',
-          }),
-        })
-        let data = await res.json();
-        SetLists(data)
-        localStorage.setItem('groupDetails', JSON.stringify(groupDetails));
-      } catch (error) {
-        console.log(error)
+      if (!groupDetails) {
+        SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
       }
+      if (groupDetails) {
+        try {
+          const res = await fetch(apiAppList + groupDetails.GroupID, {
+            method: 'GET',
+            headers: new Headers({
+              'Content-Type': 'application/json; charset=UTF-8',
+            }),
+          })
+          let data = await res.json();
+          console.log(data)
+          SetLists(data)
+          localStorage.setItem('groupDetails', JSON.stringify(groupDetails));
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
     })();
     SetPageTitle('רשימות הקבוצה')
-  }, [groupDetails,apiAppList,SetPageTitle]);
+  }, [groupDetails, apiAppList, SetPageTitle]);
 
- 
+
 
   const AddNewList = (n) => {
     let newList = {
@@ -194,96 +191,95 @@ function AGroup() {
 
   const GetIntoList = (index) => {
 
-  SetListObj(lists[index]);
+    SetListObj(lists[index]);
     history.push('/AList')
 
-
-    //localStorage.setItem('list', JSON.stringify(lists[index]));
-
-
-}
-
-const editGroupName = (e) => {
-  tempName = "";
-  tempName = e.target.value
-}
-
-const Confirmation = () => {
-  console.log(tempName)
-  if (tempName !== "") {
-    swal({
-      title: "שינוי שם קבוצה",
-      buttons: ['התחרטתי', 'שנה את השם'],
-      dangerMode: true,
-    })
-      .then((userInput) => {
-        if (userInput) {
-          console.log(tempName)
-          let g = {
-            GroupID: groupDetails.GroupID,
-            GroupName: tempName
-          }
-          fetch(apiAppGroups, {
-            method: 'PUT',
-            headers: new Headers({
-              'Content-type': 'application/json; charset=UTF-8'
-            }),
-            body: JSON.stringify(g)
-          }).then(res => { return res.json(); })
-            .then(
-              (result) => {
-                SetGroupDetails({...groupDetails, GroupName: tempName});
-                console.log('The name of ', result, ' id was changed')
-                swal('שם הקבוצה שונה');
-              },
-              (error) => {
-                console.log(error)
-              })
-
-        } else {
-          textInput.current.value = ""
-        }
-      })
   }
-}
 
-return (
-  <div className="container">
-    <div className="header"  >
-      <TextField
-        id="outlined-basic"
-        variant="outlined"
-        onInput={editGroupName}
-        placeholder={groupDetails.GroupName}
-        onBlur={Confirmation}
-        inputRef={textInput}
-      />
-    </div>
-    <div className="Maincontent">
-      {
-        lists.map((l, index) =>
-          <span key={index} onClick={()=> GetIntoList(index)}>
-            <SwipeableList key={index} className={classes.root} threshold={0.25}>
-              <SwipeableListItem
-                swipeRight={swipeRightDataComplex(l.ListID, index)}
-                onSwipeProgress={handleSwipeProgress}>
-                <IconButton aria-label="cart">
-                  <StyledBadge badgeContent={4} color="secondary">
-                    <ShoppingCartIcon />
-                  </StyledBadge>
-                </IconButton>
-                <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
-              </SwipeableListItem>
-            </SwipeableList>
-          </span>
-        )
-      }
-    </div>
-    <div className="footer">
-      <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
-    </div>
-  </div>
-);
+  const editGroupName = (e) => {
+    tempName = "";
+    tempName = e.target.value
+  }
+
+  const ConfirmationEditGroupName = () => {
+    console.log(tempName)
+    if (tempName !== "") {
+      swal({
+        title: "שינוי שם קבוצה",
+        buttons: ['התחרטתי', 'שנה את השם'],
+        dangerMode: true,
+      })
+        .then((userInput) => {
+          if (userInput) {
+            console.log(tempName)
+            let g = {
+              GroupID: groupDetails.GroupID,
+              GroupName: tempName
+            }
+            fetch(apiAppGroups, {
+              method: 'PUT',
+              headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8'
+              }),
+              body: JSON.stringify(g)
+            }).then(res => { return res.json(); })
+              .then(
+                (result) => {
+                  SetGroupDetails({ ...groupDetails, GroupName: tempName });
+                  console.log('The name of ', result, ' id was changed')
+                  swal('שם הקבוצה שונה');
+                },
+                (error) => {
+                  console.log(error)
+                })
+
+          } else {
+            textInput.current.value = ""
+          }
+        })
+    }
+  }
+
+  return (
+    <span>
+      {groupDetails && 
+      <div className="container">
+        <div className="header"  >
+          <TextField
+            id="outlined-basic"
+            variant="outlined"
+            onInput={editGroupName}
+            placeholder={groupDetails && groupDetails.GroupName}
+            onBlur={ConfirmationEditGroupName}
+            inputRef={textInput}
+          />
+        </div>
+        <div className="Maincontent">
+          {
+            lists.map((l, index) =>
+              <span key={index} onClick={() => GetIntoList(index)}>
+                <SwipeableList key={index} className={classes.root} threshold={0.25}>
+                  <SwipeableListItem
+                    swipeRight={swipeRightDataComplex(l.ListID, index)}
+                    onSwipeProgress={handleSwipeProgress}>
+                    <IconButton aria-label="cart">
+                      <StyledBadge badgeContent={4} color="secondary">
+                        <ShoppingCartIcon />
+                      </StyledBadge>
+                    </IconButton>
+                    <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
+                  </SwipeableListItem>
+                </SwipeableList>
+              </span>
+            )
+          }
+        </div>
+        <div className="footer">
+          <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
+        </div>
+      </div>}
+    </span>
+  );
 };
 
 

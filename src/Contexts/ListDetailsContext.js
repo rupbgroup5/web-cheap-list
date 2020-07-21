@@ -4,7 +4,7 @@ import React, { createContext, useState } from 'react';
 export const ListObjContext = createContext();
 
 const ListDetailsContextProvider = (props) => {
-    const [listObj, SetListObj] = useState({});
+    const [listObj, SetListObj] = useState();
 
 
     return (

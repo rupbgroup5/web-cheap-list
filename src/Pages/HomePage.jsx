@@ -74,7 +74,7 @@ function HomePage() {
 
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 12
+    userIDfromRN = 1
     
   }
 

@@ -188,7 +188,6 @@ export default function Location(props) {
         alert('הזן עיר תחילה')
         OK = false
       }
-      console.log('a',listObj)
       l = {
         TypeLocation: listObj.TypeLocation,
         ListID: listObj.ListID,
