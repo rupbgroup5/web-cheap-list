@@ -165,6 +165,7 @@ export default function SearchStores(props) {
         loading={loading}
       />
       {!loading && <GoogleMaps Stores={stores} />}
+      {/* {stores.length === 0 && <div>לא נמצאו סופרים במיקום המבוקש </div>} */}
 
     </Dialog>
   )

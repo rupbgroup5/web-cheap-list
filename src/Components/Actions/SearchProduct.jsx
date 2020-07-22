@@ -70,12 +70,11 @@ export default function SearchProduct(props) {
 
   let superGetAPI = `https://api.superget.co.il?api_key=${process.env.REACT_APP_SUPERGET_KEY}&`
   let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
-  let apiScrapper = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Scraper/"
-  console.log(superGetAPI)
+  let apiCrawler = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/WebCrawler/"
 
   if (isLocal) {
     apiAppProduct = "http://localhost:56794/api/AppProduct/";
-    apiScrapper = "http://localhost:56794/api/Scraper/"
+    apiCrawler = "http://localhost:56794/api/WebCrawler/"
   }
 
 
@@ -182,7 +181,7 @@ export default function SearchProduct(props) {
         productsNamesArr.push(resultBarcode[i].product_name)
       }
       //Get SRCIMG
-      const resSRC = await fetch(apiScrapper, {
+      const resSRC = await fetch(apiCrawler, {
         method: 'POST',
         headers: new Headers({
           'Content-type': 'application/json; charset=UTF-8'

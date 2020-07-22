@@ -11,7 +11,7 @@ const  style ={
     },
     btn: {
         fontFamily: '"Assistant", sans-serif',
-        fontSize: 16,
+        fontSize: 13,
         lineHeight: 1.5,
         cursor: 'pointer',
         display: 'flex',
@@ -111,7 +111,7 @@ function GoogleMaps(props) {
             <div dir='rtl' style={{marginTop:15}}>
                 {props.Stores.map((s,index)=>
                 <button key={index} style={style.btn} onClick={()=> HandleClickStore(s)}>
-                    המחיר לסל קניות ב- &nbsp;<b> {s.Deatils.sub_chain_name}</b> &nbsp; {`${s.Deatils.city_name}- ${s.Deatils.store_address} הינו:`} &nbsp; <b>₪{s.TotalPrice}</b> 
+                    המחיר ב- &nbsp;<b> {s.Deatils.sub_chain_name}</b> &nbsp; {`${s.Deatils.city_name}- ${s.Deatils.store_address} הינו:`} &nbsp; <b>₪{s.TotalPrice}</b> 
                 </button>
                 
                 )}
