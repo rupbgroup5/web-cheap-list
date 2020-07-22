@@ -6,7 +6,7 @@ import './App.css'
 
 //Our Components:
 import MainNabar from './Components/MainNavBar'
-import ErrorMessage from './Components/ErrorMessage'
+import CCErrorMessage from './Components/CCErrorMessage'
 
 //pages:
 import HomePage from './Pages/HomePage'
@@ -29,6 +29,9 @@ import SMmoduleContextProvider from './Contexts/SMmoduleContext';
 
 
 
+import Temp from './Temp'
+
+
 
 
 
@@ -36,36 +39,42 @@ import SMmoduleContextProvider from './Contexts/SMmoduleContext';
 
 
 function App() {
-
   return (
     <div className="App">
-      <SMmoduleContextProvider>
-        <IsLocalContextProvider>
-          <PageTitleContextProvider>
-            <UserIDContextProvider>
-              <GroupDetailsContextProvider>
-                <ListDetailsContextProvider>
-                  <ProductsCartContextProvider>
-                    <MainNabar />
-                    <Switch>
-                      <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
-                      <Route path="/HomePage/:userIDfromRN" component={HomePage} />
-                      <Route path="/TempPage/:id" component={TempPage} />
-                      <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
-                      <Route path="/AList" component={AList} />
-                      <Route path="/SuperMarketList" component={SuperMarketList} />
-                      <Route path="/MyCart" component={MyCart} />
-                      <Route path="/NotTaken" component={NotTaken} />
-                      <Route path="/ErrorMessage" component={ErrorMessage} />
-                    </Switch>
-                  </ProductsCartContextProvider>
-                </ListDetailsContextProvider>
-              </GroupDetailsContextProvider>
-            </UserIDContextProvider>
-          </PageTitleContextProvider>
-        </IsLocalContextProvider>
-      </SMmoduleContextProvider>
-    </div>
+      <CCErrorMessage> {/** THIS IS MUST BE THE FATHER OF ALL COMPONENTS */}
+
+        <SMmoduleContextProvider>
+          <IsLocalContextProvider>
+            <PageTitleContextProvider>
+              <UserIDContextProvider>
+                <GroupDetailsContextProvider>
+                  <ListDetailsContextProvider>
+                    <ProductsCartContextProvider>
+                      <MainNabar />
+                      <Switch>
+                        <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
+                        <Route path="/HomePage/:userIDfromRN" component={HomePage} />
+                        <Route path="/TempPage/:id" component={TempPage} />
+                        <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
+                        <Route path="/AList" component={AList} />
+                        <Route path="/SuperMarketList" component={SuperMarketList} />
+                        <Route path="/MyCart" component={MyCart} />
+                        <Route path="/NotTaken" component={NotTaken} />
+                        <Route path="/CCErrorMessage" component={CCErrorMessage} />
+                        <Route path="/tempError">
+                          <Temp heroName="Joker" />
+                        </Route>
+                      </Switch>
+                    </ProductsCartContextProvider>
+                  </ListDetailsContextProvider>
+                </GroupDetailsContextProvider>
+              </UserIDContextProvider>
+            </PageTitleContextProvider>
+          </IsLocalContextProvider>
+        </SMmoduleContextProvider>
+
+      </CCErrorMessage > {/** THIS IS MUST BE THE FATHER OF ALL COMPONENTS */}
+    </div >
   );
 }
 
