@@ -4,6 +4,8 @@ import ErrorMessage from './ErrorMessage'
 //----------------------------------------------------
 /** THIS COMPONENT HAS TO BE A CLASS COMPONENT !!! */
 //----------------------------------------------------
+
+
 class CCErrorMessage extends Component {
     constructor(props) {
         super(props)
@@ -12,11 +14,12 @@ class CCErrorMessage extends Component {
         }
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError() {
         return {
             hasError: true
         }
     }
+
 
 
     render() {

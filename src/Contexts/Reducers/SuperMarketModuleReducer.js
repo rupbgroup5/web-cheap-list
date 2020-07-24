@@ -1,5 +1,4 @@
 import { AddItem, RemoveItem, RemoveAll } from './ActionTypes'
-let lastId = 0
 
 // remmeber ! state is coming from the context api and 
 //when using the reducer outside you pass the action object alone 

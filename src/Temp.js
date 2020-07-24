@@ -1,4 +1,6 @@
-import React from 'react';
+import React from 'react'
+import { withRouter } from 'react-router-dom'
+
 
 const Temp = ({ heroName }) => {
     if (heroName === 'Joker') {
@@ -12,4 +14,4 @@ const Temp = ({ heroName }) => {
     );
 }
 
-export default Temp;
+export default withRouter(Temp);
