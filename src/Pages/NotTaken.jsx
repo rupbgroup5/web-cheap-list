@@ -47,7 +47,7 @@ const Transition = forwardRef((props, ref) => {
   return <Slide direction="left" ref={ref} {...props} />;
 });
 
-const NotTaken = (props) => {
+const NotTaken = () => {
   const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = useState(true);
@@ -73,7 +73,7 @@ const NotTaken = (props) => {
 
   }
 
-  const handleClose = () => { setOpen(false); props.CloseDialog() }
+  const handleClose = () => { setOpen(false); history.push('/AList')}
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>

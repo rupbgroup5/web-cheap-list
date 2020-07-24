@@ -15,7 +15,7 @@
 }
 
 #compareList .product img{
-    width:90px;
+     width:90px; 
     height:auto;
 } 
  img{
@@ -42,6 +42,7 @@
 }
 
 .productSerarch > img {
-    width:50px;
-    height:50px
+    width:100px;
+    height:100px
 }
+
