@@ -104,7 +104,6 @@ function AGroup() {
             }),
           })
           let data = await res.json();
-          console.log(data)
           SetLists(data)
           localStorage.setItem('groupDetails', JSON.stringify(groupDetails));
         } catch (error) {

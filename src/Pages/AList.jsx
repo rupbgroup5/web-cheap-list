@@ -30,12 +30,14 @@ import * as systemAction from '../Contexts/Reducers/ActionTypes';
 
 
 
+
 //Actions
 
 import Location from '../Components/Actions/Location'
 import SearchStores from '../Components/Actions/SearchStores';
 import SuperMarketList from '../Components/Actions/SuperMarketList';
 import SearchProduct from '../Components/Actions/SearchProduct'
+import MyCart from '../Pages/MyCart';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -62,13 +64,13 @@ function AList() {
     const [searchStores, SetSearchStores] = useState(false)
     const [superMarketList, SetSuperMarketList] = useState(false)
     const [searchProduct, SetSearchProduct] = useState(false);
+    const [myCart, SetMyCart] = useState(false)
 
 
     const textInput = useRef(null)
     const limitInput = useRef(null)
     const queryString = require('query-string');
     const [product, SetProduct] = useState([]);
-    const [stores, SetStores] = useState([]);
     const [limit, SetLimit] = useState()
     const [progressBar, SetProgressBar] = useState(0)
     const [implementLimit, SetimplementLimit] = useState()
@@ -122,7 +124,6 @@ function AList() {
         if (progressBar < implementLimit) updatePercentage();
         else if (progressBar > implementLimit) updatePercentage2();
     }, [progressBar]);
-
 
 
     useEffect(() => {
@@ -314,40 +315,40 @@ function AList() {
     //     }
     // }
 
-    const SearchSubstitute = async (indexS, indexO) => {
+    // const SearchSubstitute = async (indexS, indexO) => {
 
-        console.log(stores[indexS].OutOfStock[indexO])
-        let prodSubstitute = stores[indexS].OutOfStock[indexO];
-        data.GetProductsByName.product_name = prodSubstitute.product_description
-        let query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
-        let resBarcode = await fetch(query, { method: 'GET' })
-        let resultBarcode = await resBarcode.json();
-        let tempArray = []
-        for (let i = 0; i < resultBarcode.length; i++) {
-            data.GetPriceByProductBarCode.store_id = stores[indexS].store_id
-            data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
-            query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
-            let resPrice = await fetch(query, { method: 'GET' })
-            let resultPrice = await resPrice.json();
-            console.log('a', resultPrice)
-            if (resultPrice.product_barcode === prodSubstitute.product_barcode) {
-                continue;
-            }
-            tempArray.push(resultPrice)
-        }
-        console.log(tempArray)
-        if (tempArray.length !== 0) {
-            SetProduct(tempArray)
-        }
+    //     console.log(stores[indexS].OutOfStock[indexO])
+    //     let prodSubstitute = stores[indexS].OutOfStock[indexO];
+    //     data.GetProductsByName.product_name = prodSubstitute.product_description
+    //     let query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
+    //     let resBarcode = await fetch(query, { method: 'GET' })
+    //     let resultBarcode = await resBarcode.json();
+    //     let tempArray = []
+    //     for (let i = 0; i < resultBarcode.length; i++) {
+    //         data.GetPriceByProductBarCode.store_id = stores[indexS].store_id
+    //         data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
+    //         query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
+    //         let resPrice = await fetch(query, { method: 'GET' })
+    //         let resultPrice = await resPrice.json();
+    //         console.log('a', resultPrice)
+    //         if (resultPrice.product_barcode === prodSubstitute.product_barcode) {
+    //             continue;
+    //         }
+    //         tempArray.push(resultPrice)
+    //     }
+    //     console.log(tempArray)
+    //     if (tempArray.length !== 0) {
+    //         SetProduct(tempArray)
+    //     }
 
 
-    }
+    // }
 
     const DeleteProduct = (index, barcode, ListID) => {
         console.log(productCart[index])
         swal({
             title: "מחיקת פריט",
-            text: "כל פריטי הרשימה ימחקו גם הם ",
+            text: `?האם למחוק את  ${productCart[index].product_description}`,
             buttons: ['בטל', 'מחק'],
             dangerMode: true,
         })
@@ -390,10 +391,13 @@ function AList() {
 
     const CloseDialogSearchProduct = () => { SetSearchProduct(false) }
 
+    const CloseDialogMyCart = () =>{SetMyCart(false)}  
+
 
 
     return (
         <span>
+
             {listObj &&
                 <div className="container">
                     <div className="header">
@@ -437,7 +441,7 @@ function AList() {
                                 <div key={index} className="product">
                                     <div >
                                         <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small'
-                                            style={{ marginBottom: 80, marginLeft: -19, fill: 'darkgray' }} />
+                                            style={{ marginBottom: 90, marginLeft: -15, fill: 'darkgray' }} />
                                         <img src={p.product_image} alt=" " />
                                     </div>
 
@@ -487,21 +491,7 @@ function AList() {
                         >
                             שמור
                 </Button>
-
-                        {stores.map((s, indexS) =>
-                            <div key={indexS}>
-                                <div>
-                                    <b>{s.Store.store_name}</b> ברחוב {s.Store.store_address} <b>:עלות סל הקניות הוא </b> {s.TotalPrice} <br />
-                                    <u><small>המוצרים שחסרים הם</small></u>
-                                    {s.OutOfStock.map((o, indexO) =>
-                                        <p key={indexO}>
-                                            <span>{o.product_name},</span>
-                                            <button onClick={() => SearchSubstitute(indexS, indexO)} >חפש מוצר תחליפי</button>
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+    
                     </div>
                     <div className="footer" >
                         <SpeedDial
@@ -537,8 +527,9 @@ const actions = [
     { icon: <LocationOnOutlinedIcon />, name: "מיקום" },
     { icon: <AddShoppingCartOutlinedIcon />, name: "חפש מוצר" },
     { icon: <SearchOutlinedIcon />, name: "חפש סופרים" },
-    { icon: <ListAltOutlinedIcon />, name: 'רשימה בסופר' }
+    { icon: <ListAltOutlinedIcon />, name: 'רשימה בסופר' },
 
+    
 ];
 
 const data = {

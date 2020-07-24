@@ -242,7 +242,7 @@ export default function SearchProduct(props) {
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-      {console.log(loading)}
+ 
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -271,7 +271,7 @@ export default function SearchProduct(props) {
             {
               product.map((p, index) =>
                 <Card key={index}    >
-                  <Card.Img variant="top" src={p.product_image} style={{ width: '50%' }} />
+                  <Card.Img variant="top" src={p.product_image} style={{height:100, width:100}} />
                   <Card.Body>
                     <Card.Title className='product-text'>{p.product_description}</Card.Title>
                     <Card.Text className='product-text'>
