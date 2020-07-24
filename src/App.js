@@ -60,9 +60,6 @@ function App() {
                         <Route path="/MyCart" component={MyCart} />
                         <Route path="/NotTaken" component={NotTaken} />
                         <Route path="/CCErrorMessage" component={CCErrorMessage} />
-                        <Route path="/tempError">
-                          <Temp heroName="Joker" />
-                        </Route>
                       </Switch>
                     </ProductsCartContextProvider>
                   </ListDetailsContextProvider>
