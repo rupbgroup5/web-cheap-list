@@ -32,8 +32,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center'
   },
   title: {
-    marginLeft: theme.spacing(2),
     flex: 1,
+    fontFamily:"'Heebo', sans-serif",
+    fontSize: '3.5vh'
   }
 }));
 
@@ -106,18 +107,15 @@ export default function SearchStores(props) {
           for (let j = 0; j < productCart.length; j++) {
             barcodeArr.push(productCart[j].product_barcode)
           }
-          console.log(barcodeArr)
           data.GetPriceByProductBarCode['product_barcode[]'] = barcodeArr
           query = queryString.stringifyUrl({ url: superGetAPI, query: data.GetPriceByProductBarCode })
 
           //https://cors-anywhere.herokuapp.com/
           if (i >= resultStoreID.length / 2) {
-            console.log('into if')
             query = queryString.stringifyUrl({ url: 'https://allow-any-origin.appspot.com/' + superGetAPI, query: data.GetPriceByProductBarCode })
           }
           const res = await fetch(query, { method: 'GET' })
           var result = await res.json()
-          console.log('fecth', result)
           if (result.error_type === "NO_DATA") {
             outOfStock.push(result[i])
             continue;

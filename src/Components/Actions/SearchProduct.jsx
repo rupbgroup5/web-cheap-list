@@ -11,6 +11,7 @@ import Slide from '@material-ui/core/Slide';
 import Card from 'react-bootstrap/Card'
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import { TextField } from '@material-ui/core'
 
 import { css } from "@emotion/core";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
@@ -21,7 +22,6 @@ import swal from 'sweetalert'
 import { ProductsCartContext } from "../../Contexts/ProductsCartContext";
 import { ListObjContext } from "../../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../../Contexts/IsLocalContext";
-import { createBootstrapComponent } from 'react-bootstrap/esm/ThemeProvider';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,9 +31,13 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center'
   },
   title: {
-    marginLeft: theme.spacing(2),
     flex: 1,
+    fontFamily:"'Heebo', sans-serif",
+    fontSize: '3.5vh'
   },
+  button: {
+    margin: theme.spacing(1),
+},
 }));
 
 const Transition = forwardRef((props, ref) => {
@@ -62,7 +66,8 @@ export default function SearchProduct(props) {
     '5': 1,
     '6': 1,
     '7': 1,
-    '8': 1
+    '8': 1,
+    '9': 1
   })
   const [product, SetProduct] = useState([]);
 
@@ -105,9 +110,12 @@ export default function SearchProduct(props) {
     }
   }
 
-  const Add2DB = async (p) => {
-
+  const Add2DB = async (p,index) => {
+    if (productCart.some(person => person.product_barcode === p.product_barcode)) {
+      alert("המוצר קיים כבר בעגלה");
+    }
     let product = {
+      quantity:numItem[index],
       ...p,
       ListID: listObj.ListID,
       GroupID: listObj.GroupID
@@ -123,13 +131,12 @@ export default function SearchProduct(props) {
     const resultDB = await resDB.json()
     console.log('result', resultDB)
     listObj.ListEstimatedPrice += resultDB.estimatedProductPrice
-    //SetList(list)
     SetProduct([])
     SetProductCart([...productCart, resultDB])
-    alert('המוצר התווסף בהצלחה')
+    swal('המוצר התווסף בהצלחה')
   }
 
-  const ConfirmationLimit = (p) => {
+  const ConfirmationLimit = (p,index) => {
     let tempCheck = listObj.ListEstimatedPrice + p.estimatedProductPrice
     if (tempCheck > listObj.LimitPrice) {
       swal({
@@ -138,19 +145,24 @@ export default function SearchProduct(props) {
         dangerMode: true,
       }).then((willContinue) => {
         if (willContinue) {
-          Add2DB(p)
+          Add2DB(p,index)
         }
       })
     } else if (tempCheck > listObj.LimitPrice * 0.7) {
       alert('שים לב! עברת 70% מהמגבלה')
-      Add2DB(p)
+      Add2DB(p,index)
     }
-    else Add2DB(p)
+    else Add2DB(p,index)
   }
 
-  const handleProduct = (e) => { tempProduct = e.target.value }
+  const handleProduct = (e) => { tempProduct = e.target.value; }
 
   const handleClickSearch = async () => {
+    if (product.length !== 0) {
+      SetProduct([])
+      console.log('if')
+    }
+
     SetLoading(true);
     try {
       //GetStores
@@ -173,7 +185,6 @@ export default function SearchProduct(props) {
       query = queryString.stringifyUrl({ url: superGetAPI, query: data.GetProductsByName })
       let resBarcode = await fetch(query, { method: 'GET' })
       let resultBarcode = await resBarcode.json();
-      console.log('product', resultBarcode)
       let arrayProduct = []
       //GetNameProduct
       let productsNamesArr = []
@@ -189,7 +200,6 @@ export default function SearchProduct(props) {
         body: JSON.stringify(productsNamesArr)
       })
       let resultSRC = await resSRC.json();
-      console.log(resultSRC)
       for (let i = 0; i < resultBarcode.length; i++) {
         let price = 0;
         let count = 0;
@@ -209,8 +219,6 @@ export default function SearchProduct(props) {
           count++
         }
         price = price / count
-
-
         let p = {
           product_barcode: resultBarcode[i].product_barcode,
           product_name: resultBarcode[i].product_name,
@@ -222,12 +230,10 @@ export default function SearchProduct(props) {
         arrayProduct.push(p)
       }
       SetLoading(false)
-      SetProduct(...product, arrayProduct)
+      SetProduct(arrayProduct)
     } catch (error) {
       console.log(error)
     }
-
-
   }
 
 
@@ -242,7 +248,6 @@ export default function SearchProduct(props) {
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
- 
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -261,17 +266,23 @@ export default function SearchProduct(props) {
         loading={loading}
       />
       <div className="container">
-        <div className="header">
-          <input placeholder='הקלד מוצר לחיפש' dir='rtl' onChange={handleProduct} /> <br />
-          <button onClick={handleClickSearch}>חפש מוצר</button>
+        <div className='header' style={{flexDirection:"row"}}>
+          <TextField 
+          id="MuiInputBase-input"
+            placeholder="הקלד מוצר לחיפוש"
+            style={{ width: 150}}
+            onInput={handleProduct}
+          />
+          &nbsp; &nbsp;
+          <Button variant="outlined" color='primary'  onClick={handleClickSearch} >חפש מוצר</Button>
         </div>
         <div className="Maincontent">
 
           {!loading && <div className='productSerarch'>
             {
               product.map((p, index) =>
-                <Card key={index}    >
-                  <Card.Img variant="top" src={p.product_image} style={{height:100, width:100}} />
+                <Card key={index}     >
+                  <Card.Img variant="top" src={p.product_image} />
                   <Card.Body>
                     <Card.Title className='product-text'>{p.product_description}</Card.Title>
                     <Card.Text className='product-text'>
@@ -282,7 +293,7 @@ export default function SearchProduct(props) {
                     <RemoveIcon style={{ height: '0.7em' }} onClick={() => RemoveItem(index)} />
                     <br />
 
-                    <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p)} >הוסף מוצר</Button>
+                    <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p,index)} >הוסף מוצר</Button>
                   </Card.Body>
                   <br />
                 </Card>
@@ -320,7 +331,7 @@ const data = {
     action: 'GetProductsByID', product_id: '', limit: 10
   },
   GetProductsByName: {
-    action: "GetProductsByName", product_name: "", limit: 5
+    action: "GetProductsByName", product_name: "", limit: 1
   },
   GetPrice: {
     action: "GetPrice", store_id: '', limit: 10

@@ -10,10 +10,12 @@ import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import GridList from '@material-ui/core/GridList';
 import Typography from '@material-ui/core/Typography';
+import { Button } from '@material-ui/core';
 
 //ContextApi
 import { ListObjContext } from "../Contexts/ListDetailsContext";
-import { Button } from '@material-ui/core';
+import { IsLocalContext } from "../Contexts/IsLocalContext";
+import { UserIDContext } from '../Contexts/UserIDContext'
 
 const style = {
     containerStyle: {
@@ -64,32 +66,54 @@ const defaultMapOptions = {
 function GoogleMaps(props) {
     const classes = useStyles();
 
+    //ContextApi 
+    const { userID } = useContext(UserIDContext);
+    const { isLocal } = useContext(IsLocalContext);
     const { listObj } = useContext(ListObjContext);
+
     const [selectedStore, SetSelectedStore] = useState(null)
     const [isOpen, SetIsOpen] = useState(false)
     const [clickStore, SetClickStore] = useState();
     const [animation, SetAnimation] = useState(null);
     const [isClicked, SetIsClicked] = useState(false)
+    const [coords, SetCoords] = useState({})
 
     const center = {
         lat: JSON.parse(listObj.Latitude),
         lng: JSON.parse(listObj.Longitude)
     };
+    let api = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/"
+    if (isLocal) {
+      api = "http://localhost:56794/api/"
+  
+    }
+  
+    
 
-    const [scrollPosition, setSrollPosition] = useState(0);
 
-    window.addEventListener('scroll', () => { console.log(window.pageYOffset) })
 
     useEffect(() => {
-        window.addEventListener('scroll', () => { console.log('scrol') });
+        (async () => {
+          try {
+            const resUser = await fetch(`${api}AppUsers/GetUser/${userID}`, {
+              method: 'GET',
+              headers: new Headers({
+                'Content-Type': 'application/json; charset=UTF-8',
+              }),
+            })
+            let resGetUser = await resUser.json();
+            SetCoords({
+              lat: resGetUser.Latitude,
+              lng: resGetUser.Longitude
+            })
+          } catch (error) {
+            console.log(error)
+          }
+        }
+        )();
+      }, [api,userID]);
 
 
-    });
-
-    const handleScroll = () => {
-        const position = window.pageYOffset;
-        setSrollPosition(position);
-    };
 
     const HandleInfoOpen = (s) => {
         SetSelectedStore(s);
@@ -115,10 +139,10 @@ function GoogleMaps(props) {
         const lat2 = JSON.parse(destinion.Deatils.store_gps_lat)
         const lon2 = JSON.parse(destinion.Deatils.store_gps_lng)
         const R = 6371e3; // metres
-        const φ1 = center.lat * Math.PI / 180; // φ, λ in radians
+        const φ1 = coords.lat * Math.PI / 180; // φ, λ in radians
         const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - center.lat) * Math.PI / 180;
-        const Δλ = (lon2 - center.lng) * Math.PI / 180;
+        const Δφ = (lat2 - coords.lat) * Math.PI / 180;
+        const Δλ = (lon2 - coords.lng) * Math.PI / 180;
 
         const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
             Math.cos(φ1) * Math.cos(φ2) *
@@ -132,10 +156,19 @@ function GoogleMaps(props) {
 
 
 
+    const PrintOutOfStock = (s) =>{
+
+        let str = `** מוצרים שאינם במלאי:  ${s.OutOfStock[0]}`
+        for (let i = 1; i < s.OutOfStock.length; i++) {
+            str += `, ${s.OutOfStock[i]}`
+        }
+        return str
+    }
+
 
     return (
         <div>
-            {console.log(scrollPosition)}
+            {console.log(userID)}
             <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_KEY} id="a">
                 <GoogleMap
                     mapContainerStyle={style.containerStyle}
@@ -190,7 +223,8 @@ function GoogleMaps(props) {
                                             className={classes.inline}
                                             color="textPrimary"
                                             >
-                                            המחיר הינו: ₪{s.TotalPrice} <br/> במרחק של   {CalculateDistance(s)} ק"מ
+                                            המחיר הינו: ₪{s.TotalPrice} <br/> במרחק של   {CalculateDistance(s)} ק"מ 
+                                            {s.OutOfStock.length !== 0 ? <span style={{fontSize:'x-small'}}><br/>{PrintOutOfStock(s)}</span> : '' }
                                         </Typography>
                                         <br/>
                                         <Button color='primary' onClick={() => HandleClickStore(s)}>הראה לי על המפה</Button>

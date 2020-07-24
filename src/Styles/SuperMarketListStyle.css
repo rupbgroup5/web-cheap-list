@@ -70,12 +70,11 @@
 }
 
 .product_description {
-    font-size: 2em;
-    font-family: Amatic SC;
+    font-size: 3vh;
+    font-family: 'Rubik', sans-serif;
     flex: 1;
-    margin: 0;
 }
 
 #OVerRide_MuiSvgIcon-root {
-    height: 2em;
+    height: 3em;
 }
