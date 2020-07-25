@@ -4,7 +4,7 @@ import React, { createContext } from 'react';
 export const IsLocalContext = createContext();
 
 const IsLocalContextProvider = (props) => {
-    let isLocal = false;
+    let isLocal = true;
 
 
     return (

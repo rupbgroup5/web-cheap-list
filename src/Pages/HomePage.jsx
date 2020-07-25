@@ -60,7 +60,7 @@ function HomePage() {
 
 
   let { userIDfromRN } = useParams();
-  if (userIDfromRN === 'undefined') {
+  if (userIDfromRN === undefined) {
     userIDfromRN = JSON.parse(localStorage.getItem('UserID'))
   }
   const classes = useStyles();
@@ -225,7 +225,7 @@ function HomePage() {
                   onSwipeProgress={handleSwipeProgress}
                 >
                   <ListItemAvatar style={{ marginRight: '5px' }}  >
-                    <Badge badgeContent={10} color="secondary"  >
+                    <Badge badgeContent={2} color="secondary"  >
                       <Avatar  />
                     </Badge>
                   </ListItemAvatar>

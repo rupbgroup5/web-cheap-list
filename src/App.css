@@ -1,10 +1,10 @@
 .App {
   text-align: center;
   direction:rtl;
-  /* height:100vh;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position:  top center; */
+
+}
+body{
+ font-family: 'Rubik', sans-serif
 }
 
 

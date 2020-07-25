@@ -26,23 +26,24 @@
   
   .name {
     font-weight: bold;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 27px;
     color: #083749;
     margin-left: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: 'Assistant', sans-serif;
   }
   
   .description {
     margin-left: 2px;
     margin-top: 4px;
     color: #959595;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 17px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+   

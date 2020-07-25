@@ -35,10 +35,9 @@ const useStyles = makeStyles((theme) => ({
   }
   ,
   title: {
-    marginLeft: theme.spacing(2),
     flex: 1,
-    fontSize: '8vh',
-    fontFamily: 'Amatic SC',
+    fontFamily:"'Heebo', sans-serif",
+    fontSize: '3.5vh'
 
   }
 }));

@@ -21,7 +21,7 @@ export default function MainNabar(props) {
 
   //ContextAPI
   const { pageTitle } = useContext(PageTitleContext);
-  const { userID } = useContext(UserIDContext)
+  const { userID, SetUserID } = useContext(UserIDContext)
 
 
 
@@ -34,12 +34,17 @@ export default function MainNabar(props) {
     setAnchorEl(event.currentTarget);
   };
 
+  const ReturnToHomePage = () =>{
+    if (userID === undefined ) {
+      SetUserID(JSON.parse(localStorage.getItem('UserID')))
+    }
+    history.push(`/HomePage/${userID}`);
+  }
+
   return (
     <nav className="nav">
       <div className="nav-Logo">
-        <img src={Logo} alt="" onClick={() => {
-          history.push(`/HomePage/${userID}`);
-        }} />
+        <img src={Logo} alt="" onClick={ReturnToHomePage} />
       </div>
       <span className="nav-title">{pageTitle}</span>
       <div className="nav-Profile">

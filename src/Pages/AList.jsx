@@ -15,6 +15,8 @@ import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import ListAltOutlinedIcon from '@material-ui/icons/ListAltOutlined';
 
 import swal from 'sweetalert'
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import 'sweetalert2/src/sweetalert2.scss'
 
 //Styles
 import '../Styles/ProductCartStyle.css'
@@ -155,15 +157,15 @@ function AList() {
                     console.log(error)
                 }
             }
-           
+
         })();
         SetPageTitle('סל קניות')
-        
+
     }, [apiAppProduct, groupDetails]);
 
     const ActivateStateListObj = () => {
         SetLocation(listObj.Latitude === '' ? true : false)
-        SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)
+        SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
         SetLimit(listObj.LimitPrice)
     }
 
@@ -250,7 +252,7 @@ function AList() {
             })
             let result = await res.json();
             SetLimit(tempLimit);
-            SetimplementLimit(((listObj.ListEstimatedPrice / tempLimit).toFixed(2)) * 100)
+            SetimplementLimit(((listObj.ListEstimatedPrice / tempLimit).toFixed(0)) * 100)
             console.log(result)
         } catch (error) {
             console.log(error)
@@ -345,35 +347,53 @@ function AList() {
     // }
 
     const DeleteProduct = (index, barcode, ListID) => {
-        console.log(productCart[index])
-        swal({
-            title: "מחיקת פריט",
-            text: `?האם למחוק את  ${productCart[index].product_description}`,
-            buttons: ['בטל', 'מחק'],
-            dangerMode: true,
+        Swal.fire({
+            width:'20rem',
+            title: '?כמה פריטים ברצונך למחוק',
+            input: 'number',
+            inputValue: 1,
+            inputAttributes: {
+                min: 1,
+                max: productCart[index].Quantity,
+                step: 1
+              },
+            confirmButtonText:'אישור',
+            showCancelButton:true,
+            cancelButtonText:'ביטול'
+        }).then((value) => {
+            if (value.isConfirmed) {
+                swal({ 
+                    title: "מחיקת פריט",
+                    text: `האם למחוק ${value.value} 'יח של ${productCart[index].product_description}`,
+                    buttons: ['בטל', 'מחק'],
+                    dangerMode: true,
+                })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            fetch(apiAppProduct + barcode + '/' + ListID, {
+                                method: 'DELETE',
+                                headers: new Headers({
+                                    'Content-type': 'application/json; charset=UTF-8'
+                                })
+                            }).then(res => { return res.json(); })
+                                .then(
+                                    (result) => {
+                                        console.log('The ', result, ' was successfully deleted!')
+                                        listObj.ListEstimatedPrice -= productCart[index].estimatedProductPrice.toFixed(2)
+                                        productCart.splice(index, 1)
+                                        SetProductCart([...productCart])
+                                        SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(0)) * 100)
+                                        swal("המוצר נמחק ")
+                                    },
+                                    (error) => {
+                                        console.log(error)
+                                    })
+                        }
+                    }); 
+            }
+         
         })
-            .then((willDelete) => {
-                if (willDelete) {
-                    fetch(apiAppProduct + barcode + '/' + ListID, {
-                        method: 'DELETE',
-                        headers: new Headers({
-                            'Content-type': 'application/json; charset=UTF-8'
-                        })
-                    }).then(res => { return res.json(); })
-                        .then(
-                            (result) => {
-                                console.log('The ', result, ' was successfully deleted!')
-                                listObj.ListEstimatedPrice -= productCart[index].estimatedProductPrice.toFixed(2)
-                                productCart.splice(index, 1)
-                                SetProductCart([...productCart])
-                                SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)
-                                swal("המוצר נמחק ")
-                            },
-                            (error) => {
-                                console.log(error)
-                            })
-                }
-            });
+
 
     }
 
@@ -391,13 +411,12 @@ function AList() {
 
     const CloseDialogSearchProduct = () => { SetSearchProduct(false) }
 
-    const CloseDialogMyCart = () =>{SetMyCart(false)}  
+    const CloseDialogMyCart = () => { SetMyCart(false) }
 
 
 
     return (
         <span>
-
             {listObj &&
                 <div className="container">
                     <div className="header">
@@ -415,27 +434,7 @@ function AList() {
                         {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
                         {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
                         {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct}
-                            Implment={() => SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(2)) * 100)} />}
-
-
-                        {/* <h3>{list.CityName} </h3> */}
-                        {/* <input type={'text'} placeholder='הזן עיר חדשה' onChange={handleCity} /> &nbsp; */}
-                        {/* <button onClick={handleClickCity}>הגדר עיר לחיפוש </button> */}
-                        {/* <h3>{list.LimitPrice}</h3>
-                <input type={'number'} placeholder='הזן מגבלה חדשה' onChange={handleLimit}></input> &nbsp;
-                <button onClick={handleClickLimit}>הגדר מגבלה </button> <br /> <br /> <br /> <br />
-                <input type={'text'} placeholder='בחר מוצר ' onChange={handleProduct} /> &nbsp;
-                <button onClick={handleClickChoise}>חפש מוצר</button> */}
-                        {/* {product.map((p, index) =>
-                    <div key={index}>
-                    <p>
-                    {p.product_name} <b> במחיר</b> {p.estimatedProductPrice} &nbsp;
-                    <img src={p.product_image} alt="" />
-                    <button onClick={ConfirmationLimit(index)}>הוסף לרשימה</button>
-                    </p>
-                    </div>
-                )} */}
-
+                            Implment={() => SetimplementLimit(Number((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))} />}
                         <div id="compareList">
                             {productCart.map((p, index) =>
                                 <div key={index} className="product">
@@ -445,13 +444,12 @@ function AList() {
                                         <img src={p.product_image} alt=" " />
                                     </div>
 
-                                    <div className='product-text'>{p.product_description} <br /> במחיר  ₪{p.estimatedProductPrice} </div>
+                                    <div className='product-text'>{p.product_description} <br /> <b>{p.Quantity}  יח' </b> <br />   ₪{p.estimatedProductPrice * p.Quantity} </div>
                                 </div>
                             )}
                         </div>
                         <div className='product-text'>
-                            {/* {productCart.length - 1 !== 0 ? 'סך מחיר משוער: ' + '₪' + Number(list.ListEstimatedPrice).toFixed(2) : false} */}
-                 סך מחיר משוער: <b>₪{Number(listObj.ListEstimatedPrice).toFixed(2)}</b>
+                            סך מחיר משוער: <b>₪{Number(listObj.ListEstimatedPrice).toFixed(2)}</b>
                         </div>
                         <br />
                         <Circle
@@ -472,6 +470,7 @@ function AList() {
 
                         <br />
                         <TextField
+                            id='MuiInputBase-input'
                             type={'number'}
                             placeholder="הגדר מגבלה חדשה"
                             helperText={`מגבלה נוכחית: ${limit}`}
@@ -491,7 +490,7 @@ function AList() {
                         >
                             שמור
                 </Button>
-    
+
                     </div>
                     <div className="footer" >
                         <SpeedDial
@@ -529,7 +528,7 @@ const actions = [
     { icon: <SearchOutlinedIcon />, name: "חפש סופרים" },
     { icon: <ListAltOutlinedIcon />, name: 'רשימה בסופר' },
 
-    
+
 ];
 
 const data = {

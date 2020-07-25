@@ -11,6 +11,7 @@
     margin:30px;
     display: flex;
     flex-direction: column;
+    direction: rtl;
     
 }
 .footer{
@@ -24,6 +25,7 @@
 
 #outlined-basic{
     text-align: center;
+    font-family: 'Rubik', sans-serif;
 }
 .swal-input{
     direction: rtl;
@@ -34,4 +36,9 @@
 .MuiAutocomplete-noOptions{
     direction: rtl;
 }
- 
+#MuiInputBase-input{
+    font-family: 'Rubik', sans-serif;
+}
+#name{
+    font-family: 'Assistant', sans-serif;
+}

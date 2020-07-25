@@ -30,10 +30,9 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center'
   },
   title: {
-    marginLeft: theme.spacing(2),
     flex: 1,
-    fontSize: '6vh',
-    fontFamily: 'Amatic SC',
+    fontFamily:"'Heebo', sans-serif",
+    fontSize: '3.5vh'
 
   },
   box: {
@@ -115,7 +114,7 @@ const SuperMarketList = (props) => {
                   <DeleteOutlineIcon onClick={() => MoveItem2NotTaken({ ...product, clicked: true })} id='OVerRide_MuiSvgIcon-root' />
                   <AddShoppingCartIcon onClick={() => MoveItem2MyCart({ ...product, clicked: true })} id='OVerRide_MuiSvgIcon-root' />
                   <p className='product_description'>
-                    {product.name}
+                     {product.name}
                   </p>
                 </div>
               </SwipeableListItem>

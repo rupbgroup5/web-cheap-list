@@ -10,7 +10,7 @@ import  '../Styles/ListItemStyle.css';
       {icon}
       <span className="name">{name}</span>
     </div>
-    {description && <div className="desciption">{description}</div>}
+    {description && <div className="desciption" style={{fontSize:'15px'}}>{description}</div>}
   </div>
 );
 
