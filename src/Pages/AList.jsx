@@ -6,6 +6,8 @@ import Circle from 'react-circle';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 
 //SpedDial
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@material-ui/lab/';
@@ -28,18 +30,19 @@ import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 import { PageTitleContext } from "../Contexts/PageTitleContext";
 import { GroupDetailsContext } from "../Contexts/GroupDetailsContext";
 import { SMmoduleContext } from '../Contexts/SMmoduleContext'
+import { IsAdminContext } from "../Contexts/IsAdminContext";
+
 import * as systemAction from '../Contexts/Reducers/ActionTypes';
 
 
 
 
 //Actions
-
 import Location from '../Components/Actions/Location'
 import SearchStores from '../Components/Actions/SearchStores';
 import SuperMarketList from '../Components/Actions/SuperMarketList';
 import SearchProduct from '../Components/Actions/SearchProduct'
-import MyCart from '../Pages/MyCart';
+
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -59,26 +62,24 @@ function AList() {
     const { isLocal } = useContext(IsLocalContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
     const { SetPageTitle } = useContext(PageTitleContext);
+    const { isAdmin, SetIsAdmin } = useContext(IsAdminContext);
     const { smListdispatch, MyCartListDispatch, NotTakenListDispatch } = useContext(SMmoduleContext);
+
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
     const [location, SetLocation] = useState()
     const [searchStores, SetSearchStores] = useState(false)
     const [superMarketList, SetSuperMarketList] = useState(false)
     const [searchProduct, SetSearchProduct] = useState(false);
-    const [myCart, SetMyCart] = useState(false)
 
-
-    const textInput = useRef(null)
-    const limitInput = useRef(null)
-    const queryString = require('query-string');
-    const [product, SetProduct] = useState([]);
     const [limit, SetLimit] = useState()
     const [progressBar, SetProgressBar] = useState(0)
     const [implementLimit, SetimplementLimit] = useState()
     const [color, SetColor] = useState("#009900")
     const [disableSave, SetDisableSave] = useState(true)
 
+    const textInput = useRef(null)
+    const limitInput = useRef(null)
     let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
@@ -133,16 +134,10 @@ function AList() {
             if (!groupDetails) {
                 SetListObj(JSON.parse(localStorage.getItem('listObj')))
                 SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
+                SetIsAdmin(JSON.parse(localStorage.getItem('isAdmin')))
             }
             if (groupDetails) {
                 ActivateStateListObj()
-                for (let i = 0; i < groupDetails.Participiants.length; i++) {
-                    if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
-                        if (groupDetails.Participiants[i].IsAdmin) {
-                            console.log('Im  The Admin!')
-                        } else { console.log('Im Not The Admin') }
-                    }
-                }
                 try {
                     const res = await fetch(apiAppProduct + listObj.ListID, {
                         method: 'GET',
@@ -245,17 +240,17 @@ function AList() {
     }
 
     const handleClickLimit = async () => {
-        console.log('tempLimit', tempLimit )
+        console.log('tempLimit', tempLimit)
         try {
             const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + listObj.ListID, {
                 method: 'PUT',
             })
             SetLimit(tempLimit);
-            console.log('listObj', listObj.ListEstimatedPrice, )
+            console.log('listObj', listObj.ListEstimatedPrice,)
             console.log()
             SetimplementLimit(((listObj.ListEstimatedPrice / tempLimit) * 100).toFixed(0))
-            
-            
+
+
         } catch (error) {
             console.log(error)
         }
@@ -263,8 +258,8 @@ function AList() {
 
 
     const DeleteProduct = (index, barcode, ListID) => {
-        if (productCart[index].Quantity === 1 ) {
-            swal({ 
+        if (productCart[index].Quantity === 1) {
+            swal({
                 title: "מחיקת פריט",
                 text: `האם למחוק  ${productCart[index].product_description}`,
                 buttons: ['בטל', 'מחק'],
@@ -291,10 +286,10 @@ function AList() {
                                     console.log(error)
                                 })
                     }
-                }); 
-        }else{
+                });
+        } else {
             Swal.fire({
-                width:'20rem',
+                width: '20rem',
                 title: '?כמה פריטים ברצונך למחוק',
                 input: 'number',
                 inputValue: 1,
@@ -302,16 +297,16 @@ function AList() {
                     min: 1,
                     max: productCart[index].Quantity,
                     step: 1
-                  },
-                confirmButtonText:'אישור',
-                showCancelButton:true,
-                cancelButtonText:'ביטול'
+                },
+                confirmButtonText: 'אישור',
+                showCancelButton: true,
+                cancelButtonText: 'ביטול'
             }).then((value) => {
                 console.log(value)
-                if (value.isConfirmed ) {
-                    if ( productCart[index].Quantity === JSON.parse(value.value)) {
+                if (value.isConfirmed) {
+                    if (productCart[index].Quantity === JSON.parse(value.value)) {
                         console.log('here', value.value)
-                        swal({ 
+                        swal({
                             title: "מחיקת פריט",
                             text: `האם למחוק את כל היחידות של ?${productCart[index].product_description}`,
                             buttons: ['בטל', 'מחק'],
@@ -338,9 +333,9 @@ function AList() {
                                                 console.log(error)
                                             })
                                 }
-                            });  
-                    }else{
-                        swal({ 
+                            });
+                    } else {
+                        swal({
                             title: "מחיקת פריט",
                             text: `האם למחוק ${value.value} 'יח ?${productCart[index].product_description}`,
                             buttons: ['בטל', 'מחק'],
@@ -348,12 +343,12 @@ function AList() {
                         })
                             .then((willDelete) => {
                                 let product = {
-                                    Quantity:value.value,
+                                    Quantity: value.value,
                                     product_barcode: barcode,
                                     ListID: ListID,
-                                  }
+                                }
                                 if (willDelete) {
-                                    fetch(apiAppProduct + 'UpdateQuantity' + '/' + false ,{
+                                    fetch(apiAppProduct + 'UpdateQuantity' + '/' + false, {
                                         method: 'PUT',
                                         headers: new Headers({
                                             'Content-type': 'application/json; charset=UTF-8'
@@ -373,19 +368,17 @@ function AList() {
                                                 console.log(error)
                                             })
                                 }
-                            });  
+                            });
                     }
-                }             
+                }
             })
         }
-        
+
 
 
     }
 
-    const handleClose = () => {
-        setOpenSpeedDial(false);
-    }
+    const handleClose = () => { setOpenSpeedDial(false); }
 
     const handleOpen = () => { setOpenSpeedDial(true); }
 
@@ -402,6 +395,7 @@ function AList() {
 
     return (
         <span>
+            {console.log('Admin:', isAdmin)}
             {listObj &&
                 <div className="container">
                     <div className="header">
@@ -419,7 +413,7 @@ function AList() {
                         {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
                         {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
                         {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct}
-                         Implment={() => SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice)*100).toFixed(0))} />}
+                            Implment={() => SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))} />}
 
                         <div id="compareList">
                             {productCart.map((p, index) =>
@@ -455,47 +449,60 @@ function AList() {
                         />
 
                         <br />
-                        <TextField
-                            id='MuiInputBase-input'
-                            type={'number'}
-                            placeholder="הגדר מגבלה חדשה"
-                            helperText={`מגבלה נוכחית: ${limit}`}
-                            style={{ width: 150, marginRight: 20 }}
-                            onFocus={() => { SetDisableSave(false) }}
-                            onInput={handleLimit}
-                            inputRef={limitInput}
-                            onBlur={() => { tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false) }}
-                        />
-                        <Button
-                            color='primary'
-                            size="small"
-                            className={classes.button}
-                            startIcon={<SaveIcon style={{ marginLeft: 3 }} />}
-                            disabled={disableSave}
-                            onClick={handleClickLimit}
-                        >
-                            שמור
-                </Button>
+                        {isAdmin && <span>
+                            <TextField
+                                id='MuiInputBase-input'
+                                type={'number'}
+                                placeholder="הגדר מגבלה חדשה"
+                                helperText={`מגבלה נוכחית: ₪${limit}`}
+                                style={{ width: 150, marginRight: 20 }}
+                                onFocus={() => { SetDisableSave(false) }}
+                                onInput={handleLimit}
+                                inputRef={limitInput}
+                                onBlur={() => { tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false) }}
+                            />
+                            <Button
+                                color='primary'
+                                size="small"
+                                className={classes.button}
+                                startIcon={<SaveIcon style={{ marginLeft: 3 }} />}
+                                disabled={disableSave}
+                                onClick={handleClickLimit}
+                            >
+                                שמור
+                            </Button>
+                        </span>}
+                        {!isAdmin &&<div style={{fontSize: 'smaller'}}>
+                        **ישנה מגבלה לרשימה זו בסך: ₪{limit}
+                            </div>}
+
+
 
                     </div>
                     <div className="footer" >
-                        <SpeedDial
-                            ariaLabel="SpeedDial"
-                            icon={<SpeedDialIcon />}
-                            onClose={handleClose}
-                            onOpen={handleOpen}
-                            open={openSpeedDial}
-                            direction="up"
-                        >
-                            {actions.map((action) => (
-                                <SpeedDialAction
-                                    key={action.name}
-                                    icon={action.icon}
-                                    tooltipTitle={action.name}
-                                    onClick={() => handleClickAction(action.name)}
-                                />
-                            ))}
-                        </SpeedDial>
+                        {isAdmin && <span>
+                            <SpeedDial
+                                ariaLabel="SpeedDial"
+                                icon={<SpeedDialIcon />}
+                                onClose={handleClose}
+                                onOpen={handleOpen}
+                                open={openSpeedDial}
+                                direction="up" >
+                                {actions.map((action) => (
+                                    <SpeedDialAction
+                                        key={action.name}
+                                        icon={action.icon}
+                                        tooltipTitle={action.name}
+                                        onClick={() => handleClickAction(action.name)}
+                                    />
+                                ))}
+                            </SpeedDial>
+                        </span>}
+                        {!isAdmin && <span>
+                            <Fab color="primary" aria-label="add">
+                                <AddIcon onClick={() => SetSearchProduct(true)} />
+                            </Fab>
+                        </span>}
 
                     </div>
                 </div>}

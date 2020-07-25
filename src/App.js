@@ -26,6 +26,7 @@ import ProductsCartContextProvider from './Contexts/ProductsCartContext'
 import UserIDContextProvider from './Contexts/UserIDContext'
 import PageTitleContextProvider from './Contexts/PageTitleContext'
 import SMmoduleContextProvider from './Contexts/SMmoduleContext';
+import IsAdminContextProvider from './Contexts/IsAdminContext'
 
 
 
@@ -41,12 +42,12 @@ function App() {
   return (
     <div className="App">
       <CCErrorMessage> {/** THIS IS MUST BE THE FATHER OF ALL COMPONENTS */}
-
         <SMmoduleContextProvider>
           <IsLocalContextProvider>
             <PageTitleContextProvider>
               <UserIDContextProvider>
                 <GroupDetailsContextProvider>
+                  <IsAdminContextProvider>
                   <ListDetailsContextProvider>
                     <ProductsCartContextProvider>
                       <MainNabar />
@@ -63,6 +64,7 @@ function App() {
                       </Switch>
                     </ProductsCartContextProvider>
                   </ListDetailsContextProvider>
+                  </IsAdminContextProvider>
                 </GroupDetailsContextProvider>
               </UserIDContextProvider>
             </PageTitleContextProvider>

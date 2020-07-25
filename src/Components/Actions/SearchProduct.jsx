@@ -22,6 +22,8 @@ import swal from 'sweetalert'
 import { ProductsCartContext } from "../../Contexts/ProductsCartContext";
 import { ListObjContext } from "../../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../../Contexts/IsLocalContext";
+import { IsAdminContext } from '../../Contexts/IsAdminContext';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -54,6 +56,7 @@ export default function SearchProduct(props) {
   const { productCart, SetProductCart } = useContext(ProductsCartContext);
   const { listObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
+  const { isAdmin } = useContext(IsAdminContext)
 
   const [loading, SetLoading] = useState(false)
   const [open, setOpen] = useState(true);
@@ -339,7 +342,8 @@ export default function SearchProduct(props) {
                     <RemoveIcon style={{ height: '0.7em' }} onClick={() => RemoveItem(index)} />
                     <br />
 
-                    <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)} >הוסף מוצר</Button>
+                   {isAdmin && <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)}>הוסף מוצר</Button>}
+                   {!isAdmin && <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)}>בקש מוצר</Button>}
                   </Card.Body>
                   <br />
                 </Card>

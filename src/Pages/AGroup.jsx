@@ -7,6 +7,7 @@ import { DeleteIcon } from '../Images/icons'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { Badge, IconButton, TextField } from '@material-ui/core'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
+import List from '@material-ui/core/List';
 
 
 import {
@@ -31,8 +32,7 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 import { ListObjContext } from "../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../Contexts/IsLocalContext";
 import { PageTitleContext } from "../Contexts/PageTitleContext";
-
-
+import { IsAdminContext } from "../Contexts/IsAdminContext";
 
 
 
@@ -67,13 +67,17 @@ const StyledBadge = withStyles((theme) => ({
 
 
 function AGroup() {
+  const classes = useStyles();
+  const history = useHistory();
   //Context Api:
   const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
   const { SetListObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetPageTitle } = useContext(PageTitleContext);
-  const classes = useStyles();
-  const history = useHistory();
+  const { isAdmin, SetIsAdmin } = useContext(IsAdminContext);
+
+
+
   const [lists, SetLists] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
@@ -85,17 +89,21 @@ function AGroup() {
     apiAppGroups = "http://localhost:56794/api/AppGroups/";
     apiAppList = "http://localhost:56794/api/AppList/";
   }
-  let group = JSON.parse(localStorage.getItem('groupDeatils'))
-
-
-
+  
 
   useEffect(() => {
     (async function fetchMyAPI() {
       if (!groupDetails) {
         SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
+        SetIsAdmin(JSON.parse(localStorage.getItem('isAdmin')))
       }
       if (groupDetails) {
+        for (let i = 0; i < groupDetails.Participiants.length; i++) {
+          if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
+              if (groupDetails.Participiants[i].IsAdmin) {SetIsAdmin(true)
+              } else { SetIsAdmin(false) }
+          }
+      }
         try {
           const res = await fetch(apiAppList + groupDetails.GroupID, {
             method: 'GET',
@@ -106,6 +114,7 @@ function AGroup() {
           let data = await res.json();
           SetLists(data)
           localStorage.setItem('groupDetails', JSON.stringify(groupDetails));
+          localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
         } catch (error) {
           console.log(error)
         }
@@ -241,6 +250,7 @@ function AGroup() {
 
   return (
     <span>
+      {console.log('Admin:',isAdmin)}
       {groupDetails && 
       <div className="container">
         <div className="header"  >
@@ -257,7 +267,8 @@ function AGroup() {
           {
             lists.map((l, index) =>
               <span key={index} onClick={() => GetIntoList(index)}>
-                <SwipeableList key={index} className={classes.root} threshold={0.25}>
+                {isAdmin &&<span>
+                  <SwipeableList key={index} className={classes.root} threshold={0.25}>
                   <SwipeableListItem
                     swipeRight={swipeRightDataComplex(l.ListID, index)}
                     onSwipeProgress={handleSwipeProgress}>
@@ -269,13 +280,24 @@ function AGroup() {
                     <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
                   </SwipeableListItem>
                 </SwipeableList>
+                  </span>}
+                  {!isAdmin && <List key={index} className={classes.root} style={{flexDirection:"row"}} >
+                    <IconButton aria-label="cart">
+                      <StyledBadge badgeContent={4} color="secondary">
+                        <ShoppingCartIcon />
+                      </StyledBadge>
+                    </IconButton>
+                    <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
+                    </List>}
+              
               </span>
             )
           }
         </div>
-        <div className="footer">
+
+        {isAdmin && <div className="footer">
           <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
-        </div>
+        </div>}
       </div>}
     </span>
   );
