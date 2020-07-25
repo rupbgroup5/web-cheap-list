@@ -88,7 +88,7 @@ function AList() {
     }
 
 
-    let tempProduct = "";
+
     let tempName = "";
     let tempLimit = '';
 
@@ -164,6 +164,7 @@ function AList() {
     }, [apiAppProduct, groupDetails]);
 
     const ActivateStateListObj = () => {
+        console.log('here')
         SetLocation(listObj.Latitude === '' ? true : false)
         SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
         SetLimit(listObj.LimitPrice)
@@ -236,7 +237,6 @@ function AList() {
     }
 
     const handleLimit = (e) => {
-        console.log(tempLimit)
         if (e === '') {
             limitInput.current.value = ''
         }
@@ -245,154 +245,140 @@ function AList() {
     }
 
     const handleClickLimit = async () => {
-
+        console.log('tempLimit', tempLimit )
         try {
             const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + listObj.ListID, {
                 method: 'PUT',
             })
-            let result = await res.json();
             SetLimit(tempLimit);
-            SetimplementLimit(((listObj.ListEstimatedPrice / tempLimit).toFixed(0)) * 100)
-            console.log(result)
+            console.log('listObj', listObj.ListEstimatedPrice, )
+            console.log()
+            SetimplementLimit(((listObj.ListEstimatedPrice / tempLimit) * 100).toFixed(0))
+            
+            
         } catch (error) {
             console.log(error)
         }
     }
 
 
-
-
-
-
-
-    // const getTotalPrice = async () => {
-    //     try {
-    //         //getCityID
-    //         data.GetCityByName.city_name = list.CityName
-    //         console.log(list.CityName);
-
-    //         let query = queryString.stringifyUrl({ url: api, query: data.GetCityByName })
-    //         console.log('0')
-    //         let resCity = await fetch(query, { method: 'GET' })
-    //         let resultCity = await resCity.json();
-    //         console.log('1')
-    //         //getStorebycityId
-    //         data.GetStoresByCityID.city_id = resultCity[0].city_id
-    //         query = await queryString.stringifyUrl({ url: api, query: data.GetStoresByCityID })
-    //         let resStoreID = await fetch(query, { method: 'GET' })
-    //         let resultStoreID = await resStoreID.json();
-    //         console.log('2')
-    //         let tempArrayStore = []
-
-    //         for (let i = 0; i < resultStoreID.length; i++) {
-    //             let p = 0;
-    //             let outOfStock = [];
-    //             for (let j = 0; j < productCart.length; j++) {
-    //                 data.GetPriceByProductBarCode.product_barcode = productCart[j].product_barcode
-    //                 data.GetPriceByProductBarCode.store_id = resultStoreID[i].store_id
-    //                 query = queryString.stringifyUrl({ url: "https://cors-anywhere.herokuapp.com/" + api, query: data.GetPriceByProductBarCode })
-    //                 const res = await fetch(query, { method: 'GET' })
-    //                 var result = await res.json()
-    //                 console.log('3')
-    //                 if (result.error_type === "NO_DATA") {
-    //                     alert('המוצר ' + productCart[j].product_name + ' לא קיים בחנות זו ')
-    //                     outOfStock.push(productCart[j])
-    //                     continue;
-
-    //                 }
-    //                 p += JSON.parse(result[0].store_product_price)
-    //             }
-    //             const s = {
-    //                 OutOfStock: outOfStock,
-    //                 Store: resultStoreID[i],
-    //                 TotalPrice: Number(p.toFixed(2))
-    //             }
-    //             tempArrayStore.push(s)
-    //         }
-    //         SetStores(tempArrayStore)
-    //         console.log('store', stores)
-    //         // history.push(`/ListSuperMarket`, { params:tempArrayStore })
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
-
-    // const SearchSubstitute = async (indexS, indexO) => {
-
-    //     console.log(stores[indexS].OutOfStock[indexO])
-    //     let prodSubstitute = stores[indexS].OutOfStock[indexO];
-    //     data.GetProductsByName.product_name = prodSubstitute.product_description
-    //     let query = queryString.stringifyUrl({ url: api, query: data.GetProductsByName })
-    //     let resBarcode = await fetch(query, { method: 'GET' })
-    //     let resultBarcode = await resBarcode.json();
-    //     let tempArray = []
-    //     for (let i = 0; i < resultBarcode.length; i++) {
-    //         data.GetPriceByProductBarCode.store_id = stores[indexS].store_id
-    //         data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
-    //         query = await queryString.stringifyUrl({ url: api, query: data.GetPriceByProductBarCode })
-    //         let resPrice = await fetch(query, { method: 'GET' })
-    //         let resultPrice = await resPrice.json();
-    //         console.log('a', resultPrice)
-    //         if (resultPrice.product_barcode === prodSubstitute.product_barcode) {
-    //             continue;
-    //         }
-    //         tempArray.push(resultPrice)
-    //     }
-    //     console.log(tempArray)
-    //     if (tempArray.length !== 0) {
-    //         SetProduct(tempArray)
-    //     }
-
-
-    // }
-
     const DeleteProduct = (index, barcode, ListID) => {
-        Swal.fire({
-            width:'20rem',
-            title: '?כמה פריטים ברצונך למחוק',
-            input: 'number',
-            inputValue: 1,
-            inputAttributes: {
-                min: 1,
-                max: productCart[index].Quantity,
-                step: 1
-              },
-            confirmButtonText:'אישור',
-            showCancelButton:true,
-            cancelButtonText:'ביטול'
-        }).then((value) => {
-            if (value.isConfirmed) {
-                swal({ 
-                    title: "מחיקת פריט",
-                    text: `האם למחוק ${value.value} 'יח של ${productCart[index].product_description}`,
-                    buttons: ['בטל', 'מחק'],
-                    dangerMode: true,
-                })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            fetch(apiAppProduct + barcode + '/' + ListID, {
-                                method: 'DELETE',
-                                headers: new Headers({
-                                    'Content-type': 'application/json; charset=UTF-8'
+        if (productCart[index].Quantity === 1 ) {
+            swal({ 
+                title: "מחיקת פריט",
+                text: `האם למחוק  ${productCart[index].product_description}`,
+                buttons: ['בטל', 'מחק'],
+                dangerMode: true,
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        fetch(apiAppProduct + barcode + '/' + ListID, {
+                            method: 'DELETE',
+                            headers: new Headers({
+                                'Content-type': 'application/json; charset=UTF-8'
+                            })
+                        }).then(res => { return res.json(); })
+                            .then(
+                                (result) => {
+                                    console.log('The ', result, ' was successfully deleted!')
+                                    listObj.ListEstimatedPrice -= (productCart[index].estimatedProductPrice * productCart[index].Quantity).toFixed(2)
+                                    productCart.splice(index, 1)
+                                    SetProductCart([...productCart])
+                                    SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
+                                    swal("המוצר נמחק ")
+                                },
+                                (error) => {
+                                    console.log(error)
                                 })
-                            }).then(res => { return res.json(); })
-                                .then(
-                                    (result) => {
-                                        console.log('The ', result, ' was successfully deleted!')
-                                        listObj.ListEstimatedPrice -= productCart[index].estimatedProductPrice.toFixed(2)
-                                        productCart.splice(index, 1)
-                                        SetProductCart([...productCart])
-                                        SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice).toFixed(0)) * 100)
-                                        swal("המוצר נמחק ")
-                                    },
-                                    (error) => {
-                                        console.log(error)
-                                    })
-                        }
-                    }); 
-            }
-         
-        })
+                    }
+                }); 
+        }else{
+            Swal.fire({
+                width:'20rem',
+                title: '?כמה פריטים ברצונך למחוק',
+                input: 'number',
+                inputValue: 1,
+                inputAttributes: {
+                    min: 1,
+                    max: productCart[index].Quantity,
+                    step: 1
+                  },
+                confirmButtonText:'אישור',
+                showCancelButton:true,
+                cancelButtonText:'ביטול'
+            }).then((value) => {
+                console.log(value)
+                if (value.isConfirmed ) {
+                    if ( productCart[index].Quantity === JSON.parse(value.value)) {
+                        console.log('here', value.value)
+                        swal({ 
+                            title: "מחיקת פריט",
+                            text: `האם למחוק את כל היחידות של ?${productCart[index].product_description}`,
+                            buttons: ['בטל', 'מחק'],
+                            dangerMode: true,
+                        })
+                            .then((willDelete) => {
+                                if (willDelete) {
+                                    fetch(apiAppProduct + barcode + '/' + ListID, {
+                                        method: 'DELETE',
+                                        headers: new Headers({
+                                            'Content-type': 'application/json; charset=UTF-8'
+                                        })
+                                    }).then(res => { return res.json(); })
+                                        .then(
+                                            (result) => {
+                                                console.log('The ', result, ' was successfully deleted!')
+                                                listObj.ListEstimatedPrice -= (productCart[index].estimatedProductPrice * productCart[index].Quantity).toFixed(2)
+                                                productCart.splice(index, 1)
+                                                SetProductCart([...productCart])
+                                                SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
+                                                swal("המוצר נמחק ")
+                                            },
+                                            (error) => {
+                                                console.log(error)
+                                            })
+                                }
+                            });  
+                    }else{
+                        swal({ 
+                            title: "מחיקת פריט",
+                            text: `האם למחוק ${value.value} 'יח ?${productCart[index].product_description}`,
+                            buttons: ['בטל', 'מחק'],
+                            dangerMode: true,
+                        })
+                            .then((willDelete) => {
+                                let product = {
+                                    Quantity:value.value,
+                                    product_barcode: barcode,
+                                    ListID: ListID,
+                                  }
+                                if (willDelete) {
+                                    fetch(apiAppProduct + 'UpdateQuantity' + '/' + false ,{
+                                        method: 'PUT',
+                                        headers: new Headers({
+                                            'Content-type': 'application/json; charset=UTF-8'
+                                        }),
+                                        body: JSON.stringify(product)
+                                    }).then(res => { return res.json(); })
+                                        .then(
+                                            (result) => {
+                                                console.log('The ', result, ' was successfully deleted!')
+                                                listObj.ListEstimatedPrice -= (productCart[index].estimatedProductPrice * JSON.parse(value.value)).toFixed(2)
+                                                productCart[index].Quantity -= JSON.parse(value.value)
+                                                SetProductCart([...productCart])
+                                                SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
+                                                swal("המוצר נמחק ")
+                                            },
+                                            (error) => {
+                                                console.log(error)
+                                            })
+                                }
+                            });  
+                    }
+                }             
+            })
+        }
+        
 
 
     }
@@ -411,7 +397,6 @@ function AList() {
 
     const CloseDialogSearchProduct = () => { SetSearchProduct(false) }
 
-    const CloseDialogMyCart = () => { SetMyCart(false) }
 
 
 
@@ -434,7 +419,8 @@ function AList() {
                         {searchStores && <SearchStores CloseDialog={CloseDialogSearchStores} />}
                         {superMarketList && <SuperMarketList CloseDialog={CloseDialogSMList} />}
                         {searchProduct && <SearchProduct CloseDialog={CloseDialogSearchProduct}
-                            Implment={() => SetimplementLimit(Number((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))} />}
+                         Implment={() => SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice)*100).toFixed(0))} />}
+
                         <div id="compareList">
                             {productCart.map((p, index) =>
                                 <div key={index} className="product">
@@ -444,7 +430,7 @@ function AList() {
                                         <img src={p.product_image} alt=" " />
                                     </div>
 
-                                    <div className='product-text'>{p.product_description} <br /> <b>{p.Quantity}  יח' </b> <br />   ₪{p.estimatedProductPrice * p.Quantity} </div>
+                                    <div className='product-text'>{p.product_description} <br /> <b>{p.Quantity}  יח' </b> <br />   ₪{(p.estimatedProductPrice * p.Quantity).toFixed(2)} </div>
                                 </div>
                             )}
                         </div>

@@ -32,12 +32,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flex: 1,
-    fontFamily:"'Heebo', sans-serif",
+    fontFamily: "'Heebo', sans-serif",
     fontSize: '3.5vh'
   },
   button: {
     margin: theme.spacing(1),
-},
+  },
 }));
 
 const Transition = forwardRef((props, ref) => {
@@ -110,34 +110,75 @@ export default function SearchProduct(props) {
     }
   }
 
-  const Add2DB = async (p,index) => {
+  const Add2DB = async (p, index) => {
+    console.log(p)
     if (productCart.some(person => person.product_barcode === p.product_barcode)) {
-      alert("המוצר קיים כבר בעגלה");
+      swal({
+        title: 'מוצר זה קיים בעגלה',
+        text: "האם תרצה להוסיף בכל זאת?",
+        buttons: ['בטל', 'המשך בכל זאת'],
+      }).then((willContinue) => {
+        if (willContinue) {
+          let product = {
+            Quantity: numItem[index],
+            product_barcode: p.product_barcode,
+            ListID: listObj.ListID,
+          }
+          fetch(apiAppProduct + 'UpdateQuantity' + '/' + true, {
+            method: 'PUT',
+            headers: new Headers({
+              'Content-type': 'application/json; charset=UTF-8'
+            }),
+            body: JSON.stringify(product)
+          }).then(res => { return res.json(); })
+            .then(
+              (resultDB) => {
+                console.log('resultDB', resultDB)
+                console.log('p.estimatedProductPrice', p.estimatedProductPrice)
+                console.log('resultDB.Quantity', resultDB.Quantity)
+                listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
+                //product[index].Quantity += resultDB.Quantity
+                let i = productCart.findIndex(x => x.product_barcode  === p.product_barcode);
+                 productCart[i].Quantity += resultDB.Quantity
+                 productCart[i].EstimatedProductPrice += p.estimatedProductPrice * resultDB.Quantity
+                SetProductCart([...productCart])
+                SetProduct([])
+                console.log(productCart)
+                swal('המוצר התווסף בהצלחה')
+              },
+              (error) => {
+                console.log(error)
+              })
+        }
+      })
+    } else {
+      let product = {
+        Quantity: numItem[index],
+        ...p,
+        ListID: listObj.ListID,
+        GroupID: listObj.GroupID
+      }
+      console.log(product)
+      const resDB = await fetch(apiAppProduct, {
+        method: 'POST',
+        headers: new Headers({
+          'Content-type': 'application/json; charset=UTF-8'
+        }),
+        body: JSON.stringify(product)
+      })
+      const resultDB = await resDB.json()
+      console.log('result', resultDB)
+      listObj.ListEstimatedPrice += resultDB.EstimatedProductPrice * resultDB.Quantity
+      SetProduct([])
+      SetProductCart([...productCart, resultDB])
+      swal('המוצר התווסף בהצלחה')
     }
-    let product = {
-      quantity:numItem[index],
-      ...p,
-      ListID: listObj.ListID,
-      GroupID: listObj.GroupID
-    }
-    console.log(product)
-    const resDB = await fetch(apiAppProduct, {
-      method: 'POST',
-      headers: new Headers({
-        'Content-type': 'application/json; charset=UTF-8'
-      }),
-      body: JSON.stringify(product)
-    })
-    const resultDB = await resDB.json()
-    console.log('result', resultDB)
-    listObj.ListEstimatedPrice += resultDB.estimatedProductPrice
-    SetProduct([])
-    SetProductCart([...productCart, resultDB])
-    swal('המוצר התווסף בהצלחה')
   }
 
-  const ConfirmationLimit = (p,index) => {
-    let tempCheck = listObj.ListEstimatedPrice + p.estimatedProductPrice
+
+
+  const ConfirmationLimit = (p, index) => {
+    let tempCheck = listObj.ListEstimatedPrice + (p.estimatedProductPrice * numItem[index])
     if (tempCheck > listObj.LimitPrice) {
       swal({
         text: "שים לב! חרגת מהמגבלה",
@@ -145,14 +186,17 @@ export default function SearchProduct(props) {
         dangerMode: true,
       }).then((willContinue) => {
         if (willContinue) {
-          Add2DB(p,index)
+          Add2DB(p, index)
         }
       })
     } else if (tempCheck > listObj.LimitPrice * 0.7) {
-      alert('שים לב! עברת 70% מהמגבלה')
-      Add2DB(p,index)
+      swal({
+        text: 'שים לב! עברת 70% מהמגבלה',
+        dangerMode: true
+      })
+      Add2DB(p, index)
     }
-    else Add2DB(p,index)
+    else Add2DB(p, index)
   }
 
   const handleProduct = (e) => { tempProduct = e.target.value; }
@@ -242,11 +286,13 @@ export default function SearchProduct(props) {
     setOpen(false);
     props.CloseDialog()
     props.Implment();
+
   };
 
 
 
   return (
+
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
       <AppBar className={classes.appBar}>
         <Toolbar>
@@ -266,15 +312,15 @@ export default function SearchProduct(props) {
         loading={loading}
       />
       <div className="container">
-        <div className='header' style={{flexDirection:"row"}}>
-          <TextField 
-          id="MuiInputBase-input"
+        <div className='header' style={{ flexDirection: "row" }}>
+          <TextField
+            id="MuiInputBase-input"
             placeholder="הקלד מוצר לחיפוש"
-            style={{ width: 150}}
+            style={{ width: 150 }}
             onInput={handleProduct}
           />
           &nbsp; &nbsp;
-          <Button variant="outlined" color='primary'  onClick={handleClickSearch} >חפש מוצר</Button>
+          <Button variant="outlined" color='primary' onClick={handleClickSearch} >חפש מוצר</Button>
         </div>
         <div className="Maincontent">
 
@@ -293,7 +339,7 @@ export default function SearchProduct(props) {
                     <RemoveIcon style={{ height: '0.7em' }} onClick={() => RemoveItem(index)} />
                     <br />
 
-                    <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p,index)} >הוסף מוצר</Button>
+                    <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)} >הוסף מוצר</Button>
                   </Card.Body>
                   <br />
                 </Card>
