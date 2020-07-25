@@ -225,7 +225,7 @@ function AList() {
             NotTakenListDispatch(systemClear);
             MyCartListDispatch(systemClear);
             productCart.forEach((p) => {
-                smListdispatch({ type: systemAction.AddItem, newItem: { name: p.product_description } });
+                smListdispatch({ type: systemAction.AddItem, newItem: { name: `${p.product_description} - ${p.Quantity} יח` } });
             });
             SetSuperMarketList(true);
         }
