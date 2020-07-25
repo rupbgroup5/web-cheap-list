@@ -292,7 +292,7 @@ function AGroup() {
               </span>
             )
           }
-          <button onClick={()=> alert('Setting')}>הגדרות</button>
+          <button onClick={()=> history.push('/GroupSetting')}>הגדרות</button>
         </div>
 
         {isAdmin && <div className="footer">
