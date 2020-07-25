@@ -171,7 +171,7 @@ export default function SearchProduct(props) {
       })
       const resultDB = await resDB.json()
       console.log('result', resultDB)
-      listObj.ListEstimatedPrice += resultDB.EstimatedProductPrice * resultDB.Quantity
+      listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
       SetProduct([])
       SetProductCart([...productCart, resultDB])
       swal('המוצר התווסף בהצלחה')

@@ -250,7 +250,6 @@ function AGroup() {
 
   return (
     <span>
-      {console.log('Admin:',isAdmin)}
       {groupDetails && 
       <div className="container">
         <div className="header"  >
@@ -293,6 +292,7 @@ function AGroup() {
               </span>
             )
           }
+          <button onClick={()=> alert('Setting')}>הגדרות</button>
         </div>
 
         {isAdmin && <div className="footer">

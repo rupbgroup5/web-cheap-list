@@ -68,7 +68,7 @@ export default function Location(props) {
 
   
   const [open, setOpen] = useState(true);
-  const [enable, SetEnable] = useState((listObj.TypeLocation === 'currentLocation' ? false : true))
+  const [enable, SetEnable] = useState((listObj.TypeLocation === 'currentLocation' || listObj.TypeLocation === null  ? false : true))
   const [cities, SetCities] = useState([])
   const [coords, SetCoords] = useState({})
 
@@ -254,6 +254,7 @@ export default function Location(props) {
 
   return (
     <div dir='rtl' style={{ alignItems: 'center' }} >
+      {console.log(listObj)}
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
         <AppBar className={classes.appBar}>
           <Toolbar>
@@ -270,7 +271,9 @@ export default function Location(props) {
         </AppBar>
         <br /><br />
         <FormControl className={classes.FormControl}>
-          <RadioGroup row aria-label="position" name="position" value={listObj.TypeLocation} onChange={handleChange} >
+          <RadioGroup row aria-label="position" name="position" 
+          value={listObj.TypeLocation !== null ? listObj.TypeLocation :  'currentLocation' } 
+          onChange={handleChange} >
             <FormControlLabel
               value="city"
               control={<Radio color="default" />}

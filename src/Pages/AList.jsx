@@ -67,11 +67,14 @@ function AList() {
 
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
-    const [location, SetLocation] = useState()
+    let bool = false
+    if (listObj !== undefined && (listObj.Latitude === null || listObj.Latitude === '') ) {
+        bool = true;
+    }
+    const [location, SetLocation] = useState(bool)
     const [searchStores, SetSearchStores] = useState(false)
     const [superMarketList, SetSuperMarketList] = useState(false)
     const [searchProduct, SetSearchProduct] = useState(false);
-
     const [limit, SetLimit] = useState()
     const [progressBar, SetProgressBar] = useState(0)
     const [implementLimit, SetimplementLimit] = useState()
@@ -159,8 +162,6 @@ function AList() {
     }, [apiAppProduct, groupDetails]);
 
     const ActivateStateListObj = () => {
-        console.log('here')
-        SetLocation(listObj.Latitude === '' ? true : false)
         SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
         SetLimit(listObj.LimitPrice)
     }
@@ -395,7 +396,6 @@ function AList() {
 
     return (
         <span>
-            {console.log('Admin:', isAdmin)}
             {listObj &&
                 <div className="container">
                     <div className="header">
@@ -419,8 +419,8 @@ function AList() {
                             {productCart.map((p, index) =>
                                 <div key={index} className="product">
                                     <div >
-                                        <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small'
-                                            style={{ marginBottom: 90, marginLeft: -15, fill: 'darkgray' }} />
+                                       {isAdmin && <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small'
+                                            style={{ marginBottom: 90, marginLeft: -15, fill: 'darkgray' }} />}
                                         <img src={p.product_image} alt=" " />
                                     </div>
 

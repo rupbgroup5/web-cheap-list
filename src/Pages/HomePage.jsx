@@ -71,7 +71,6 @@ function HomePage() {
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
-  userIDfromRN = 1
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 1
@@ -196,10 +195,10 @@ function HomePage() {
       return str;
     }
     
-    const AddNewMembers = (groupName)=> {
+    const ShowContactsDDl = (groupName)=> {
       console.log('groupName',groupName)
        SetTempGroupName(groupName);    
-       SetEnable(true)
+       SetEnable(true);
     }   
 
     const handleCloseListContact = (arr) => {
@@ -240,8 +239,7 @@ function HomePage() {
         {enable && <Contacts userID={userIDfromRN} groupName={tempGroupName} close={handleCloseListContact} style={{textAlign:'center'}}/>}
       </div>
       <div className="footer">
-        <FormDialog getData={AddNewMembers}  headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
-        {/* userID={userIDfromRN} */}
+        <FormDialog getData={ShowContactsDDl}  headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
     </div>
 
