@@ -1,0 +1,4 @@
+.overRideTableCellAPI {
+    /* overwrite original api */
+    text-align: right;
+}
