@@ -25,7 +25,7 @@ export default function MainNabar(props) {
   //ContextAPI
   const { pageTitle } = useContext(PageTitleContext);
   const { userID, SetUserID } = useContext(UserIDContext)
-  const [badge, setBagde] = useState(0) 
+  const [badge, setBagde] = useState(2) 
 
 
 
@@ -80,7 +80,10 @@ export default function MainNabar(props) {
           <MenuItem onClick={handleClose}>הגדרות</MenuItem>
         </Menu>
       
-        {pageTitle === 'סל קניות' && <span >
+        
+      </div>
+     
+     {pageTitle === 'סל קניות' && <span className="nav-not" >
           <IconButton
           aria-label="account of current user"
           aria-controls="menu-appbar"
@@ -89,11 +92,11 @@ export default function MainNabar(props) {
           color="inherit"
         >
          <Badge badgeContent={badge} color="secondary">
-        <NotificationsNoneOutlinedIcon  className={badge === 0 ? ' ' : "nav-not"} />
+        <NotificationsNoneOutlinedIcon  className={badge === 0 ? ' ' : "ring"} />
           </Badge>
         </IconButton>
           </span>}
-      </div>
+     
     </nav>
   );
 

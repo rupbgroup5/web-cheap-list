@@ -22,10 +22,15 @@
     margin: 11px;
     font-size: x-large;
     font-family: 'Heebo', sans-serif;
+    width: 40%;
     
 }
 .nav-not{
+    float: right;
+    margin: 4px 0;
+}   
 
+.ring{
     transform-origin: 50% 1rem;
     animation-name: ring;
     animation-duration: 2s;
