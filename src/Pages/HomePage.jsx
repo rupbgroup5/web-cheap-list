@@ -108,7 +108,7 @@ function HomePage() {
     };
     for (let i = 0; i < participiantsArr.length; i++) {
       if (participiantsArr[i].ExpoToken !== null) {
-        SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName,tempGroupName)
+        SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName, tempGroupName)
       }
       
     }
@@ -195,20 +195,15 @@ function HomePage() {
       return str;
     }
     
-    const ShowContactsDDl = (groupName)=> {
-      console.log('groupName',groupName)
+    const GetNameGroup = (groupName)=> {
        SetTempGroupName(groupName);    
        SetEnable(true);
     }   
 
-    const handleCloseListContact = (arr) => {
+    const handleCloseListContact = (participiants) => {
       SetEnable(false);
-      AddNewGroup(arr);
-      
+      AddNewGroup(participiants);
     }
-
-  
-
 
   return (
 
@@ -239,7 +234,7 @@ function HomePage() {
         {enable && <Contacts userID={userIDfromRN} groupName={tempGroupName} close={handleCloseListContact} style={{textAlign:'center'}}/>}
       </div>
       <div className="footer">
-        <FormDialog getData={ShowContactsDDl}  headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+        <FormDialog getData={GetNameGroup}  headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
     </div>
 

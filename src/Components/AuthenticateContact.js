@@ -23,10 +23,9 @@ const AuthenticateContact = async (PhoneNumber) => {
 
     if (member.UserID === 0) {
         const newUser = {
-            UserName: PhoneNumber,
-            PhoneNumber: PhoneNumber //The defulat userName is the PhoneNumber until the user will change his name
+            UserName: PhoneNumber,//The defulat userName is the PhoneNumber until the user will change his name
+            PhoneNumber: PhoneNumber 
         }
-        console.log('into if')
         await fetch(`${apiAppUser}SystemPostUser`, {
             method: 'POST',
             headers: new Headers({
