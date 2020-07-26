@@ -133,6 +133,7 @@ const GroupSetting = () => {
     const apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
     const apiDeleteGroup = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/appGroups/AddUsers2UserInGroup";
     const localDeleteGroup = "http://localhost:56794/api/appGroups/AddUsers2UserInGroup";
+    const glocalDeleteGroup = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/appGroups/AddUsers2UserInGroup";
     const removeUserInGroupFromDB = (userId, GroupId) => {
         return `${apiAppGroups}RemoveUserFromGroup/${userId}/${GroupId}`;
     }
@@ -283,7 +284,7 @@ const GroupSetting = () => {
             Participiants: pArr
         };
 
-        await fetch(localDeleteGroup, {
+        await fetch(glocalDeleteGroup, {
             method: 'PUT',
             headers: new Headers({
                 'Content-type': 'application/json; charset=UTF-8'
@@ -297,8 +298,6 @@ const GroupSetting = () => {
                     for (let i = 0; i < pArr.length; i++) {
                         newParticipiants.push(pArr[i]);
                     }
-
-
                     SetGroup(
                         {
                             ...group,
