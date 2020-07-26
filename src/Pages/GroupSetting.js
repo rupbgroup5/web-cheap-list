@@ -4,6 +4,8 @@ import { withRouter, useHistory } from 'react-router-dom'
 
 //our components
 import Contacts from '../Components/Contacts'
+import AuthenticateContact from '../Components/AuthenticateContact'
+
 
 
 //material-ui
@@ -50,13 +52,13 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: 'Amatic SC',
     },
     root: {
-        flexGrow: 1,
         maxWidth: 752,
-        textAlign: 'center'
+        textAlign: 'center',
     },
     ParticipiantsDiv: {
         backgroundColor: theme.palette.background.paper,
-        height: '45vh'
+        height: '45vh',
+        overflow: 'overlay',
     },
     listItemText: {
         textAlign: 'right',
@@ -68,19 +70,30 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
     },
     myButton: {
-        margin: theme.spacing(1),
-        marginBottom: '10vh',
+        margin: '0 2.5vw',
+        marginTop: '5vw',
         color: 'white',
-
+        width: '95vw',
     },
     myTxtFeild: {
         marginTop: '5vh',
     },
     PlusBtn: {
-        marginLeft: '75vw'
-
+        marginLeft: '75vw',
     },
-
+    myContactsList: {
+        width: '100vw',
+        position: 'absolute',
+        zIndex: 1,
+        bottom: '20vh',
+        background: 'white',
+        textAlign: 'center',
+    },
+    footer: {
+        width: '100vw',
+        height: '20vh',
+        marginTop: '5vh',
+    },
 
 }));
 
@@ -102,7 +115,12 @@ const GroupSetting = () => {
             JSON.parse(localStorage.getItem('groupDetails')) :
             undefined
     );
+
     const loggedInUserId = JSON.parse(localStorage.getItem('UserID'));
+
+
+
+
     let adminUserId;
     group.Participiants.map((p) => {
         if (p.IsAdmin) {
@@ -113,8 +131,8 @@ const GroupSetting = () => {
 
     //api calls
     const apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
-    const apiGetUserContacts = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/GetUserContacts/`;
-
+    const apiDeleteGroup = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/appGroups/AddUsers2UserInGroup";
+    const localDeleteGroup = "http://localhost:56794/api/appGroups/AddUsers2UserInGroup";
     const removeUserInGroupFromDB = (userId, GroupId) => {
         return `${apiAppGroups}RemoveUserFromGroup/${userId}/${GroupId}`;
     }
@@ -173,11 +191,15 @@ const GroupSetting = () => {
                         headers: new Headers({
                             'Content-type': 'application/json; charset=UTF-8'
                         }),
-                        // body: JSON.stringify(g)
                     }).then(res => { return res.json(); })
                         .then(
                             (result) => {
                                 console.log(result);
+                                let updatedParticipiants = group.Participiants
+                                    .filter((p) => p.UserID !== userId2Remove);
+                                console.log(updatedParticipiants);
+                                SetGroup({ ...group, Participiants: updatedParticipiants });
+                                localStorage.setItem("groupDetails", JSON.stringify({ ...group, Participiants: updatedParticipiants }));
                                 swal('המשתמש נמחק');
                             },
                             (error) => {
@@ -189,8 +211,109 @@ const GroupSetting = () => {
 
 
     }
+
+    const ExitFromThisGroup = () => {
+        swal({
+            title: `?בטוח שאתה רוצה לצאת מהקבוצה`,
+            buttons: ['התחרטתי', 'צא'],
+            dangerMode: true,
+        })
+            .then((userResponse) => {
+                if (userResponse) {
+                    fetch(removeUserInGroupFromDB(loggedInUserId, group.GroupID), {
+                        method: 'PUT',
+                        headers: new Headers({
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }),
+                    }).then(res => { return res.json(); })
+                        .then(
+                            (result) => {
+                                console.log(result);
+                                swal('יצאת הקבוצה')
+                                    .then(() => {
+                                        history.push(`/HomePage/${loggedInUserId}`);
+                                    });
+                            },
+                            (error) => {
+                                console.log(error)
+                            })
+                }
+            });
+    }
+
+    const DeleteGroup = () => {
+        swal({
+            title: `?בטוח שאתה רוצה למחוק את הקבוצה`,
+            buttons: ['התחרטתי', 'מחק'],
+            dangerMode: true,
+        })
+            .then((userResponse) => {
+                if (userResponse) {
+                    fetch(apiDeleteGroup, {
+                        method: 'DELETE',
+                        headers: new Headers({
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }),
+                    }).then(res => { return res.json(); })
+                        .then(
+                            (result) => {
+                                console.log(result);
+                                swal('הקבוצה נמחקה')
+                                    .then(() => {
+                                        history.push(`/HomePage/${loggedInUserId}`);
+                                    });
+                            },
+                            (error) => {
+                                console.log(error)
+                            })
+                }
+            });
+
+    }
+
+    const AddParticipants2Group = async (participants) => {
+        let pArr = [];
+        for (let i = 0; i < participants.length; i++) {
+            let newParticipant = await AuthenticateContact(participants[i].PhoneNumber);
+            pArr.push(newParticipant);
+        }
+
+        let GroupObject = {
+            GroupID: group.GroupID,
+            Participiants: pArr
+        };
+
+        await fetch(localDeleteGroup, {
+            method: 'PUT',
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8'
+            }),
+            body: JSON.stringify(GroupObject)
+        }).then(res => { return res.json(); })
+            .then(
+                (result) => {
+                    console.log(result)
+                    let newParticipiants = group.Participiants;
+                    for (let i = 0; i < pArr.length; i++) {
+                        newParticipiants.push(pArr[i]);
+                    }
+
+
+                    SetGroup(
+                        {
+                            ...group,
+                            Participiants: newParticipiants
+                        }
+                    );
+                },
+                (error) => {
+                    console.log(error)
+                })
+    }
+
     const handleCloseListContact = (participants) => {
         SetEnableContacts(false);
+        AddParticipants2Group(participants);
     }
 
     const handleClose = () => { setOpen(false); history.push('/AGroups') }
@@ -206,6 +329,8 @@ const GroupSetting = () => {
                     </Typography>
                 </Toolbar>
             </AppBar>
+
+
             <div className={classes.root}>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" className={classes.title}>
@@ -227,68 +352,82 @@ const GroupSetting = () => {
                             }}
                         />
                     </Typography>
-                    <div className={classes.ParticipiantsDiv}>
-                        <List dense={true}>
-                            {
-                                group.Participiants.map((p) => {
-                                    return <ListItem key={p.UserID}>
-                                        {!p.IsAdmin && loggedInUserId === adminUserId ?
-                                            <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                            : ""
-                                        }
-                                        <ListItemText
-                                            primary={p.UserName}
-                                            secondary={p.IsAdmin ?
-                                                <span className={classes.secondaryTxt}>מנהל</span>
-                                                : ''}
-                                            className={classes.listItemText}
-                                        />
-                                        <ListItemAvatar>
-                                            <Avatar />
-                                        </ListItemAvatar>
-                                    </ListItem>
-                                })
-                            }
-                        </List>
-                    </div>
                 </Grid>
+            </div>
 
-                {enableContacts && <Contacts userID={loggedInUserId} groupName={group.GroupName} close={handleCloseListContact} style={{ textAlign: 'center' }} />}
+
+            <div className={classes.ParticipiantsDiv}>
+                <List dense={true}>
+                    {
+                        group.Participiants.map((p) => {
+                            return <ListItem key={p.UserID}>
+                                {!p.IsAdmin && loggedInUserId === adminUserId ?
+                                    <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                    : ""
+                                }
+                                <ListItemText
+                                    primary={p.UserName}
+                                    secondary={p.IsAdmin ?
+                                        <span className={classes.secondaryTxt}>מנהל</span>
+                                        : ''}
+                                    className={classes.listItemText}
+                                />
+                                <ListItemAvatar>
+                                    <Avatar />
+                                </ListItemAvatar>
+                            </ListItem>
+                        })
+                    }
+                </List>
+            </div>
+            {
+                enableContacts &&
+                <div className={classes.myContactsList}>
+                    <Contacts
+                        userID={loggedInUserId}
+                        groupName={group.GroupName}
+                        close={handleCloseListContact}
+
+                    />
+                </div>
+            }
 
 
+
+            <div className={classes.footer}>
                 <Fab
                     className={classes.PlusBtn}
                     color="primary"
                     aria-label="add">
                     <AddIcon onClick={() => { SetEnableContacts(true) }} />
                 </Fab>
-
-
-            </div>
-            {
-                loggedInUserId === adminUserId ?
-                    <Button
-                        style={{ backgroundColor: 'red' }}
-                        variant="contained"
-                        className={classes.myButton}
-                        startIcon={<DeleteIcon />}
-                        onClick={() => { alert(adminUserId) }}
-                    >
-                        מחק את הקבוצה
+                {
+                    loggedInUserId === adminUserId ?
+                        <Button
+                            style={{ backgroundColor: 'red' }}
+                            variant="contained"
+                            className={classes.myButton}
+                            startIcon={<DeleteIcon />}
+                            onClick={() => { DeleteGroup(); }}
+                        >
+                            מחק את הקבוצה
                 </Button>
-                    :
-                    <Button
-                        style={{ backgroundColor: 'red' }}
-                        variant="contained"
-                        className={classes.myButton}
-                        startIcon={<DeleteIcon />}
-                        onClick={() => { alert('red') }}
-                    >
-                        צא מהקבוצה
+                        :
+                        <Button
+                            style={{ backgroundColor: 'red' }}
+                            variant="contained"
+                            className={classes.myButton}
+                            startIcon={<DeleteIcon />}
+                            onClick={() => { ExitFromThisGroup() }}
+                        >
+                            צא מהקבוצה
             </Button>
-            }
+                }
+            </div>
+
+
 
         </Dialog>
 

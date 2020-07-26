@@ -71,10 +71,11 @@ function HomePage() {
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
+  
+  userIDfromRN = 12;
   if (isLocal) {
-    apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 1
-    
+    apiAppGroups = "http://localhost:56794/api/AppGroups/";
+    userIDfromRN = 1;
   }
 
   useEffect(() => {
