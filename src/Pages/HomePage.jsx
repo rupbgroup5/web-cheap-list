@@ -101,15 +101,21 @@ function HomePage() {
       let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
       await participiantsArr.push(newParticipiant)
     }
+    let admin = {
+      UserID: groups.UserID,
+      UserName: groups.UserName,
+      IsAdmin:true,
+    }
+   
     console.log('participiantsArr', participiantsArr)
-
+    // participiantsArr.push(admin)
     let newGroup = {
       GroupName: tempGroupName,
       UserID: userIDfromRN,
-      Participiants: participiantsArr
+      Participiants: participiantsArr,
     };
     for (let i = 0; i < participiantsArr.length; i++) {
-      if (participiantsArr[i].ExpoToken !== null) {
+      if ( participiantsArr[i].ExpoToken !== "") {
         SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName, tempGroupName)
       }
       
@@ -126,7 +132,7 @@ function HomePage() {
       .then(
         (result) => {
           console.log('The ', result, ' was successfully added!')
-          SetGroups([...groups, {
+        SetGroups([...groups, {
             ...result
           }])
         },
@@ -136,6 +142,7 @@ function HomePage() {
 
     console.log(groups)
   }
+
   const Delete = (id, index) => {
     if (swipeProgress >= 70) {
       swal({
