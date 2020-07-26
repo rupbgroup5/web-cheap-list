@@ -73,7 +73,7 @@ function HomePage() {
   const [tempGroupName,SetTempGroupName] = useState();
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 1
+    userIDfromRN = 12
     
   }
 
@@ -127,7 +127,6 @@ function HomePage() {
           SetGroups([...groups, {
             ...result
           }])
-          console.log(result)
         },
         (error) => {
           console.log(error)

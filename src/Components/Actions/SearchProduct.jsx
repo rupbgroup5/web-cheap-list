@@ -17,12 +17,17 @@ import { css } from "@emotion/core";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 import swal from 'sweetalert'
 
+//Push
+import { SendPushAskForProduct } from '../SendPush';
 
 //ContextApi
 import { ProductsCartContext } from "../../Contexts/ProductsCartContext";
 import { ListObjContext } from "../../Contexts/ListDetailsContext";
 import { IsLocalContext } from "../../Contexts/IsLocalContext";
 import { IsAdminContext } from '../../Contexts/IsAdminContext';
+import { GroupDetailsContext } from '../../Contexts/GroupDetailsContext';
+
+
 
 
 
@@ -56,7 +61,8 @@ export default function SearchProduct(props) {
   const { productCart, SetProductCart } = useContext(ProductsCartContext);
   const { listObj } = useContext(ListObjContext);
   const { isLocal } = useContext(IsLocalContext);
-  const { isAdmin } = useContext(IsAdminContext)
+  const { isAdmin } = useContext(IsAdminContext);
+  const { groupDetails } = useContext(GroupDetailsContext)
 
   const [loading, SetLoading] = useState(false)
   const [open, setOpen] = useState(true);
@@ -141,9 +147,9 @@ export default function SearchProduct(props) {
                 console.log('resultDB.Quantity', resultDB.Quantity)
                 listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
                 //product[index].Quantity += resultDB.Quantity
-                let i = productCart.findIndex(x => x.product_barcode  === p.product_barcode);
-                 productCart[i].Quantity += resultDB.Quantity
-                 productCart[i].EstimatedProductPrice += p.estimatedProductPrice * resultDB.Quantity
+                let i = productCart.findIndex(x => x.product_barcode === p.product_barcode);
+                productCart[i].Quantity += resultDB.Quantity
+                productCart[i].EstimatedProductPrice += p.estimatedProductPrice * resultDB.Quantity
                 SetProductCart([...productCart])
                 SetProduct([])
                 console.log(productCart)
@@ -181,25 +187,41 @@ export default function SearchProduct(props) {
 
 
   const ConfirmationLimit = (p, index) => {
-    let tempCheck = listObj.ListEstimatedPrice + (p.estimatedProductPrice * numItem[index])
-    if (tempCheck > listObj.LimitPrice) {
-      swal({
-        text: "שים לב! חרגת מהמגבלה",
-        buttons: ['בטל', 'המשך בכל זאת'],
-        dangerMode: true,
-      }).then((willContinue) => {
-        if (willContinue) {
-          Add2DB(p, index)
-        }
-      })
-    } else if (tempCheck > listObj.LimitPrice * 0.7) {
-      swal({
-        text: 'שים לב! עברת 70% מהמגבלה',
-        dangerMode: true
-      })
-      Add2DB(p, index)
+    if (isAdmin) {
+      let tempCheck = listObj.ListEstimatedPrice + (p.estimatedProductPrice * numItem[index])
+      if (tempCheck > listObj.LimitPrice) {
+        swal({
+          text: "שים לב! חרגת מהמגבלה",
+          buttons: ['בטל', 'המשך בכל זאת'],
+          dangerMode: true,
+        }).then((willContinue) => {
+          if (willContinue) {
+            Add2DB(p, index)
+          }
+        })
+      } else if (tempCheck > listObj.LimitPrice * 0.7) {
+        swal({
+          text: 'שים לב! עברת 70% מהמגבלה',
+          dangerMode: true
+        })
+        Add2DB(p, index)
+      }
+      else Add2DB(p, index)
+    } else {
+      let admin = groupDetails.Participiants.find(admin => admin.IsAdmin === true);
+      //let admin = groupDetails.Participiants.filter(admin => admin.IsAdmin === true)
+      p = {
+        ...p,
+        Quantity: numItem[index]
+      }
+      let userFrom ={
+        UserID: groupDetails.UserID,
+        UserName: groupDetails.UserName
+      }
+      SendPushAskForProduct(userFrom,admin,groupDetails.GroupName, listObj.ListName, p)
+      SetProduct([])
     }
-    else Add2DB(p, index)
+
   }
 
   const handleProduct = (e) => { tempProduct = e.target.value; }
@@ -297,6 +319,7 @@ export default function SearchProduct(props) {
   return (
 
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
+      {console.log(groupDetails)}
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -342,8 +365,8 @@ export default function SearchProduct(props) {
                     <RemoveIcon style={{ height: '0.7em' }} onClick={() => RemoveItem(index)} />
                     <br />
 
-                   {isAdmin && <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)}>הוסף מוצר</Button>}
-                   {!isAdmin && <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)}>בקש מוצר</Button>}
+                    {isAdmin && <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)}>הוסף מוצר</Button>}
+                    {!isAdmin && <Button ovariant="primary" color='primary' onClick={() => ConfirmationLimit(p, index)}>בקש מוצר</Button>}
                   </Card.Body>
                   <br />
                 </Card>

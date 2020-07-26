@@ -1,11 +1,14 @@
-import React, { useContext } from 'react'
+import React, { useContext,useState } from 'react'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import '../Styles/NavBarStyle.css'
+import Badge from '@material-ui/core/Badge';
+import NotificationsNoneOutlinedIcon from '@material-ui/icons/NotificationsNoneOutlined';
+
 import { useHistory } from 'react-router-dom';
 
+import '../Styles/NavBarStyle.css'
 
 import Logo from '../Images/letter.jpg'
 
@@ -22,6 +25,7 @@ export default function MainNabar(props) {
   //ContextAPI
   const { pageTitle } = useContext(PageTitleContext);
   const { userID, SetUserID } = useContext(UserIDContext)
+  const [badge, setBagde] = useState(0) 
 
 
 
@@ -75,6 +79,20 @@ export default function MainNabar(props) {
           <MenuItem onClick={handleClose}>פרופיל</MenuItem>
           <MenuItem onClick={handleClose}>הגדרות</MenuItem>
         </Menu>
+      
+        {pageTitle === 'סל קניות' && <span >
+          <IconButton
+          aria-label="account of current user"
+          aria-controls="menu-appbar"
+          aria-haspopup="true"
+          onClick={handleMenu}
+          color="inherit"
+        >
+         <Badge badgeContent={badge} color="secondary">
+        <NotificationsNoneOutlinedIcon  className={badge === 0 ? ' ' : "nav-not"} />
+          </Badge>
+        </IconButton>
+          </span>}
       </div>
     </nav>
   );

@@ -24,3 +24,28 @@
     font-family: 'Heebo', sans-serif;
     
 }
+.nav-not{
+
+    transform-origin: 50% 1rem;
+    animation-name: ring;
+    animation-duration: 2s;
+     /* animation-iteration-count: infinite;  */
+} 
+
+@keyframes ring
+  {
+    0% { transform: rotate(0deg) }
+    5% { transform: rotate(45deg) }
+    15% { transform: rotate(-40deg) }
+    25% { transform: rotate(20deg) }
+    35% { transform: rotate(-15deg) }
+    45% { transform: rotate(10deg) }
+    55% { transform: rotate(-5deg) }
+    60% { transform: rotate(0deg) }
+    100% { transform: rotate(0deg) }
+  }
+
+  
+
+  
+  
