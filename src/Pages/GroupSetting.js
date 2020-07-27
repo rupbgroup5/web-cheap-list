@@ -36,7 +36,7 @@ import AddIcon from '@material-ui/icons/Add'
 import swal from 'sweetalert'
 
 //notificaion handle
-import { SendPushIDeletedMySelf, SendPushRemovedByAdmin } from '../temp4pushYogi'
+import { SendPushIDeletedMySelf, SendPushRemovedByAdmin } from '../Components/SendPush'
 
 
 
