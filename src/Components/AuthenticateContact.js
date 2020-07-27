@@ -1,18 +1,18 @@
- //import  { useContext } from 'react'
+//import  { useContext } from 'react'
 
- //Context Api
- //import { IsLocalContext } from "../Contexts/IsLocalContext";
+//Context Api
+//import { IsLocalContext } from "../Contexts/IsLocalContext";
 
 
 
 const AuthenticateContact = async (PhoneNumber) => {
     //const  { isLocal } = useContext(IsLocalContext); //not working, probably because breaking the Rules of Hooks.
-     let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
-    
-     if (true) {
-      apiAppUser = 'http://localhost:56794/api/AppUsers/'
-     }
-     
+    let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
+
+    if (true) {
+        apiAppUser = 'http://localhost:56794/api/AppUsers/'
+    }
+
     const res = await fetch(`${apiAppUser}AuthenticateContact/${PhoneNumber}`, {
         method: 'GET',
         headers: new Headers({
@@ -24,7 +24,7 @@ const AuthenticateContact = async (PhoneNumber) => {
     if (member.UserID === 0) {
         const newUser = {
             UserName: PhoneNumber,//The defulat userName is the PhoneNumber until the user will change his name
-            PhoneNumber: PhoneNumber 
+            PhoneNumber: PhoneNumber
         }
         await fetch(`${apiAppUser}SystemPostUser`, {
             method: 'POST',

@@ -35,6 +35,13 @@ import AddIcon from '@material-ui/icons/Add'
 //sweetalert
 import swal from 'sweetalert'
 
+//notificaion handle
+import { SendPushIDeletedMySelf, SendPushRemovedByAdmin } from '../temp4pushYogi'
+
+
+
+
+
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
@@ -145,6 +152,7 @@ const GroupSetting = () => {
         tempName = "";
         tempName = e.target.value
     }
+
     const ConfirmationEditGroupName = () => {
         if (tempName !== "") {
             swal({
@@ -180,7 +188,29 @@ const GroupSetting = () => {
         }
     }
 
+    const HandleNotification4RemovedByAdmin = (userToId) => {
 
+        let userTo = {
+            UserID: userToId,
+            ExpoToken: "",
+        }
+
+        let adminUser = {
+            UserID: adminUserId,
+            UserName: ""
+        }
+        group.Participiants.forEach(p => {
+            if (p.UserID === userToId) {
+                userTo.ExpoToken = p.ExpoToken;
+            }
+            if (p.IsAdmin) {
+                adminUser.UserName = p.UserName;
+            }
+        });
+
+        SendPushRemovedByAdmin(adminUser, userTo, group.GroupName);
+
+    }
 
     const removeUserfromGroup = (userId2Remove, userName2Remove) => {
         swal({
@@ -201,9 +231,9 @@ const GroupSetting = () => {
                                 console.log(result);
                                 let updatedParticipiants = group.Participiants
                                     .filter((p) => p.UserID !== userId2Remove);
-                                console.log(updatedParticipiants);
                                 SetGroup({ ...group, Participiants: updatedParticipiants });
                                 localStorage.setItem("groupDetails", JSON.stringify({ ...group, Participiants: updatedParticipiants }));
+                                HandleNotification4RemovedByAdmin(userId2Remove);
                                 swal('המשתמש נמחק');
                             },
                             (error) => {
@@ -213,6 +243,31 @@ const GroupSetting = () => {
             });
 
 
+
+    }
+
+
+    const HandleNotification4exitFromGroup = () => {
+
+        let loggedInUser = {
+            UserID: loggedInUserId,
+            UserName: ""
+        }
+
+        let adminUser = {
+            UserID: adminUserId,
+            ExpoToken: ""
+        }
+        group.Participiants.forEach(p => {
+            if (p.UserID === loggedInUserId) {
+                loggedInUser.UserName = p.UserName;
+            }
+            if (p.IsAdmin) {
+                adminUser.ExpoToken = p.ExpoToken;
+            }
+        });
+
+        SendPushIDeletedMySelf(loggedInUser, adminUser, group.GroupName);
 
     }
 
@@ -235,6 +290,7 @@ const GroupSetting = () => {
                                 console.log(result);
                                 swal('יצאת הקבוצה')
                                     .then(() => {
+                                        HandleNotification4exitFromGroup();
                                         history.push(`/HomePage/${loggedInUserId}`);
                                     });
                             },
