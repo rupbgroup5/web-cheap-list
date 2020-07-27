@@ -29,6 +29,7 @@ import UserIDContextProvider from './Contexts/UserIDContext'
 import PageTitleContextProvider from './Contexts/PageTitleContext'
 import SMmoduleContextProvider from './Contexts/SMmoduleContext';
 import IsAdminContextProvider from './Contexts/IsAdminContext'
+import NotificationsContextProvider from './Contexts/NotificationsContext'
 
 
 
@@ -49,6 +50,7 @@ function App() {
           <IsLocalContextProvider>
             <PageTitleContextProvider>
               <UserIDContextProvider>
+                <NotificationsContextProvider>
                 <GroupDetailsContextProvider>
                   <IsAdminContextProvider>
                   <ListDetailsContextProvider>
@@ -70,6 +72,7 @@ function App() {
                   </ListDetailsContextProvider>
                   </IsAdminContextProvider>
                 </GroupDetailsContextProvider>
+                </NotificationsContextProvider>
               </UserIDContextProvider>
             </PageTitleContextProvider>
           </IsLocalContextProvider>

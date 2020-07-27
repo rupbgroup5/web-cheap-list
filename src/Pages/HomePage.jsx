@@ -217,7 +217,6 @@ function HomePage() {
 
     <div className="container">
       <div className="header"></div>
-      {console.log('g',groups)}
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>
@@ -227,7 +226,6 @@ function HomePage() {
                   swipeRight={SwipeRightContent(g.GroupID, index)}
                   onSwipeProgress={handleSwipeProgress}
                 >
-                  {console.log(g.Badge)}
                   <ListItemAvatar style={{ marginRight: '5px' }}  >
                     <Badge badgeContent={g.Badge} color="secondary"  >
                       <Avatar  />

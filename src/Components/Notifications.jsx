@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, forwardRef } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -18,8 +18,10 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import { TextField, ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
 
 //Context Api
-import { IsLocalContext } from '../Contexts/IsLocalContext';
-import { UserIDContext } from '../Contexts/UserIDContext'
+// import { IsLocalContext } from '../Contexts/IsLocalContext';
+// import { UserIDContext } from '../Contexts/UserIDContext';
+import { NotificationsContext } from '../Contexts/NotificationsContext';
+
 
 
 
@@ -85,33 +87,18 @@ const Notifications = (props) => {
     const classes = useStyles();
 
     //ContextApi
-    const { isLocal } = useContext(IsLocalContext);
-    const { userID } = useContext(UserIDContext)
+    // const { isLocal } = useContext(IsLocalContext);
+    // const { userID } = useContext(UserIDContext)
+    const {notifications} = useContext(NotificationsContext)
 
     const [open, setOpen] = useState(true);
-    const [notifications, SetNotifications] = useState([])
+    const history = useHistory()
 
-    let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}`
-    if (isLocal) {
-        apiNotifications = `http://localhost:56794/api/Notifications/1`
-    }
-
-    useEffect(() => {
-        (async function fetchMyAPI() {
-            const res = await fetch(apiNotifications, {
-                method: 'GET',
-                headers: new Headers({
-                    'Content-Type': 'application/json; charset=UTF-8',
-                }),
-            })
-            let data = await res.json();
-            console.log(data)
-            SetNotifications(data);
-        }())
-    }, []);
+  
 
     const handleClose = () => {
         setOpen(false);
+        history.push('/AList')
     };
 
     const ApproveProducat = (n) => {

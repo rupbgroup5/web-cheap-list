@@ -1,4 +1,4 @@
-import React, { useContext,useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -15,6 +15,9 @@ import Logo from '../Images/letter.jpg'
 //ContextAPI
 import { PageTitleContext } from "../Contexts/PageTitleContext";
 import { UserIDContext } from '../Contexts/UserIDContext'
+import { IsLocalContext } from '../Contexts/IsLocalContext';
+import { NotificationsContext } from '../Contexts/NotificationsContext';
+
 
 
 export default function MainNabar(props) {
@@ -26,7 +29,31 @@ export default function MainNabar(props) {
   //ContextAPI
   const { pageTitle } = useContext(PageTitleContext);
   const { userID, SetUserID } = useContext(UserIDContext)
-  const [badge, setBagde] = useState(2) 
+  const { isLocal } = useContext(IsLocalContext);
+  const { notifications, SetNotifications } = useContext(NotificationsContext)
+
+
+
+  let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}`
+  if (isLocal) {
+    apiNotifications = `http://localhost:56794/api/Notifications/1`
+  }
+
+  useEffect(() => {
+    (async function fetchMyAPI() {
+      console.log('use')
+      const res = await fetch(apiNotifications, {
+        method: 'GET',
+        headers: new Headers({
+          'Content-Type': 'application/json; charset=UTF-8',
+        }),
+      })
+      let data = await res.json();
+      console.log(data)
+      SetNotifications(data);
+    }())
+
+  }, []);
 
 
 
@@ -35,12 +62,11 @@ export default function MainNabar(props) {
   };
 
   const handleMenu = (event) => {
-    console.log(event.currentTarget)
     setAnchorEl(event.currentTarget);
   };
 
-  const ReturnToHomePage = () =>{
-    if (userID === undefined ) {
+  const ReturnToHomePage = () => {
+    if (userID === undefined) {
       SetUserID(JSON.parse(localStorage.getItem('UserID')))
     }
     history.push(`/HomePage/${userID}`);
@@ -51,8 +77,8 @@ export default function MainNabar(props) {
       <div className="nav-Logo">
         <img src={Logo} alt="" onClick={ReturnToHomePage} />
       </div>
-  <span className="nav-title"  style={{ paddingLeft: 'סל קניות' === pageTitle ? 50 : 15  }}>{pageTitle}</span>
-      <div className="nav-Profile">   
+      <span className="nav-title" style={{ paddingLeft: 'סל קניות' === pageTitle ? 50 : 15 }}>{pageTitle}</span>
+      <div className="nav-Profile">
         <IconButton
           aria-label="account of current user"
           aria-controls="menu-appbar"
@@ -80,21 +106,21 @@ export default function MainNabar(props) {
           <MenuItem onClick={handleClose}>פרופיל</MenuItem>
           <MenuItem onClick={handleClose}>הגדרות</MenuItem>
         </Menu>
-      
-        
+
+
       </div>
-     
-     {pageTitle === 'סל קניות' && <span className="nav-not" >
-          <IconButton
-          onClick={()=>history.push('/Notifications')}
+
+      {pageTitle === 'סל קניות' && <span className="nav-not" >
+        <IconButton
+          onClick={() => history.push('/Notifications')}
           color="inherit"
         >
-         <Badge badgeContent={badge} color="secondary">
-        <NotificationsNoneOutlinedIcon  className={badge === 0 ? ' ' : "ring"} />
+          <Badge badgeContent={notifications.length} color="secondary">
+            <NotificationsNoneOutlinedIcon className={notifications.length === 0 ? ' ' : "ring"} />
           </Badge>
         </IconButton>
-          </span>}
-     
+      </span>}
+
     </nav>
   );
 
