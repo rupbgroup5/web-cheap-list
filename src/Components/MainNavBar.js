@@ -10,13 +10,14 @@ import { useHistory } from 'react-router-dom';
 
 import '../Styles/NavBarStyle.css'
 
-import Logo from '../Images/letter.jpg'
+import Logo from '../Images/Logo.png'
 
 //ContextAPI
 import { PageTitleContext } from "../Contexts/PageTitleContext";
 import { UserIDContext } from '../Contexts/UserIDContext'
 import { IsLocalContext } from '../Contexts/IsLocalContext';
 import { NotificationsContext } from '../Contexts/NotificationsContext';
+import { ListObjContext } from '../Contexts/ListDetailsContext'
 
 
 
@@ -31,29 +32,36 @@ export default function MainNabar(props) {
   const { userID, SetUserID } = useContext(UserIDContext)
   const { isLocal } = useContext(IsLocalContext);
   const { notifications, SetNotifications } = useContext(NotificationsContext)
+  const { listObj, SetListObj } = useContext(ListObjContext)
 
+ 
 
-
-  let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}`
-  if (isLocal) {
-    apiNotifications = `http://localhost:56794/api/Notifications/1`
-  }
 
   useEffect(() => {
-    (async function fetchMyAPI() {
-      console.log('use')
-      const res = await fetch(apiNotifications, {
-        method: 'GET',
-        headers: new Headers({
-          'Content-Type': 'application/json; charset=UTF-8',
-        }),
-      })
-      let data = await res.json();
-      console.log(data)
-      SetNotifications(data);
-    }())
+    if (pageTitle === 'סל קניות') {
+      if (!listObj) {
+        SetListObj(JSON.parse(localStorage.getItem('listObj')))
+      }
+      let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}/${listObj.ListID}`
+      if (isLocal) {
+        apiNotifications = `http://localhost:56794/api/Notifications/${userID}/${listObj.ListID}`
+      }
+      (async function fetchMyAPI() {
 
-  }, []);
+        const res = await fetch(apiNotifications, {
+          method: 'GET',
+          headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8',
+          }),
+        })
+        let data = await res.json();
+        SetNotifications(data);
+      }())
+    }
+
+
+  }, [pageTitle]);
+
 
 
 

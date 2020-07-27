@@ -12,34 +12,18 @@ import Slide from '@material-ui/core/Slide';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
-import Card from 'react-bootstrap/Card'
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
-import { TextField, ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
+import { ListItemText, ListItemAvatar, Avatar } from '@material-ui/core'
+
+import swal from 'sweetalert'
+
 
 //Context Api
-// import { IsLocalContext } from '../Contexts/IsLocalContext';
-// import { UserIDContext } from '../Contexts/UserIDContext';
+import { IsLocalContext } from '../Contexts/IsLocalContext';
+import { UserIDContext } from '../Contexts/UserIDContext';
 import { NotificationsContext } from '../Contexts/NotificationsContext';
+import { ListObjContext } from '../Contexts/ListDetailsContext'
+import { ProductsCartContext } from "../Contexts/ProductsCartContext";
 
-
-
-
-// const useStyles = makeStyles((theme) => ({
-//     appBar: {
-//         position: 'relative',
-//         backgroundColor: 'darkgray',
-//         textAlign: 'center'
-//     },
-//     title: {
-//         flex: 1,
-//         fontFamily: "'Heebo', sans-serif",
-//         fontSize: '3.5vh'
-//     },
-//     button: {
-//         margin: theme.spacing(1),
-//     },
-// }));
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -87,31 +71,72 @@ const Notifications = (props) => {
     const classes = useStyles();
 
     //ContextApi
-    // const { isLocal } = useContext(IsLocalContext);
-    // const { userID } = useContext(UserIDContext)
-    const {notifications} = useContext(NotificationsContext)
+    const { isLocal } = useContext(IsLocalContext);
+    const { userID } = useContext(UserIDContext)
+    const { listObj } = useContext(ListObjContext);
+    const { productCart, SetProductCart } = useContext(ProductsCartContext);
+
+
+    const { notifications, SetNotifications } = useContext(NotificationsContext)
 
     const [open, setOpen] = useState(true);
     const history = useHistory()
 
-  
+    let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
+    if (isLocal) {
+        apiAppProduct = "http://localhost:56794/api/AppProduct/";
+    }
+
+
+
 
     const handleClose = () => {
         setOpen(false);
+        for (let i = 0; i < notifications.length; i++) {
+           notifications[i].HasRead = true;
+        }
+        SetNotifications([...notifications])
         history.push('/AList')
     };
 
-    const ApproveProducat = (n) => {
+    const ApproveProducat = (p, index) => {
+        Add2DB(p, index)
     }
 
     const DeclineProducat = () => {
 
     }
 
+    const Add2DB = async (p, index) => {
+        let product = {
+            Quantity: p.Quantity,
+            ...p,
+            ListID: listObj.ListID,
+            GroupID: listObj.GroupID,
+            NotID: notifications[index].NotID
+        }
+        console.log(product)
+        const resDB = await fetch(apiAppProduct, {
+            method: 'POST',
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8'
+            }),
+            body: JSON.stringify(product)
+        })
+        const resultDB = await resDB.json()
+        console.log('result', resultDB)
+        listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
+        SetProductCart([...productCart, resultDB])
+        notifications.splice(index, 1)
+        SetNotifications([...notifications])
+        swal('המוצר התווסף בהצלחה')
+    }
+
 
 
     return (
         <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
+            {console.log('notfa', notifications)}
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -126,28 +151,28 @@ const Notifications = (props) => {
                 {notifications.map((n, index) => {
                     return (
                         <div key={index} style={{ backgroundColor: !n.HasDone ? ' #f2f2f2' : 'white' }}>
-                            <ListItem  style={{ textAlign: 'right' }}>
+                            <ListItem style={{ textAlign: 'right' }}>
                                 <ListItemAvatar style={{ marginRight: '5px' }}  >
                                     <Avatar />
                                 </ListItemAvatar>
                                 <ListItemText dir='rtl'
-                                primary={n.Title}
+                                    primary={n.Title}
                                     secondary={
                                         <React.Fragment>
                                             במחיר של ₪{JSON.parse(n.DataObject).estimatedProductPrice *
-                                            JSON.parse(n.DataObject).Quantity }
+                                                JSON.parse(n.DataObject).Quantity}
                                         </React.Fragment>
                                     }
-                                    
+
                                 />
                             </ListItem>
-                            {n.TypeNot === 'AskProduct' && <span style={{marginRight:'30%'}} >
-                                <Button variant="contained" className={classes.button} onClick={() => ApproveProducat(n)}
-                                >
+                            {n.TypeNot === 'AskProduct' && <span style={{ marginRight: '30%' }} >
+                                <Button variant="contained" className={classes.button}
+                                    onClick={() => ApproveProducat(JSON.parse(n.DataObject), index)}>
                                     אשר
                             </Button>
                             &nbsp;
-                                <Button variant="contained" className={classes.button} onClick={() => DeclineProducat(n)}
+                                <Button variant="contained" className={classes.button} onClick={() => DeclineProducat(n, index)}
                                 >
                                     דחה
                             </Button>

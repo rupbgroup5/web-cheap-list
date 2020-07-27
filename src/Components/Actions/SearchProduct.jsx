@@ -124,8 +124,8 @@ export default function SearchProduct(props) {
     if (productCart.some(person => person.product_barcode === p.product_barcode)) {
       swal({
         title: 'מוצר זה קיים בעגלה',
-        text: "האם תרצה להוסיף בכל זאת?",
-        buttons: ['בטל', 'המשך בכל זאת'],
+        text: "?האם תרצה להוסיף בכל זאת",
+        buttons: ['בטל', 'הוסף'],
       }).then((willContinue) => {
         if (willContinue) {
           let product = {
@@ -187,6 +187,7 @@ export default function SearchProduct(props) {
 
 
   const ConfirmationLimit = (p, index) => {
+    console.log(listObj)
     if (isAdmin) {
       let tempCheck = listObj.ListEstimatedPrice + (p.estimatedProductPrice * numItem[index])
       if (tempCheck > listObj.LimitPrice) {
@@ -208,20 +209,42 @@ export default function SearchProduct(props) {
       }
       else Add2DB(p, index)
     } else {
-      let admin = groupDetails.Participiants.find(admin => admin.IsAdmin === true);
-      //let admin = groupDetails.Participiants.filter(admin => admin.IsAdmin === true)
-      p = {
-        ...p,
-        Quantity: numItem[index]
+      if (productCart.some(person => person.product_barcode === p.product_barcode)) {
+        swal({
+          title: 'מוצר זה קיים בעגלה',
+          text: "?האם תרצה לבקש בכל זאת",
+          buttons: ['בטל', 'בקש'],
+        }).then((willContinue) => {
+          if (willContinue) {
+            let admin = groupDetails.Participiants.find(admin => admin.IsAdmin === true);
+            p = {
+              ...p,
+              Quantity: numItem[index]
+            }
+            let userFrom ={
+              UserID: groupDetails.UserID,
+              UserName: groupDetails.UserName
+            }
+            
+            SendPushAskForProduct(userFrom,admin,groupDetails, listObj, p)
+            SetProduct([])
+          }
+        })
+      }else{
+        let admin = groupDetails.Participiants.find(admin => admin.IsAdmin === true);
+        p = {
+          ...p,
+          Quantity: numItem[index]
+        }
+        let userFrom ={
+          UserID: groupDetails.UserID,
+          UserName: groupDetails.UserName
+        }
+        SendPushAskForProduct(userFrom,admin,groupDetails,listObj, p)
+        SetProduct([])
       }
-      let userFrom ={
-        UserID: groupDetails.UserID,
-        UserName: groupDetails.UserName
-      }
-      SendPushAskForProduct(userFrom,admin,groupDetails.GroupName, listObj.ListName, p)
-      SetProduct([])
+      
     }
-
   }
 
   const handleProduct = (e) => { tempProduct = e.target.value; }
@@ -319,7 +342,7 @@ export default function SearchProduct(props) {
   return (
 
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-      {console.log(groupDetails)}
+      {console.log('group',groupDetails, 'list', listObj)}
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">

@@ -92,6 +92,7 @@ function AGroup() {
   
 
   useEffect(() => {
+    document.body.style.backgroundSize = '50vh' ;;
     (async function fetchMyAPI() {
       if (!groupDetails) {
         SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))

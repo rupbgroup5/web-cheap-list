@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-
 function AList() {
     const classes = useStyles();
 
@@ -68,7 +67,7 @@ function AList() {
     //SpeedDial
     const [openSpeedDial, setOpenSpeedDial] = useState(false);
     let bool = false
-    if (listObj !== undefined && (listObj.Latitude === null || listObj.Latitude === '') ) {
+    if (listObj !== undefined && (listObj.Latitude === null || listObj.Latitude === '')) {
         bool = true;
     }
     const [location, SetLocation] = useState(bool)
@@ -91,7 +90,14 @@ function AList() {
         apiAppList = "http://localhost:56794/api/AppList/"
     }
 
+    const mainbg = {
 
+        backgroundImage: 'url("./Images/letter.jpg")',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+
+    }
 
     let tempName = "";
     let tempLimit = '';
@@ -151,6 +157,12 @@ function AList() {
                     let result = await res.json();
                     SetProductCart(result)
                     localStorage.setItem('listObj', JSON.stringify(listObj));
+                    if (isAdmin && result.length !== 0) {
+                        document.body.style.backgroundSize = '20vh'
+                    }
+                    if (result.length !== 0 && !isAdmin) {
+                        document.body.style.backgroundSize = '30vh'
+                    }
                 } catch (error) {
                     console.log(error)
                 }
@@ -394,9 +406,9 @@ function AList() {
 
 
     return (
-        <span>
+        <span id="orel" >
             {listObj &&
-                <div className="container">
+                <div className="container" >
                     <div className="header">
                         <TextField
                             id="outlined-basic"
@@ -418,7 +430,7 @@ function AList() {
                             {productCart.map((p, index) =>
                                 <div key={index} className="product">
                                     <div >
-                                       {isAdmin && <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small'
+                                        {isAdmin && <ClearOutlinedIcon onClick={() => DeleteProduct(index, p.product_barcode, p.ListID)} fontSize='small'
                                             style={{ marginBottom: 90, marginLeft: -15, fill: 'darkgray' }} />}
                                         <img src={p.product_image} alt=" " />
                                     </div>
@@ -471,9 +483,9 @@ function AList() {
                                 שמור
                             </Button>
                         </span>}
-                        {!isAdmin &&<div style={{fontSize: 'smaller'}}>
-                        **ישנה מגבלה לרשימה זו בסך: ₪{limit}
-                            </div>}
+                        {!isAdmin && <div style={{ fontSize: 'smaller' }}>
+                            **ישנה מגבלה לרשימה זו בסך: ₪{limit}
+                        </div>}
 
 
 

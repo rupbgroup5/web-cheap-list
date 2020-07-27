@@ -35,15 +35,15 @@ export const SendPushAddToGroup = (token, AdminName, GroupName) => {
     });
 }
 
-export const SendPushAskForProduct = (userFrom, userTo, GroupName, ListName, p) => {
+export const SendPushAskForProduct = (userFrom, userTo, group, list, p) => {
 
 
-  console.log('userFrom', userFrom, 'userTo', userTo, 'Group', GroupName, 'ListName', ListName, 'product', p)
+  console.log('userFrom', userFrom, 'userTo', userTo, 'Group', group, 'ListName', list, 'product', p)
   //msg to push!
   let msg = {
     to: userTo.ExpoToken,
     title: `${userFrom.UserName} מבקש מוצר`,
-    body: `מרשימת הקניות "${ListName}" הנמצאת ב"${GroupName}"`,
+    body: `מרשימת הקניות "${list.ListName}" הנמצאת ב"${group.GroupName}"`,
     badge: 1,
   }
   fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
@@ -58,14 +58,14 @@ export const SendPushAskForProduct = (userFrom, userTo, GroupName, ListName, p) 
     .then(json => {
       if (json.data.status === "ok") {
         console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
-        //until here copy paste
 
-        //object for DB
         let n = {
           UserFrom: userFrom.UserID,
           UserTo: userTo.UserID,
           Title: `${userFrom.UserName} מבקש להוסיף ${p.Quantity} יח של ${p.product_description}`, // text on React 
           TypeNot: 'AskProduct',  
+          GroupID: group.GroupID,
+          ListID: list.ListID,
           DataObject: JSON.stringify(p)  
         }
         fetch(apiNotifications, {

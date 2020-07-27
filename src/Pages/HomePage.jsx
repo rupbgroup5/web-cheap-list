@@ -80,6 +80,7 @@ function HomePage() {
   }
 
   useEffect(() => {
+    document.body.style.backgroundSize = '50vh' ;;
       localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
     (async function fetchMyAPI() {
       const res = await fetch(apiAppGroups + userIDfromRN, {
@@ -101,14 +102,7 @@ function HomePage() {
       let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
       await participiantsArr.push(newParticipiant)
     }
-    let admin = {
-      UserID: groups.UserID,
-      UserName: groups.UserName,
-      IsAdmin:true,
-    }
-   
     console.log('participiantsArr', participiantsArr)
-    // participiantsArr.push(admin)
     let newGroup = {
       GroupName: tempGroupName,
       UserID: userIDfromRN,
