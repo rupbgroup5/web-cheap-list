@@ -39,6 +39,7 @@ export const SendPushAskForProduct = (userFrom, userTo, GroupName, ListName, p) 
 
 
   console.log('userFrom', userFrom, 'userTo', userTo, 'Group', GroupName, 'ListName', ListName, 'product', p)
+  //msg to push!
   let msg = {
     to: userTo.ExpoToken,
     title: `${userFrom.UserName} מבקש מוצר`,
@@ -57,12 +58,15 @@ export const SendPushAskForProduct = (userFrom, userTo, GroupName, ListName, p) 
     .then(json => {
       if (json.data.status === "ok") {
         console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+        //until here copy paste
+
+        //object for DB
         let n = {
           UserFrom: userFrom.UserID,
           UserTo: userTo.UserID,
-          Title: `${userFrom.UserName} מבקש להוסיף ${p.Quantity} יח של ${p.product_description}`,
-          TypeNot: 'AskProduct',
-          DataObject: JSON.stringify(p)
+          Title: `${userFrom.UserName} מבקש להוסיף ${p.Quantity} יח של ${p.product_description}`, // text on React 
+          TypeNot: 'AskProduct',  
+          DataObject: JSON.stringify(p)  
         }
         fetch(apiNotifications, {
           method: 'POST',

@@ -105,7 +105,8 @@ function AGroup() {
           }
       }
         try {
-          const res = await fetch(apiAppList + groupDetails.GroupID, {
+          const res = await fetch(apiAppList + groupDetails.GroupID + 
+            '/' + groupDetails.UserID , {
             method: 'GET',
             headers: new Headers({
               'Content-Type': 'application/json; charset=UTF-8',
@@ -273,7 +274,7 @@ function AGroup() {
                     swipeRight={swipeRightDataComplex(l.ListID, index)}
                     onSwipeProgress={handleSwipeProgress}>
                     <IconButton aria-label="cart">
-                      <StyledBadge badgeContent={4} color="secondary">
+                      <StyledBadge badgeContent={l.Badge} color="secondary">
                         <ShoppingCartIcon />
                       </StyledBadge>
                     </IconButton>
@@ -283,7 +284,7 @@ function AGroup() {
                   </span>}
                   {!isAdmin && <List key={index} className={classes.root} style={{flexDirection:"row"}} >
                     <IconButton aria-label="cart">
-                      <StyledBadge badgeContent={4} color="secondary">
+                      <StyledBadge badgeContent={l.Badge} color="secondary">
                         <ShoppingCartIcon />
                       </StyledBadge>
                     </IconButton>

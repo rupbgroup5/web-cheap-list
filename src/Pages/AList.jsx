@@ -158,7 +158,6 @@ function AList() {
 
         })();
         SetPageTitle('סל קניות')
-
     }, [apiAppProduct, groupDetails]);
 
     const ActivateStateListObj = () => {

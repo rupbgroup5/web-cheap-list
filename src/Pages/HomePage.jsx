@@ -72,10 +72,10 @@ function HomePage() {
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
   
-  userIDfromRN = 12;
+  userIDfromRN = 1;
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 12
+    userIDfromRN = 1
     
   }
 
@@ -217,6 +217,7 @@ function HomePage() {
 
     <div className="container">
       <div className="header"></div>
+      {console.log('g',groups)}
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>
@@ -226,8 +227,9 @@ function HomePage() {
                   swipeRight={SwipeRightContent(g.GroupID, index)}
                   onSwipeProgress={handleSwipeProgress}
                 >
+                  {console.log(g.Badge)}
                   <ListItemAvatar style={{ marginRight: '5px' }}  >
-                    <Badge badgeContent={2} color="secondary"  >
+                    <Badge badgeContent={g.Badge} color="secondary"  >
                       <Avatar  />
                     </Badge>
                   </ListItemAvatar>

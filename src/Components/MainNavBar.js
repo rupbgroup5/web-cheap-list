@@ -18,6 +18,7 @@ import { UserIDContext } from '../Contexts/UserIDContext'
 
 
 export default function MainNabar(props) {
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const history = useHistory()
@@ -50,8 +51,8 @@ export default function MainNabar(props) {
       <div className="nav-Logo">
         <img src={Logo} alt="" onClick={ReturnToHomePage} />
       </div>
-      <span className="nav-title">{pageTitle}</span>
-      <div className="nav-Profile">
+  <span className="nav-title"  style={{ paddingLeft: 'סל קניות' === pageTitle ? 50 : 15  }}>{pageTitle}</span>
+      <div className="nav-Profile">   
         <IconButton
           aria-label="account of current user"
           aria-controls="menu-appbar"
@@ -85,10 +86,7 @@ export default function MainNabar(props) {
      
      {pageTitle === 'סל קניות' && <span className="nav-not" >
           <IconButton
-          aria-label="account of current user"
-          aria-controls="menu-appbar"
-          aria-haspopup="true"
-          onClick={handleMenu}
+          onClick={()=>history.push('/Notifications')}
           color="inherit"
         >
          <Badge badgeContent={badge} color="secondary">
