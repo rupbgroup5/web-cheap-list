@@ -7,6 +7,8 @@ import './App.css'
 //Our Components:
 import MainNabar from './Components/MainNavBar'
 import CCErrorMessage from './Components/CCErrorMessage'
+import Notifications from './Components/Notifications'
+
 
 //pages:
 import HomePage from './Pages/HomePage'
@@ -27,6 +29,7 @@ import UserIDContextProvider from './Contexts/UserIDContext'
 import PageTitleContextProvider from './Contexts/PageTitleContext'
 import SMmoduleContextProvider from './Contexts/SMmoduleContext';
 import IsAdminContextProvider from './Contexts/IsAdminContext'
+
 
 
 
@@ -61,6 +64,7 @@ function App() {
                         <Route path="/MyCart" component={MyCart} />
                         <Route path="/NotTaken" component={NotTaken} />
                         <Route path="/CCErrorMessage" component={CCErrorMessage} />
+                        <Route path ="/Notifications"  component = {Notifications}/>
                       </Switch>
                     </ProductsCartContextProvider>
                   </ListDetailsContextProvider>

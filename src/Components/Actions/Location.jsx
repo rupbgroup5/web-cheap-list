@@ -110,6 +110,14 @@ export default function Location(props) {
           lat: resGetUser.Latitude,
           lng: resGetUser.Longitude
         })
+        SetListObj({
+          ...listObj,
+          TypeLocation: 'currentLocation',
+          CityName: 'הזן עיר לחיפוש',
+          CityID: 0,
+          Latitude:resGetUser.Latitude,
+          Longitude:resGetUser.Longitude
+        })
       } catch (error) {
 
       }
@@ -200,6 +208,7 @@ export default function Location(props) {
       }
     }
     if (OK) {
+      console.log('ok',l)
     try {
       const res = await fetch(`${api}appList/Location`, {
         method: 'PUT',

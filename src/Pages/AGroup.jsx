@@ -250,6 +250,7 @@ function AGroup() {
 
   return (
     <span>
+      {console.log(groupDetails)}
       {groupDetails && 
       <div className="container">
         <div className="header"  >
