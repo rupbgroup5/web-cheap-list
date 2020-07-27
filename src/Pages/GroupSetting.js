@@ -1,12 +1,13 @@
 //React
-import React, { forwardRef, useState, useRef } from 'react'
+import React, { forwardRef, useState, useRef, useContext } from 'react'
 import { withRouter, useHistory } from 'react-router-dom'
 
 //our components
 import Contacts from '../Components/Contacts'
 import AuthenticateContact from '../Components/AuthenticateContact'
 
-
+//context API
+import { IsLocalContext } from '../Contexts/IsLocalContext'
 
 //material-ui
 import { makeStyles } from '@material-ui/core/styles'
@@ -31,13 +32,8 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 
-
 //sweetalert
 import swal from 'sweetalert'
-
-
-
-
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -97,13 +93,12 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-
-
 const Transition = forwardRef((props, ref) => {
     return <Slide direction="left" ref={ref} {...props} />;
 });
 
 const GroupSetting = () => {
+    const { isLocal } = useContext(IsLocalContext);
     const classes = useStyles();
     const textInput = useRef(null);
     const history = useHistory();
@@ -115,11 +110,7 @@ const GroupSetting = () => {
             JSON.parse(localStorage.getItem('groupDetails')) :
             undefined
     );
-
     const loggedInUserId = JSON.parse(localStorage.getItem('UserID'));
-
-
-
 
     let adminUserId;
     group.Participiants.map((p) => {
@@ -129,15 +120,27 @@ const GroupSetting = () => {
         }
     });
 
-    //api calls
-    const apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/";
-    const apiDeleteGroup = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/appGroups/AddUsers2UserInGroup";
-    const localDeleteGroup = "http://localhost:56794/api/appGroups/AddUsers2UserInGroup";
-    const glocalDeleteGroup = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/appGroups/AddUsers2UserInGroup";
-    const removeUserInGroupFromDB = (userId, GroupId) => {
-        return `${apiAppGroups}RemoveUserFromGroup/${userId}/${GroupId}`;
+    let api4EditGroupName;
+    let api4DeleteGroup;
+    let api4AddUsers2UserInGroup;
+    let api4removeUserInGroup;
+    if (isLocal) {
+        const localPrefix = "http://localhost:56794/api/appGroups";
+        api4EditGroupName = `${localPrefix}`;
+        api4DeleteGroup = `${localPrefix}/${group.GroupID}`;
+        api4AddUsers2UserInGroup = `${localPrefix}/AddUsers2UserInGroup`;
+        api4removeUserInGroup = (userId, GroupId) => {
+            return `${localPrefix}/RemoveUserFromGroup/${userId}/${GroupId}`;
+        }
+    } else { //global
+        const globalPrefix = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups";
+        api4EditGroupName = `${globalPrefix}`;
+        api4DeleteGroup = `${globalPrefix}/${group.GroupID}`;
+        api4AddUsers2UserInGroup = `${globalPrefix}/AddUsers2UserInGroup`;
+        api4removeUserInGroup = (userId, GroupId) => {
+            return `${globalPrefix}/RemoveUserFromGroup/${userId}/${GroupId}`;
+        }
     }
-
     const editGroupName = (e) => {
         tempName = "";
         tempName = e.target.value
@@ -155,7 +158,7 @@ const GroupSetting = () => {
                             GroupID: group.GroupID,
                             GroupName: tempName
                         }
-                        fetch(apiAppGroups, {
+                        fetch(api4EditGroupName, {
                             method: 'PUT',
                             headers: new Headers({
                                 'Content-type': 'application/json; charset=UTF-8'
@@ -187,7 +190,7 @@ const GroupSetting = () => {
         })
             .then((userResponse) => {
                 if (userResponse) {
-                    fetch(removeUserInGroupFromDB(userId2Remove, group.GroupID), {
+                    fetch(api4removeUserInGroup(userId2Remove, group.GroupID), {
                         method: 'PUT',
                         headers: new Headers({
                             'Content-type': 'application/json; charset=UTF-8'
@@ -221,7 +224,7 @@ const GroupSetting = () => {
         })
             .then((userResponse) => {
                 if (userResponse) {
-                    fetch(removeUserInGroupFromDB(loggedInUserId, group.GroupID), {
+                    fetch(api4removeUserInGroup(loggedInUserId, group.GroupID), {
                         method: 'PUT',
                         headers: new Headers({
                             'Content-type': 'application/json; charset=UTF-8'
@@ -250,7 +253,7 @@ const GroupSetting = () => {
         })
             .then((userResponse) => {
                 if (userResponse) {
-                    fetch(apiDeleteGroup, {
+                    fetch(api4DeleteGroup, {
                         method: 'DELETE',
                         headers: new Headers({
                             'Content-type': 'application/json; charset=UTF-8'
@@ -284,7 +287,7 @@ const GroupSetting = () => {
             Participiants: pArr
         };
 
-        await fetch(glocalDeleteGroup, {
+        await fetch(api4AddUsers2UserInGroup, {
             method: 'PUT',
             headers: new Headers({
                 'Content-type': 'application/json; charset=UTF-8'
