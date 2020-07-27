@@ -193,12 +193,17 @@ const GroupSetting = () => {
         let userTo = {
             UserID: userToId,
             ExpoToken: "",
-        }
+        };
 
         let adminUser = {
             UserID: adminUserId,
             UserName: ""
-        }
+        };
+
+        let group2send = {
+            GroupID: group.GroupID,
+            GroupName: group.GroupName
+        };
         group.Participiants.forEach(p => {
             if (p.UserID === userToId) {
                 userTo.ExpoToken = p.ExpoToken;
@@ -208,7 +213,7 @@ const GroupSetting = () => {
             }
         });
 
-        SendPushRemovedByAdmin(adminUser, userTo, group.GroupName);
+        SendPushRemovedByAdmin(adminUser, userTo, group2send);
 
     }
 
@@ -258,6 +263,10 @@ const GroupSetting = () => {
             UserID: adminUserId,
             ExpoToken: ""
         }
+        let group2send = {
+            GroupID: group.GroupID,
+            GroupName: group.GroupName
+        };
         group.Participiants.forEach(p => {
             if (p.UserID === loggedInUserId) {
                 loggedInUser.UserName = p.UserName;
@@ -267,7 +276,7 @@ const GroupSetting = () => {
             }
         });
 
-        SendPushIDeletedMySelf(loggedInUser, adminUser, group.GroupName);
+        SendPushIDeletedMySelf(loggedInUser, adminUser, group2send);
 
     }
 
