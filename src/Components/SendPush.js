@@ -191,14 +191,13 @@ export const DeclineRequest = (userFrom, userTo, group, list, p) => {
     });
 }
 
-export const SendPushIDeletedMySelf = (userFrom, admin, GroupName) => {
+export const SendPushIDeletedMySelf = (userFrom, admin, GroupRef) => {
 
   //msg to push!
   let msg = {
       to: admin.ExpoToken,
       title: `${userFrom.UserName} יצא מהקבוצה`,
-
-      body: `${userFrom.UserName} מחק את עצמו מהקבוצה ${GroupName}`,
+      body: `${userFrom.UserName} מחק את עצמו מהקבוצה ${GroupRef.GroupName}`,
       badge: 1,
   }
   fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
@@ -216,8 +215,8 @@ export const SendPushIDeletedMySelf = (userFrom, admin, GroupName) => {
               let n = {
                   UserFrom: userFrom.UserID,
                   UserTo: admin.UserID,
-                  Title: `${userFrom.UserName} מחק את עצמו מהקבוצה ${GroupName}`,
-                  
+                  Title: `${userFrom.UserName} מחק את עצמו מהקבוצה ${GroupRef.GroupName}`,
+                  GroupID: GroupRef.GroupID,
                   TypeNot: 'RemovedSelf',
                   DataObject: ""
               }
@@ -241,13 +240,13 @@ export const SendPushIDeletedMySelf = (userFrom, admin, GroupName) => {
       });
 }
 
-export const SendPushRemovedByAdmin = (admin, userTo, GroupName) => {
+export const SendPushRemovedByAdmin = (admin, userTo, GroupRef) => {
 
   //msg to push!
   let msg = {
       to: userTo.ExpoToken,
       title: `${admin.UserName} הסיר אותך מהקבוצה`,
-      body: `${admin.UserName} הסיר אותך מהקבוצה ${GroupName}`,
+      body: `${admin.UserName} הסיר אותך מהקבוצה ${GroupRef.GroupName}`,
       badge: 1,
   }
   fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
@@ -265,7 +264,8 @@ export const SendPushRemovedByAdmin = (admin, userTo, GroupName) => {
               let n = {
                   UserFrom: admin.UserID,
                   UserTo: userTo.UserID,
-                  Title: `${admin.UserName} הסיר אותך מהקבוצה ${GroupName}`,
+                  Title: `${admin.UserName} הסיר אותך מהקבוצה ${GroupRef.GroupName}`,
+                  GroupID:GroupRef.GroupID,
                   TypeNot: 'RemovedByAdmin',
                   DataObject: ""
               }
@@ -287,6 +287,61 @@ export const SendPushRemovedByAdmin = (admin, userTo, GroupName) => {
               console.log('err json');
           }
       });
+}
+
+export const AsyncSendPush_GroupDeletedByAdmin = async (admin, exposOfUsers2, idsOfUsersTo, GroupName) => {
+
+  let msg = {
+      to: "yet to be implemnted",
+      title: `${GroupName} נמחקה`,
+      body: `${admin.UserName} מחק את הקבוצה ${GroupName}`,
+      badge: 1,
+  }
+  for (let i = 0; i < exposOfUsers2.length; i++) { //string[]
+
+      msg.to = exposOfUsers2[i];
+      await fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          body: JSON.stringify(msg),
+          headers: {
+              'Accept': 'application/json',
+              "Content-type": "application/json; charset=UTF-8"
+          }
+      })
+          .then(response => response.json(),)
+          .then(json => {
+              if (json.data.status === "ok") {
+                  console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+              } else {
+                  alert('err json');
+              }
+          });
+
+  }
+
+
+  let n = {
+      UserFrom: admin.UserID,
+      UsersTo: idsOfUsersTo, // int[]
+      Title: `${admin.UserName} מחק את הקבוצה ${GroupName}`,
+      TypeNot: 'groupDeletedByAdmin',
+  }
+  fetch(apiNotifications + 'PostNot2MultipleParticipants', {
+      method: 'POST',
+      headers: new Headers({
+          'Content-type': 'application/json; charset=UTF-8'
+      }),
+      body: JSON.stringify(n)
+  }).then(res => { return res.json(); })
+      .then(
+          (result) => {
+              console.log("result: ", result)
+          },
+          (error) => {
+              console.log(error)
+          })
+
+
 }
 
 

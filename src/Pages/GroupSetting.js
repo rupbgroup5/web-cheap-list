@@ -38,9 +38,11 @@ import swal from 'sweetalert'
 //notificaion handle
 import {
     SendPushIDeletedMySelf,
-    SendPushRemovedByAdmin
+    SendPushRemovedByAdmin,
+    AsyncSendPush_GroupDeletedByAdmin
 } from '../Components/SendPush'
-import { AsyncSendPush_GroupDeletedByAdmin } from '../temp4pushYogi.js'
+
+
 
 
 
