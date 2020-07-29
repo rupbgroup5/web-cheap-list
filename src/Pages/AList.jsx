@@ -34,7 +34,7 @@ import { IsAdminContext } from "../Contexts/IsAdminContext";
 
 import * as systemAction from '../Contexts/Reducers/ActionTypes';
 
-
+import { ChangeListNamePush } from '../Components/SendPush';
 
 
 //Actions
@@ -173,6 +173,7 @@ function AList() {
     }
 
     const ConfirmationEditListName = () => {
+        let oldListName = listObj.ListName
         if (tempName !== "") {
             swal({
                 title: "שינוי שם הרשימה",
@@ -198,7 +199,20 @@ function AList() {
 
                                     SetListObj({ ...listObj, ListName: tempName })
                                     console.log('The name of ', result, ' id was changed')
-                                    swal('שם הקבוצה שונה');
+                                    swal('שם הרשימה שונה');
+                                    let ArrUserTo = []
+                                    let userFrom;
+                                    for (let i = 0; i < groupDetails.Participiants.length; i++) {
+                                      if (groupDetails.UserID === groupDetails.Participiants[i].UserID) {
+                                        userFrom = groupDetails.Participiants[i]
+                                        continue;
+                                      }
+                                      if (groupDetails.Participiants[i].ExpoToken !== "") {
+                                        ArrUserTo.push(groupDetails.Participiants[i])
+                                      } 
+                                    }
+                                    console.log(listObj.GroupID)
+                                    ChangeListNamePush(userFrom,ArrUserTo,oldListName,listObj.ListName,listObj.GroupID)
                                 },
                                 (error) => {
                                     console.log(error)

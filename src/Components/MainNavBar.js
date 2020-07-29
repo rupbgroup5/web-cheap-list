@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect } from 'react'
 import {withRouter} from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -24,7 +24,7 @@ import { ListObjContext } from '../Contexts/ListDetailsContext'
 
 
 
- function MainNabar(props) {
+ function MainNabar() {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -37,12 +37,6 @@ import { ListObjContext } from '../Contexts/ListDetailsContext'
   const {badge, Setbadge, SetNotifications } = useContext(NotificationsContext)
   const { listObj, SetListObj } = useContext(ListObjContext)
 
-  const isMountedRef = useRef(null);
-  
-
-
- 
-
 
   useEffect(() => {
     if (pageTitle === 'סל קניות') {
@@ -54,9 +48,7 @@ import { ListObjContext } from '../Contexts/ListDetailsContext'
         apiNotifications = `http://localhost:56794/api/Notifications/${userID}/${listObj.ListID}`
       }
       (async function fetchMyAPI() {
-        console.log('m', isMountedRef.current )
       try {
-      
         const res = await fetch(apiNotifications, {
           method: 'GET',
           headers: new Headers({

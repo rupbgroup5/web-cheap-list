@@ -25,6 +25,7 @@ import '../Styles/HomeStyle.css'
 import ListItem from '../Components/ListItem'
 import ItemContent from '../Components/ItemContent'
 import FormDialog from '../Components/FormDialog'
+import { ChangeGroupNamePush } from '../Components/SendPush'
 
 
 //Context Api:
@@ -212,7 +213,7 @@ function AGroup() {
   }
 
   const ConfirmationEditGroupName = () => {
-    console.log(tempName)
+    let oldGroupName = groupDetails.GroupName
     if (tempName !== "") {
       swal({
         title: "שינוי שם קבוצה",
@@ -238,11 +239,24 @@ function AGroup() {
                   SetGroupDetails({ ...groupDetails, GroupName: tempName });
                   console.log('The name of ', result, ' id was changed')
                   swal('שם הקבוצה שונה');
+                  let ArrUserTo = []
+                  let userFrom;
+                  for (let i = 0; i < groupDetails.Participiants.length; i++) {
+                    if (groupDetails.UserID === groupDetails.Participiants[i].UserID) {
+                      userFrom = groupDetails.Participiants[i]
+                      continue;
+                    }
+                    if (groupDetails.Participiants[i].ExpoToken !== "") {
+                      ArrUserTo.push(groupDetails.Participiants[i])
+                    } 
+                  }
+                  console.log(ArrUserTo)
+                  ChangeGroupNamePush(userFrom,ArrUserTo,oldGroupName,groupDetails.GroupName)
                 },
                 (error) => {
                   console.log(error)
                 })
-
+                
           } else {
             textInput.current.value = ""
           }
@@ -254,6 +268,7 @@ function AGroup() {
     <span>
       {groupDetails && 
       <div className="container">
+        {console.log(groupDetails)}
         <div className="header"  >
           <TextField
             id="outlined-basic"

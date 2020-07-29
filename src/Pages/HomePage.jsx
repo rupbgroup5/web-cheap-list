@@ -110,8 +110,7 @@ function HomePage() {
     for (let i = 0; i < participiantsArr.length; i++) {
       if ( participiantsArr[i].ExpoToken !== "") {
         SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName, tempGroupName)
-      }
-      
+      } 
     }
   
 
