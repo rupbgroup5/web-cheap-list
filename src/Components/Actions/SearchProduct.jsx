@@ -133,7 +133,7 @@ export default function SearchProduct(props) {
             product_barcode: p.product_barcode,
             ListID: listObj.ListID,
           }
-          fetch(apiAppProduct + 'UpdateQuantity' + '/' + true, {
+          fetch(apiAppProduct + `UpdateQuantity/${true}`, {
             method: 'PUT',
             headers: new Headers({
               'Content-type': 'application/json; charset=UTF-8'
@@ -332,11 +332,6 @@ export default function SearchProduct(props) {
           if (resultBarcode[i].product_description.includes("'")) {
             productDescription = resultBarcode[i].product_description.replace("'", "`")
           }else productDescription = resultBarcode[i].product_description
-          console.log('name', productName)
-          console.log('descr',productDescription)
-
-     
-
 
           let p = {
             product_barcode: resultBarcode[i].product_barcode,
@@ -457,7 +452,7 @@ const data = {
     action: 'GetProductsByID', product_id: '', limit: 10
   },
   GetProductsByName: {
-    action: "GetProductsByName", product_name: "", limit: 1
+    action: "GetProductsByName", product_name: "", limit: 6
   },
   GetPrice: {
     action: "GetPrice", store_id: '', limit: 10

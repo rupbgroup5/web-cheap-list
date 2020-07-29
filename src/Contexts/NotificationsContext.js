@@ -5,10 +5,11 @@ export const NotificationsContext = createContext();
 
 const NotificationsContextProvider = (props) => {
     const [notifications, SetNotifications] = useState([]);
+    const [badge, Setbadge ] = useState(0)
 
 
     return (
-        <NotificationsContext.Provider value={{ notifications, SetNotifications }}>
+        <NotificationsContext.Provider value={{ notifications, SetNotifications, badge, Setbadge }}>
             {props.children}
         </NotificationsContext.Provider>
     );
