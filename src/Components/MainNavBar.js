@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
+import {withRouter} from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -23,7 +24,7 @@ import { ListObjContext } from '../Contexts/ListDetailsContext'
 
 
 
-export default function MainNabar(props) {
+ function MainNabar(props) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -33,8 +34,12 @@ export default function MainNabar(props) {
   const { pageTitle } = useContext(PageTitleContext);
   const { userID, SetUserID } = useContext(UserIDContext)
   const { isLocal } = useContext(IsLocalContext);
-  const { notifications, SetNotifications } = useContext(NotificationsContext)
+  const {badge, Setbadge, SetNotifications } = useContext(NotificationsContext)
   const { listObj, SetListObj } = useContext(ListObjContext)
+
+  const isMountedRef = useRef(null);
+  
+
 
  
 
@@ -49,7 +54,9 @@ export default function MainNabar(props) {
         apiNotifications = `http://localhost:56794/api/Notifications/${userID}/${listObj.ListID}`
       }
       (async function fetchMyAPI() {
-
+        console.log('m', isMountedRef.current )
+      try {
+      
         const res = await fetch(apiNotifications, {
           method: 'GET',
           headers: new Headers({
@@ -57,14 +64,20 @@ export default function MainNabar(props) {
           }),
         })
         let data = await res.json();
-        SetNotifications(data);
+        if (true) {
+          SetNotifications(data); 
+          let tempBagde = data.filter(item => item.HasRead === false)
+           Setbadge(tempBagde.length)
+        }
+        
+      } catch (error) {
+        console.log(error)
+      }
       }())
     }
 
 
   }, [pageTitle]);
-
-
 
 
   const handleClose = () => {
@@ -125,8 +138,8 @@ export default function MainNabar(props) {
           onClick={() => history.push('/Notifications')}
           color="inherit"
         >
-          <Badge badgeContent={notifications.length} color="secondary">
-            <NotificationsNoneOutlinedIcon className={notifications.length === 0 ? ' ' : "ring"} />
+          <Badge badgeContent={badge} color="secondary">
+            <NotificationsNoneOutlinedIcon className={badge === 0 ? ' ' : "ring"} />
           </Badge>
         </IconButton>
       </span>}
@@ -135,3 +148,5 @@ export default function MainNabar(props) {
   );
 
 }
+
+export default withRouter(MainNabar)

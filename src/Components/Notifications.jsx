@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, forwardRef } from 'react';
+import React, { useContext, useState, forwardRef } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -19,7 +19,6 @@ import swal from 'sweetalert'
 
 //Context Api
 import { IsLocalContext } from '../Contexts/IsLocalContext';
-import { UserIDContext } from '../Contexts/UserIDContext';
 import { NotificationsContext } from '../Contexts/NotificationsContext';
 import { ListObjContext } from '../Contexts/ListDetailsContext'
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
@@ -75,13 +74,12 @@ const Notifications = (props) => {
 
     //ContextApi
     const { isLocal } = useContext(IsLocalContext);
-    const { userID } = useContext(UserIDContext)
     const { listObj } = useContext(ListObjContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
     const { groupDetails } = useContext(GroupDetailsContext)
 
 
-    const { notifications, SetNotifications } = useContext(NotificationsContext)
+    const { notifications, SetNotifications, Setbadge } = useContext(NotificationsContext)
 
     const [open, setOpen] = useState(true);
     const history = useHistory()
@@ -97,7 +95,7 @@ const Notifications = (props) => {
 
 
     const handleClose = () => {
-        setOpen(false);
+       
         for (let i = 0; i < notifications.length; i++) {
             notifications[i].HasRead = true;
         }
@@ -112,13 +110,15 @@ const Notifications = (props) => {
             })
             let tempNotifiactions = notifications.filter(item  => item.HasRead === 0 || item.TypeNot === 'AskProduct' )
             SetNotifications(tempNotifiactions)
+            Setbadge(0);
         } catch (error) {
             console.log(error)
         }
         history.push('/AList')
+        setOpen(false);
     };
 
-    const ApproveProducat = (p, index) => { Add2DB(p, index) }
+    const ApproveProducat = (p, index) => {  Add2DB(p, index) }
 
     const DeclineProducat = (p, index) => {
         notifications[index].TypeNot = '';
@@ -130,8 +130,8 @@ const Notifications = (props) => {
 
         let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
         swal('הבקשה סורבה')
-
-        DeclineRequest (userFrom, userTo, groupDetails, listObj, JSON.stringify(p))
+        DeclineRequest(userFrom, userTo, groupDetails, listObj, p)
+       
     }
 
     const Add2DB = async (p, index) => {
@@ -149,7 +149,7 @@ const Notifications = (props) => {
                         GroupID: listObj.GroupID,
                         NotID: notifications[index].NotID
                     }
-                    fetch(apiAppProduct + 'UpdateQuantity' + '/' + true, {
+                    fetch(apiAppProduct + `UpdateQuantity/${true}`, {
                         method: 'PUT',
                         headers: new Headers({
                             'Content-type': 'application/json; charset=UTF-8'
@@ -173,7 +173,7 @@ const Notifications = (props) => {
                                 }
 
                                 let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
-                                ApproveRequest(userFrom, userTo, groupDetails, listObj, JSON.stringify(p))
+                                ApproveRequest(userFrom, userTo, groupDetails, listObj, p)
                             },
                             (error) => {
                                 console.log(error)
@@ -211,7 +211,7 @@ const Notifications = (props) => {
                 }
                 let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
                 console.log('userTo', userTo)
-                ApproveRequest(userFrom, userTo, groupDetails, listObj, JSON.stringify(p))
+                ApproveRequest(userFrom, userTo, groupDetails, listObj, p)
             } catch (error) {
                 console.log(error)
             }
@@ -228,7 +228,7 @@ const Notifications = (props) => {
 
     return (
         <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-
+            {console.log(notifications)}
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -239,7 +239,7 @@ const Notifications = (props) => {
             </Typography>
                 </Toolbar>
             </AppBar>
-            <List className={classes.root} dir='rtl'>
+            {notifications && <List className={classes.root} dir='rtl'>
                 {notifications.map((n, index) => {
                     return (
                         <div key={index}>
@@ -264,7 +264,7 @@ const Notifications = (props) => {
                                         אשר
                             </Button>
                             &nbsp;
-                                <Button variant="contained" className={classes.button} onClick={() => DeclineProducat(n, index)}
+                                <Button variant="contained" className={classes.button} onClick={() => DeclineProducat(JSON.parse(n.DataObject), index)}
                                     >
                                         דחה
                             </Button>
@@ -291,8 +291,7 @@ const Notifications = (props) => {
                     )
                 })}
             </List>
-
-
+}
         </Dialog>
     );
 }

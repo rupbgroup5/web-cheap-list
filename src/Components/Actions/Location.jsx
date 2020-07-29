@@ -68,7 +68,7 @@ export default function Location(props) {
 
   
   const [open, setOpen] = useState(true);
-  const [enable, SetEnable] = useState((listObj.TypeLocation === 'currentLocation' || listObj.TypeLocation === null  ? false : true))
+  const [enable, SetEnable] = useState((listObj.TypeLocation === 'currentLocation' || listObj.TypeLocation === null  ? true : false))
   const [cities, SetCities] = useState([])
   const [coords, SetCoords] = useState({})
 
@@ -110,16 +110,8 @@ export default function Location(props) {
           lat: resGetUser.Latitude,
           lng: resGetUser.Longitude
         })
-        SetListObj({
-          ...listObj,
-          TypeLocation: 'currentLocation',
-          CityName: 'הזן עיר לחיפוש',
-          CityID: 0,
-          Latitude:resGetUser.Latitude,
-          Longitude:resGetUser.Longitude
-        })
       } catch (error) {
-
+        console.log(error)
       }
     }
     )();
@@ -130,15 +122,15 @@ export default function Location(props) {
   const handleChange = (event) => {
 
     if (event.target.value === 'city') {
-      SetEnable(true)
+      SetEnable(false)
       SetListObj({
         ...listObj,
         TypeLocation: 'city',
-        KM_radius: 5
+        KM_radius: 10
       })
     }
     if (event.target.value === 'currentLocation') {
-      SetEnable(false);
+      SetEnable(true);
       SetListObj({
         ...listObj,
         TypeLocation: 'currentLocation',
@@ -188,7 +180,7 @@ export default function Location(props) {
         ListID: listObj.ListID,
         Latitude: coords.lat,
         Longitude: coords.lng,
-        CityName: null,
+        CityName: 'הזן עיר לחיפוש',
         CityID: listObj.CityID,
         KM_radius: listObj.KM_radius
       }
@@ -204,7 +196,7 @@ export default function Location(props) {
         Longitude: listObj.Longitude,
         CityName: listObj.CityName,
         CityID: listObj.CityID,
-        KM_radius: 5
+        KM_radius: 10
       }
     }
     if (OK) {
@@ -263,7 +255,7 @@ export default function Location(props) {
 
   return (
     <div dir='rtl' style={{ alignItems: 'center' }} >
-      {console.log(listObj)}
+      {console.log(listObj.TypeLocation)}
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
         <AppBar className={classes.appBar}>
           <Toolbar>
@@ -281,7 +273,7 @@ export default function Location(props) {
         <br /><br />
         <FormControl className={classes.FormControl}>
           <RadioGroup row aria-label="position" name="position" 
-          value={listObj.TypeLocation !== null ? listObj.TypeLocation :  'currentLocation' } 
+          value={listObj.TypeLocation === 'currentLocation' || listObj.TypeLocation === null  ? 'currentLocation' : 'city' } 
           onChange={handleChange} >
             <FormControlLabel
               value="city"
@@ -302,7 +294,7 @@ export default function Location(props) {
         </FormControl>
 
         <div dir='rtl' className={classes.TextField}>
-          {!enable && <span>
+          {enable && <span>
             <Typography id="discrete-slider" gutterBottom>
               בחר טווח ק"מ רצוי לחיפוש
            </Typography>
@@ -318,7 +310,7 @@ export default function Location(props) {
               onChange={handleKM}
             /></span>}
 
-          {enable && <Autocomplete
+          {!enable && <Autocomplete
             id="combo-box-demo"
             options={cities}
             getOptionLabel={(option) => option.cityName}

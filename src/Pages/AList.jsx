@@ -82,21 +82,11 @@ function AList() {
 
     const textInput = useRef(null)
     const limitInput = useRef(null)
-    let api = "https://api.superget.co.il?api_key=847da8607b5187d8ad1ea24fde8ee8016b19a6db&"
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
     let apiAppList = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppList/"
     if (isLocal) {
         apiAppProduct = "http://localhost:56794/api/AppProduct/"
         apiAppList = "http://localhost:56794/api/AppList/"
-    }
-
-    const mainbg = {
-
-        backgroundImage: 'url("./Images/letter.jpg")',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-
     }
 
     let tempName = "";
@@ -257,6 +247,8 @@ function AList() {
             const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + listObj.ListID, {
                 method: 'PUT',
             })
+            const data = res.json();
+            console.log(data);
             SetLimit(tempLimit);
             console.log('listObj', listObj.ListEstimatedPrice,)
             console.log()
@@ -360,7 +352,7 @@ function AList() {
                                     ListID: ListID,
                                 }
                                 if (willDelete) {
-                                    fetch(apiAppProduct + 'UpdateQuantity' + '/' + false, {
+                                    fetch(apiAppProduct + `UpdateQuantity/${false}`, {
                                         method: 'PUT',
                                         headers: new Headers({
                                             'Content-type': 'application/json; charset=UTF-8'
@@ -535,52 +527,5 @@ const actions = [
 
 ];
 
-const data = {
-    TestFunction: {
-        action: "TestFunction"
-    },
-    GetChains: {
-        action: "GetChains"
-    },
-    GetStoresByChain: {
-        action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
-    },
-    GetStoresByCityID: {
-        action: "GetStoresByCityID", city_id: '', limit: 10
-    },
-    GetStoresByGPS: {
-        action: "GetStoresByGPS", latitude: '', longitude: '', km_radius: '', order: 1, limit: 10
-    },
-    GetProductsByBarCode: {
-        action: "GetProductsByBarCode", product_barcode: '', limit: 3
-    },
-    GetProductsByID: {
-        action: 'GetProductsByID', product_id: '', limit: 10
-    },
-    GetProductsByName: {
-        action: "GetProductsByName", product_name: "", limit: 5
-    },
-    GetPrice: {
-        action: "GetPrice", store_id: '', limit: 10
-    },
-    GetPriceByProductBarCode: {
-        action: "GetPriceByProductBarCode", store_id: '', 'product_barcode[]': []
-    },
-    GetPriceByProductID: {
-        action: "GetPriceByProductID", store_id: '', product_id: ''
-    },
-    GetHistoryByProductBarCode: {
-        action: "GetHistoryByProductBarCode", store_id: '', product_barcode: '', from_date: '', to_date: ''
-    },
-    GetHistoryByProductID: {
-        action: "GetHistoryByProductID", store_id: '', product_id: '', from_date: '', to_date: ''
-    },
-    GetCities: {
-        action: "GetCities", limit: 10
-    },
-    GetCityByName: {
-        action: "GetCityByName", city_name: '', limit: 1
-    }
-}
 
 

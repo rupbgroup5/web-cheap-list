@@ -97,6 +97,7 @@ export const ApproveRequest = (userFrom, userTo, group, list, p) => {
     body: `${p.product_description} התווסף לרשימת ${list.ListName}`,
     badge: 1,
   }
+  console.log('pppp',p.product_description)
   fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     body: JSON.stringify(msg),
@@ -160,7 +161,7 @@ export const DeclineRequest = (userFrom, userTo, group, list, p) => {
     .then(response => response.json(),)
     .then(json => {
       if (json.data.status === "ok") {
-        console.log(`returned from server\njson.data= ${(json.data)}`);
+        console.log(`returned from server= ${(JSON.stringify(json.data.status ))}`);
 
         let n = {
           UserFrom: userFrom.UserID,
