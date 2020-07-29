@@ -296,33 +296,63 @@ export default function SearchProduct(props) {
         let price = 0;
         let count = 0;
         //GetPriceByProductBarcode
-        for (let j = 0; j < resultStoreID.length; j++) {
+        let numOfSearchForEstmiated = 3
+        for (let j = 0; j < numOfSearchForEstmiated; j++) {
           data.GetPriceByProductBarCode.store_id = resultStoreID[j].store_id
           data.GetPriceByProductBarCode.product_barcode = resultBarcode[i].product_barcode
           query = await queryString.stringifyUrl({ url: superGetAPI, query: data.GetPriceByProductBarCode })
-          if (j >= resultStoreID.length / 2) {
+          if (true) {
             query = await queryString.stringifyUrl({ url: 'https://allow-any-origin.appspot.com/' + superGetAPI, query: data.GetPriceByProductBarCode })
           }
           let resPrice = await fetch(query, { method: 'GET' })
           let resultPrice = await resPrice.json();
-          if (resultPrice.error_type === "NO_DATA") continue;
+          if (resultPrice.error_type === "NO_DATA") {
+            if (j !== (numOfSearchForEstmiated - 1) ) {
+              continue;
+            }else{   
+              if (numOfSearchForEstmiated < resultStoreID.length) {
+                if (count === 0) {
+                  numOfSearchForEstmiated++
+                }
+              }
+            }    
+          }else{
+            price += JSON.parse(resultPrice[0].store_product_price)
+            count++
+          }
+        }
+        if (count !== 0) {
+          price = price / count
+          let productName;
+          if (resultBarcode[i].product_name.includes("'")) {
+            productName = resultBarcode[i].product_name.replace("'", "`")
+          }else productName = resultBarcode[i].product_name
 
-          price += JSON.parse(resultPrice[0].store_product_price)
-          count++
-        }
-        price = price / count
-        let p = {
-          product_barcode: resultBarcode[i].product_barcode,
-          product_name: resultBarcode[i].product_name,
-          product_description: resultBarcode[i].product_description,
-          product_image: resultSRC[i],
-          manufacturer_name: resultBarcode[i].manufacturer_name,
-          estimatedProductPrice: Number(price.toFixed(2))
-        }
-        arrayProduct.push(p)
+          let productDescription;
+          if (resultBarcode[i].product_description.includes("'")) {
+            productDescription = resultBarcode[i].product_description.replace("'", "`")
+          }else productDescription = resultBarcode[i].product_description
+          console.log('name', productName)
+          console.log('descr',productDescription)
+
+     
+
+
+          let p = {
+            product_barcode: resultBarcode[i].product_barcode,
+            product_name: productName,
+            product_description: productDescription,
+            product_image: resultSRC[i],
+            estimatedProductPrice: Number(price.toFixed(2))
+          }
+          arrayProduct.push(p)
+        } 
       }
       SetLoading(false)
-      SetProduct(arrayProduct)
+      if (arrayProduct.length !== 0) {
+        SetProduct(arrayProduct)
+      }else SetProduct(' לא נמצאו מוצרים בסופרים הנמצאים באזור החיפוש')
+     
     } catch (error) {
       console.log(error)
     }
@@ -342,7 +372,6 @@ export default function SearchProduct(props) {
   return (
 
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-      {console.log('group',groupDetails, 'list', listObj)}
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -373,13 +402,13 @@ export default function SearchProduct(props) {
         </div>
         <div className="Maincontent">
 
-          {!loading && <div className='productSerarch'>
+          {(!loading && Array.isArray(product)) && <div className='productSerarch'>
             {
               product.map((p, index) =>
                 <Card key={index}     >
                   <Card.Img variant="top" src={p.product_image} />
                   <Card.Body>
-                    <Card.Title className='product-text'>{p.product_description}</Card.Title>
+                    <Card.Title className='product-text'>{p.product_description !== '' ? p.product_description : p.product_name}</Card.Title>
                     <Card.Text className='product-text'>
                       מחיר: ₪{p.estimatedProductPrice}
                     </Card.Text>
@@ -397,6 +426,7 @@ export default function SearchProduct(props) {
               )
             }
           </div>}
+          {!loading && !Array.isArray(product) && <div> {product} </div>}
 
         </div>
       </div>
@@ -415,10 +445,10 @@ const data = {
     action: "GetStoresByChain", chain_id: '', sub_chain_id: '', limit: 10
   },
   GetStoresByCityID: {
-    action: "GetStoresByCityID", city_id: '', limit: 3
+    action: "GetStoresByCityID", city_id: '', limit: 10
   },
   GetStoresByGPS: {
-    action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 3
+    action: "GetStoresByGPS", chain_id: '', sub_chain_id: '', latitude: '', longitude: '', km_radius: '', order: '', limit: 10
   },
   GetProductsByBarCode: {
     action: "GetProductsByBarCode", product_barcode: '', limit: 10

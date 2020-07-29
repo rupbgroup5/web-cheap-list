@@ -23,6 +23,9 @@ import { UserIDContext } from '../Contexts/UserIDContext';
 import { NotificationsContext } from '../Contexts/NotificationsContext';
 import { ListObjContext } from '../Contexts/ListDetailsContext'
 import { ProductsCartContext } from "../Contexts/ProductsCartContext";
+import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
+
+import { ApproveRequest,DeclineRequest } from '../Components/SendPush'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -75,6 +78,7 @@ const Notifications = (props) => {
     const { userID } = useContext(UserIDContext)
     const { listObj } = useContext(ListObjContext);
     const { productCart, SetProductCart } = useContext(ProductsCartContext);
+    const { groupDetails } = useContext(GroupDetailsContext)
 
 
     const { notifications, SetNotifications } = useContext(NotificationsContext)
@@ -83,8 +87,10 @@ const Notifications = (props) => {
     const history = useHistory()
 
     let apiAppProduct = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppProduct/"
+    let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/`
     if (isLocal) {
         apiAppProduct = "http://localhost:56794/api/AppProduct/";
+        apiNotifications = `http://localhost:56794/api/Notifications/`;
     }
 
 
@@ -93,50 +99,136 @@ const Notifications = (props) => {
     const handleClose = () => {
         setOpen(false);
         for (let i = 0; i < notifications.length; i++) {
-           notifications[i].HasRead = true;
+            notifications[i].HasRead = true;
         }
         SetNotifications([...notifications])
+        try {
+            fetch(apiNotifications, {
+                method: 'Put',
+                headers: new Headers({
+                    'Content-type': 'application/json; charset=UTF-8'
+                }),
+                body: JSON.stringify(notifications)
+            })
+            let tempNotifiactions = notifications.filter(item  => item.HasRead === 0 || item.TypeNot === 'AskProduct' )
+            SetNotifications(tempNotifiactions)
+        } catch (error) {
+            console.log(error)
+        }
         history.push('/AList')
     };
 
-    const ApproveProducat = (p, index) => {
-        Add2DB(p, index)
-    }
+    const ApproveProducat = (p, index) => { Add2DB(p, index) }
 
-    const DeclineProducat = () => {
+    const DeclineProducat = (p, index) => {
+        notifications[index].TypeNot = '';
+        let tempUserTo = notifications[index].UserFrom
+        let userFrom = {
+            UserID: groupDetails.UserID,
+            UserName: groupDetails.UserName
+        }
 
+        let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
+        swal('הבקשה סורבה')
+
+        DeclineRequest (userFrom, userTo, groupDetails, listObj, JSON.stringify(p))
     }
 
     const Add2DB = async (p, index) => {
-        let product = {
-            Quantity: p.Quantity,
-            ...p,
-            ListID: listObj.ListID,
-            GroupID: listObj.GroupID,
-            NotID: notifications[index].NotID
+        if (productCart.some(person => person.product_barcode === p.product_barcode)) {
+            swal({
+                title: 'מוצר זה קיים בעגלה',
+                text: "?האם תרצה להוסיף בכל זאת",
+                buttons: ['בטל', 'הוסף'],
+            }).then((willContinue) => {
+                if (willContinue) {
+                    let product = {
+                        Quantity: p.Quantity,
+                        ...p,
+                        ListID: listObj.ListID,
+                        GroupID: listObj.GroupID,
+                        NotID: notifications[index].NotID
+                    }
+                    fetch(apiAppProduct + 'UpdateQuantity' + '/' + true, {
+                        method: 'PUT',
+                        headers: new Headers({
+                            'Content-type': 'application/json; charset=UTF-8'
+                        }),
+                        body: JSON.stringify(product)
+                    }).then(res => { return res.json(); })
+                        .then(
+                            (resultDB) => {
+                                listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
+                                let i = productCart.findIndex(x => x.product_barcode === p.product_barcode);
+                                productCart[i].Quantity += resultDB.Quantity
+                                productCart[i].EstimatedProductPrice += p.estimatedProductPrice * resultDB.Quantity
+                                SetProductCart([...productCart])
+                                let tempUserTo = notifications[index].UserFrom
+                                notifications.splice(index, 1)
+                                SetNotifications([...notifications])
+                                swal('המוצר התווסף בהצלחה')
+                                let userFrom = {
+                                    UserID: groupDetails.UserID,
+                                    UserName: groupDetails.UserName
+                                }
+
+                                let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
+                                ApproveRequest(userFrom, userTo, groupDetails, listObj, JSON.stringify(p))
+                            },
+                            (error) => {
+                                console.log(error)
+                            })
+                }
+            })
+        } else {
+            let product = {
+                Quantity: p.Quantity,
+                ...p,
+                ListID: listObj.ListID,
+                GroupID: listObj.GroupID,
+                NotID: notifications[index].NotID
+            }
+            try {
+                const resDB = await fetch(apiAppProduct, {
+                    method: 'POST',
+                    headers: new Headers({
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }),
+                    body: JSON.stringify(product)
+                })
+                const resultDB = await resDB.json()
+                console.log('result', resultDB)
+                listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
+                SetProductCart([...productCart, resultDB])
+                let tempUserTo = notifications[index].UserFrom
+                console.log('tempUserTo', tempUserTo)
+                notifications.splice(index, 1)
+                SetNotifications([...notifications])
+                swal('המוצר התווסף בהצלחה')
+                let userFrom = {
+                    UserID: groupDetails.UserID,
+                    UserName: groupDetails.UserName
+                }
+                let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
+                console.log('userTo', userTo)
+                ApproveRequest(userFrom, userTo, groupDetails, listObj, JSON.stringify(p))
+            } catch (error) {
+                console.log(error)
+            }
         }
-        console.log(product)
-        const resDB = await fetch(apiAppProduct, {
-            method: 'POST',
-            headers: new Headers({
-                'Content-type': 'application/json; charset=UTF-8'
-            }),
-            body: JSON.stringify(product)
-        })
-        const resultDB = await resDB.json()
-        console.log('result', resultDB)
-        listObj.ListEstimatedPrice += p.estimatedProductPrice * resultDB.Quantity
-        SetProductCart([...productCart, resultDB])
-        notifications.splice(index, 1)
-        SetNotifications([...notifications])
-        swal('המוצר התווסף בהצלחה')
+
+
+
+
+
+
     }
 
 
 
     return (
         <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-            {console.log('notfa', notifications)}
+
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -150,34 +242,51 @@ const Notifications = (props) => {
             <List className={classes.root} dir='rtl'>
                 {notifications.map((n, index) => {
                     return (
-                        <div key={index} style={{ backgroundColor: !n.HasDone ? ' #f2f2f2' : 'white' }}>
-                            <ListItem style={{ textAlign: 'right' }}>
-                                <ListItemAvatar style={{ marginRight: '5px' }}  >
-                                    <Avatar />
-                                </ListItemAvatar>
-                                <ListItemText dir='rtl'
-                                    primary={n.Title}
-                                    secondary={
-                                        <React.Fragment>
-                                            במחיר של ₪{JSON.parse(n.DataObject).estimatedProductPrice *
-                                                JSON.parse(n.DataObject).Quantity}
-                                        </React.Fragment>
-                                    }
+                        <div key={index}>
+                            {n.TypeNot === 'AskProduct' && <div  style={{ backgroundColor: !n.HasRead ? ' #f2f2f2' : 'white' }}>
+                                <ListItem style={{ textAlign: 'right' }}>
+                                    <ListItemAvatar style={{ marginRight: '5px' }}  >
+                                        <Avatar />
+                                    </ListItemAvatar>
+                                    <ListItemText dir='rtl'
+                                        primary={n.Title}
+                                        secondary={
+                                            <React.Fragment>
+                                                {n.body}
+                                            </React.Fragment>
+                                        }
 
-                                />
-                            </ListItem>
-                            {n.TypeNot === 'AskProduct' && <span style={{ marginRight: '30%' }} >
-                                <Button variant="contained" className={classes.button}
-                                    onClick={() => ApproveProducat(JSON.parse(n.DataObject), index)}>
-                                    אשר
+                                    />
+                                </ListItem>
+                                {<span style={{ marginRight: '30%' }} >
+                                    <Button variant="contained" className={classes.button}
+                                        onClick={() => ApproveProducat(JSON.parse(n.DataObject), index)}>
+                                        אשר
                             </Button>
                             &nbsp;
                                 <Button variant="contained" className={classes.button} onClick={() => DeclineProducat(n, index)}
-                                >
-                                    דחה
+                                    >
+                                        דחה
                             </Button>
-                            </span>}
-                            <Divider />
+                                </span>}
+                                <Divider />
+                            </div>}
+                            {n.TypeNot !== 'AskProduct' && <div  style={{ backgroundColor: !n.HasRead ? ' #f2f2f2' : 'white' }}>
+                                <ListItem style={{ textAlign: 'right' }}>
+                                    <ListItemAvatar style={{ marginRight: '5px' }}  >
+                                        <Avatar />
+                                    </ListItemAvatar>
+                                    <ListItemText dir='rtl'
+                                        primary={n.Title}
+                                        secondary={
+                                            <React.Fragment>
+                                                {n.Body}
+                                            </React.Fragment>
+                                        }
+                                    />
+                                </ListItem>
+                                <Divider />
+                            </div>}
                         </div>
                     )
                 })}

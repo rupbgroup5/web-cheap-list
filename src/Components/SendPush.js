@@ -36,8 +36,6 @@ export const SendPushAddToGroup = (token, AdminName, GroupName) => {
 }
 
 export const SendPushAskForProduct = (userFrom, userTo, group, list, p) => {
-
-
   console.log('userFrom', userFrom, 'userTo', userTo, 'Group', group, 'ListName', list, 'product', p)
   //msg to push!
   let msg = {
@@ -62,8 +60,9 @@ export const SendPushAskForProduct = (userFrom, userTo, group, list, p) => {
         let n = {
           UserFrom: userFrom.UserID,
           UserTo: userTo.UserID,
-          Title: `${userFrom.UserName} מבקש להוסיף ${p.Quantity} יח של ${p.product_description}`, // text on React 
-          TypeNot: 'AskProduct',  
+          Title: `${userFrom.UserName} מבקש להוסיף ${p.Quantity} יח של ${p.product_description}`, 
+          Body: `במחיר של ₪${p.estimatedProductPrice * p.Quantity}`,
+          TypeNot:'AskProduct',
           GroupID: group.GroupID,
           ListID: list.ListID,
           DataObject: JSON.stringify(p)  
@@ -83,9 +82,111 @@ export const SendPushAskForProduct = (userFrom, userTo, group, list, p) => {
             (error) => {
               console.log(error)
             })
-        swal('הבקשה נשלחה בהצלחה')
       } else {
-        alert('err json');
+        console.log('err json');
+      }
+    });
+}
+
+export const ApproveRequest = (userFrom, userTo, group, list, p) => {
+  console.log('userFrom', userFrom, 'userTo', userTo, 'Group', group, 'ListName', list, 'product', p)
+  //msg to push!
+  let msg = {
+    to: userTo.ExpoToken,
+    title: `${userFrom.UserName} אישר את בקשתך`,
+    body: `${p.product_description} התווסף לרשימת ${list.ListName}`,
+    badge: 1,
+  }
+  fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    body: JSON.stringify(msg),
+    headers: {
+      'Accept': 'application/json',
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  })
+    .then(response => response.json(),)
+    .then(json => {
+      if (json.data.status === "ok") {
+        console.log(`returned from server\njson.data= ${(json.data)}`);
+
+        let n = {
+          UserFrom: userFrom.UserID,
+          UserTo: userTo.UserID,
+          Title: 'בקשתך אושרה', // text on React 
+          Body:`${userFrom.UserName} הוסיף ${p.Quantity} יח של ${p.product_description} לסל הקניות`,
+          TypeNot: 'ApproveRequest',  
+          GroupID: group.GroupID,
+          ListID: list.ListID
+        }
+        fetch(apiNotifications, {
+          method: 'POST',
+          headers: new Headers({
+            'Content-type': 'application/json; charset=UTF-8'
+          }),
+          body: JSON.stringify(n)
+        }).then(res => { return res.json(); })
+          .then(
+            (result) => {
+              console.log('The ', result, ' was successfully sent!')
+            },
+            (error) => {
+              console.log(error)
+            })
+            
+      } else {
+        console.log('err json');
+      }
+    });
+}
+
+export const DeclineRequest = (userFrom, userTo, group, list, p) => {
+  console.log('userFrom', userFrom, 'userTo', userTo, 'Group', group, 'ListName', list, 'product', p)
+  //msg to push!
+  let msg = {
+    to: userTo.ExpoToken,
+    title: `${userFrom.UserName} סירב לבקשתך`,
+    body: `להוסיף את ${p.product_description} לרשימת ${list.ListName}`,
+    badge: 1,
+  }
+  fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    body: JSON.stringify(msg),
+    headers: {
+      'Accept': 'application/json',
+      "Content-type": "application/json; charset=UTF-8"
+    }
+  })
+    .then(response => response.json(),)
+    .then(json => {
+      if (json.data.status === "ok") {
+        console.log(`returned from server\njson.data= ${(json.data)}`);
+
+        let n = {
+          UserFrom: userFrom.UserID,
+          UserTo: userTo.UserID,
+          Title: 'בקשתך סורבה', // text on React 
+          Body:`${userFrom.UserName} סירב להוסיף את  ${p.product_description} לסל הקניות`,
+          TypeNot: 'DeclineRequest',  
+          GroupID: group.GroupID,
+          ListID: list.ListID
+        }
+        fetch(apiNotifications, {
+          method: 'POST',
+          headers: new Headers({
+            'Content-type': 'application/json; charset=UTF-8'
+          }),
+          body: JSON.stringify(n)
+        }).then(res => { return res.json(); })
+          .then(
+            (result) => {
+              console.log('The ', result, ' was successfully sent!')
+            },
+            (error) => {
+              console.log(error)
+            })
+      } else {
+        console.log('err json');
       }
     });
 }
@@ -116,6 +217,7 @@ export const SendPushIDeletedMySelf = (userFrom, admin, GroupName) => {
                   UserFrom: userFrom.UserID,
                   UserTo: admin.UserID,
                   Title: `${userFrom.UserName} מחק את עצמו מהקבוצה ${GroupName}`,
+                  
                   TypeNot: 'RemovedSelf',
                   DataObject: ""
               }
@@ -134,7 +236,7 @@ export const SendPushIDeletedMySelf = (userFrom, admin, GroupName) => {
                           console.log(error)
                       })
           } else {
-              alert('err json');
+              console.log('err json');
           }
       });
 }
@@ -182,7 +284,7 @@ export const SendPushRemovedByAdmin = (admin, userTo, GroupName) => {
                           console.log(error)
                       })
           } else {
-              alert('err json');
+              console.log('err json');
           }
       });
 }

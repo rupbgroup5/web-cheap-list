@@ -72,11 +72,10 @@ function HomePage() {
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
   
-  userIDfromRN = 1;
+  userIDfromRN = 1
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 1
-    
   }
 
   useEffect(() => {
