@@ -39,7 +39,8 @@ import swal from 'sweetalert'
 import {
     SendPushIDeletedMySelf,
     SendPushRemovedByAdmin,
-    AsyncSendPush_GroupDeletedByAdmin
+    AsyncSendPush_GroupDeletedByAdmin,
+    SendPushAddToGroup
 } from '../Components/SendPush'
 
 
@@ -126,13 +127,28 @@ const GroupSetting = () => {
     );
     const loggedInUserId = JSON.parse(localStorage.getItem('UserID'));
 
-    let adminUserId;
+    // let adminUserId;
+    // group.Participiants.map((p) => {
+    //     if (p.IsAdmin) {
+    //         adminUserId = p.UserID;
+    //         return;
+    //     }
+    // });
+
+    let adminUser = {
+        UserID: 0,
+        UserName: ""
+    }
+
     group.Participiants.map((p) => {
         if (p.IsAdmin) {
-            adminUserId = p.UserID;
+            adminUser.UserID = p.UserID;
+            adminUser.UserName = p.UserName;
+            adminUser.ExpoToken = p.ExpoToken;
             return;
         }
     });
+
 
     let api4EditGroupName;
     let api4DeleteGroup;
@@ -202,10 +218,6 @@ const GroupSetting = () => {
             ExpoToken: "",
         };
 
-        let adminUser = {
-            UserID: adminUserId,
-            UserName: ""
-        };
 
         let group2send = {
             GroupID: group.GroupID,
@@ -266,10 +278,7 @@ const GroupSetting = () => {
             UserName: ""
         }
 
-        let adminUser = {
-            UserID: adminUserId,
-            ExpoToken: ""
-        }
+
         let group2send = {
             GroupID: group.GroupID,
             GroupName: group.GroupName
@@ -320,19 +329,13 @@ const GroupSetting = () => {
 
 
     const HandleNotification4DeleteGroup = async () => {
-        let adminUser = {
-            UserID: adminUserId,
-            UserName: ""
-        };
 
 
         let idsOfUsersTo = [];
         let exposOfUsers2 = [];
 
         group.Participiants.forEach(p => {
-            if (p.IsAdmin) {
-                adminUser.UserName = p.UserName;
-            } else { // no need to send push to the admin...
+            if (!p.IsAdmin) {// no need to send push to the admin...
                 exposOfUsers2.push(p.ExpoToken);
                 idsOfUsersTo.push(p.UserID);
             }
@@ -375,18 +378,18 @@ const GroupSetting = () => {
     }
 
     const AddParticipants2Group = async (participants) => {
-        let pArr = [];
+        let justAddedParticipants = [];
         for (let i = 0; i < participants.length; i++) {
             let newParticipant = await AuthenticateContact(participants[i].PhoneNumber);
-            pArr.push(newParticipant);
+            justAddedParticipants.push(newParticipant);
         }
 
         let GroupObject = {
             GroupID: group.GroupID,
-            Participiants: pArr
+            Participiants: justAddedParticipants
         };
 
-        await fetch(api4AddUsers2UserInGroup, {
+        await fetch(api4AddUsers2UserInGroup, {//post justAddedParticipants 2 DB
             method: 'PUT',
             headers: new Headers({
                 'Content-type': 'application/json; charset=UTF-8'
@@ -394,11 +397,11 @@ const GroupSetting = () => {
             body: JSON.stringify(GroupObject)
         }).then(res => { return res.json(); })
             .then(
-                (result) => {
-                    console.log(result)
+                (/**result*/) => {
+                    // console.log("result: →", result)
                     let newParticipiants = group.Participiants;
-                    for (let i = 0; i < pArr.length; i++) {
-                        newParticipiants.push(pArr[i]);
+                    for (let i = 0; i < justAddedParticipants.length; i++) {
+                        newParticipiants.push(justAddedParticipants[i]);
                     }
                     SetGroup(
                         {
@@ -406,6 +409,21 @@ const GroupSetting = () => {
                             Participiants: newParticipiants
                         }
                     );
+                    localStorage.setItem("groupDetails",
+                        JSON.stringify(
+                            {
+                                ...group, Participiants: newParticipiants
+                            }
+                        )
+                    );
+
+                    //send them push notification they have been added to a group:
+                    justAddedParticipants.forEach((np) => {
+                        if (np.ExpoToken !== null) {
+                            SendPushAddToGroup(np.ExpoToken, adminUser.UserName, group.GroupName);
+                        }
+                    });
+
                 },
                 (error) => {
                     console.log(error)
@@ -462,7 +480,8 @@ const GroupSetting = () => {
                     {
                         group.Participiants.map((p) => {
                             return <ListItem key={p.UserID}>
-                                {!p.IsAdmin && loggedInUserId === adminUserId ?
+                                {!p.IsAdmin && loggedInUserId === adminUser.UserID ?
+                                    //show the DeleteIcon only if logged in user is admin and side with one he is not admin himself 
                                     <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
                                         <DeleteIcon />
                                     </IconButton>
@@ -505,7 +524,7 @@ const GroupSetting = () => {
                     <AddIcon onClick={() => { SetEnableContacts(true) }} />
                 </Fab>
                 {
-                    loggedInUserId === adminUserId ?
+                    loggedInUserId === adminUser.UserID ?
                         <Button
                             style={{ backgroundColor: 'red' }}
                             variant="contained"
