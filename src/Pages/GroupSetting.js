@@ -36,7 +36,12 @@ import AddIcon from '@material-ui/icons/Add'
 import swal from 'sweetalert'
 
 //notificaion handle
-import { SendPushIDeletedMySelf, SendPushRemovedByAdmin } from '../Components/SendPush'
+import {
+    SendPushIDeletedMySelf,
+    SendPushRemovedByAdmin
+} from '../Components/SendPush'
+import { AsyncSendPush_GroupDeletedByAdmin } from '../temp4pushYogi.js'
+
 
 
 
@@ -310,6 +315,32 @@ const GroupSetting = () => {
             });
     }
 
+
+
+    const HandleNotification4DeleteGroup = async () => {
+        let adminUser = {
+            UserID: adminUserId,
+            UserName: ""
+        };
+
+
+        let idsOfUsersTo = [];
+        let exposOfUsers2 = [];
+
+        group.Participiants.forEach(p => {
+            if (p.IsAdmin) {
+                adminUser.UserName = p.UserName;
+            } else { // no need to send push to the admin...
+                exposOfUsers2.push(p.ExpoToken);
+                idsOfUsersTo.push(p.UserID);
+            }
+
+        });
+        await AsyncSendPush_GroupDeletedByAdmin(adminUser, exposOfUsers2, idsOfUsersTo, group.GroupName);
+
+    }
+
+
     const DeleteGroup = () => {
         swal({
             title: `?בטוח שאתה רוצה למחוק את הקבוצה`,
@@ -327,6 +358,7 @@ const GroupSetting = () => {
                         .then(
                             (result) => {
                                 console.log(result);
+                                HandleNotification4DeleteGroup();
                                 swal('הקבוצה נמחקה')
                                     .then(() => {
                                         history.push(`/HomePage/${loggedInUserId}`);
