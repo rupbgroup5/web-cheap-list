@@ -127,13 +127,6 @@ const GroupSetting = () => {
     );
     const loggedInUserId = JSON.parse(localStorage.getItem('UserID'));
 
-    // let adminUserId;
-    // group.Participiants.map((p) => {
-    //     if (p.IsAdmin) {
-    //         adminUserId = p.UserID;
-    //         return;
-    //     }
-    // });
 
     let adminUser = {
         UserID: 0,
@@ -223,16 +216,16 @@ const GroupSetting = () => {
             GroupID: group.GroupID,
             GroupName: group.GroupName
         };
+        let notValidExpo = false;
         group.Participiants.forEach(p => {
-            if (p.UserID === userToId) {
+            notValidExpo = p.ExpoToken === null || p.ExpoToken === "";
+            if (p.UserID === userToId && !notValidExpo) {
                 userTo.ExpoToken = p.ExpoToken;
-            }
-            if (p.IsAdmin) {
-                adminUser.UserName = p.UserName;
+                SendPushRemovedByAdmin(adminUser, userTo, group2send);
             }
         });
 
-        SendPushRemovedByAdmin(adminUser, userTo, group2send);
+
 
     }
 
@@ -287,9 +280,6 @@ const GroupSetting = () => {
             if (p.UserID === loggedInUserId) {
                 loggedInUser.UserName = p.UserName;
             }
-            if (p.IsAdmin) {
-                adminUser.ExpoToken = p.ExpoToken;
-            }
         });
 
         SendPushIDeletedMySelf(loggedInUser, adminUser, group2send);
@@ -333,11 +323,14 @@ const GroupSetting = () => {
 
         let idsOfUsersTo = [];
         let exposOfUsers2 = [];
-
+        let notValidExpo = false;
         group.Participiants.forEach(p => {
             if (!p.IsAdmin) {// no need to send push to the admin...
-                exposOfUsers2.push(p.ExpoToken);
                 idsOfUsersTo.push(p.UserID);
+            }
+            notValidExpo = p.ExpoToken === null || p.ExpoToken === "";
+            if (!notValidExpo) {
+                exposOfUsers2.push(p.ExpoToken);
             }
 
         });
@@ -417,9 +410,10 @@ const GroupSetting = () => {
                         )
                     );
 
-                    //send them push notification they have been added to a group:
+                    let notValidExpo = false;
                     justAddedParticipants.forEach((np) => {
-                        if (np.ExpoToken !== null) {
+                        notValidExpo = np.ExpoToken === null || np.ExpoToken === "";
+                        if (!notValidExpo) {
                             SendPushAddToGroup(np.ExpoToken, adminUser.UserName, group.GroupName);
                         }
                     });
