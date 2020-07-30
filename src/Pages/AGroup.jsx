@@ -8,6 +8,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { Badge, IconButton, TextField } from '@material-ui/core'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import List from '@material-ui/core/List';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 
 import {
@@ -52,7 +53,6 @@ const useStyles = makeStyles(theme => ({
   },
   '& .MuiBadge-root': {
     marginRight: theme.spacing(4),
-
   },
 
 }));
@@ -90,10 +90,10 @@ function AGroup() {
     apiAppGroups = "http://localhost:56794/api/AppGroups/";
     apiAppList = "http://localhost:56794/api/AppList/";
   }
-  
+
 
   useEffect(() => {
-    document.body.style.backgroundSize = '50vh' ;;
+    document.body.style.backgroundSize = '50vh';;
     (async function fetchMyAPI() {
       if (!groupDetails) {
         SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
@@ -102,13 +102,14 @@ function AGroup() {
       if (groupDetails) {
         for (let i = 0; i < groupDetails.Participiants.length; i++) {
           if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
-              if (groupDetails.Participiants[i].IsAdmin) {SetIsAdmin(true)
-              } else { SetIsAdmin(false) }
+            if (groupDetails.Participiants[i].IsAdmin) {
+              SetIsAdmin(true)
+            } else { SetIsAdmin(false) }
           }
-      }
+        }
         try {
-          const res = await fetch(apiAppList + groupDetails.GroupID + 
-            '/' + groupDetails.UserID , {
+          const res = await fetch(apiAppList + groupDetails.GroupID +
+            '/' + groupDetails.UserID, {
             method: 'GET',
             headers: new Headers({
               'Content-Type': 'application/json; charset=UTF-8',
@@ -248,15 +249,15 @@ function AGroup() {
                     }
                     if (groupDetails.Participiants[i].ExpoToken !== "") {
                       ArrUserTo.push(groupDetails.Participiants[i])
-                    } 
+                    }
                   }
                   console.log(ArrUserTo)
-                  ChangeGroupNamePush(userFrom,ArrUserTo,oldGroupName,groupDetails.GroupName)
+                  ChangeGroupNamePush(userFrom, ArrUserTo, oldGroupName, groupDetails.GroupName)
                 },
                 (error) => {
                   console.log(error)
                 })
-                
+
           } else {
             textInput.current.value = ""
           }
@@ -266,55 +267,63 @@ function AGroup() {
 
   return (
     <span>
-      {groupDetails && 
-      <div className="container">
-        <div className="header"  >
-          <TextField
-            id="outlined-basic"
-            variant="outlined"
-            onInput={editGroupName}
-            placeholder={groupDetails && groupDetails.GroupName}
-            onBlur={ConfirmationEditGroupName}
-            inputRef={textInput}
-          />
-        </div>
-        <div className="Maincontent">
-          {
-            lists.map((l, index) =>
-              <span key={index} onClick={() => GetIntoList(index)}>
-                {isAdmin &&<span>
-                  <SwipeableList key={index} className={classes.root} threshold={0.25}>
-                  <SwipeableListItem
-                    swipeRight={swipeRightDataComplex(l.ListID, index)}
-                    onSwipeProgress={handleSwipeProgress}>
-                    <IconButton aria-label="cart">
-                      <StyledBadge badgeContent={l.Badge} color="secondary">
-                        <ShoppingCartIcon />
-                      </StyledBadge>
-                    </IconButton>
-                    <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
-                  </SwipeableListItem>
-                </SwipeableList>
-                  </span>}
-                  {!isAdmin && <List key={index} className={classes.root} style={{flexDirection:"row"}} >
-                    <IconButton aria-label="cart">
-                      <StyledBadge badgeContent={l.Badge} color="secondary">
-                        <ShoppingCartIcon />
-                      </StyledBadge>
-                    </IconButton>
-                    <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
-                    </List>}
-              
-              </span>
-            )
-          }
-          <button onClick={()=> history.push('/GroupSetting')}>הגדרות</button>
-        </div>
+      {groupDetails &&
+        <div className="container">
+          <div className="header" style={{
+            alignItems: 'center',
+            paddingRight: 30,
+            flexDirection: 'row'
+          }} >
+            <TextField
+              id="outlined-basic"
 
-        {isAdmin && <div className="footer">
-          <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
+              variant="outlined"
+              onInput={editGroupName}
+              placeholder={groupDetails && groupDetails.GroupName}
+              onBlur={ConfirmationEditGroupName}
+              inputRef={textInput}
+            />
+            <InfoOutlinedIcon onClick={() => history.push('/GroupSetting')} style={{ paddingRight: '15px' }} />
+          </div>
+          <div className="Maincontent">
+            {
+              lists.map((l, index) =>
+                <span key={index} onClick={() => GetIntoList(index)}>
+                  {isAdmin && <span>
+                    <SwipeableList key={index} className={classes.root} threshold={0.25}>
+                      <SwipeableListItem
+                        swipeRight={swipeRightDataComplex(l.ListID, index)}
+                        onSwipeProgress={handleSwipeProgress}>
+                        <IconButton aria-label="cart">
+                          <StyledBadge badgeContent={l.Badge} color="secondary">
+                            <ShoppingCartIcon />
+                          </StyledBadge>
+                        </IconButton>
+                        <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
+                      </SwipeableListItem>
+                    </SwipeableList>
+                  </span>}
+                  {!isAdmin && <List key={index} className={classes.root} style={{ flexDirection: "row" }} >
+                    <IconButton aria-label="cart">
+                      <StyledBadge badgeContent={l.Badge} color="secondary">
+                        <ShoppingCartIcon />
+                      </StyledBadge>
+                    </IconButton>
+                    <ListItem name={l.ListName} description={`סך עלות משוערת: ${l.ListEstimatedPrice === 0.00 ? 0 : Number(l.ListEstimatedPrice).toFixed(2)}`} />
+                  </List>}
+
+                </span>
+              )
+            }
+
+            {/* <button onClick={()=> history.push('/GroupSetting')}>הגדרות</button> */}
+
+          </div>
+
+          {isAdmin && <div className="footer">
+            <FormDialog getData={AddNewList} headLine={'יצירת רשימה'} label={'שם הרשימה'} />
+          </div>}
         </div>}
-      </div>}
     </span>
   );
 };

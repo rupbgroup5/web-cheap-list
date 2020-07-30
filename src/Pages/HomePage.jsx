@@ -106,13 +106,15 @@ function HomePage() {
       UserID: userIDfromRN,
       Participiants: participiantsArr,
     };
+
     for (let i = 0; i < participiantsArr.length; i++) {
-      if ( participiantsArr[i].ExpoToken !== "") {
+      let notValidExpo = false;
+      notValidExpo = participiantsArr[i].ExpoToken === null || participiantsArr[i].ExpoToken === "";
+      if (!notValidExpo) {
         SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName, tempGroupName)
-      } 
+      }
     }
   
-
     fetch(apiAppGroups, {
       method: 'POST',
       headers: new Headers({

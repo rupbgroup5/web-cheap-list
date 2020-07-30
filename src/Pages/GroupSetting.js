@@ -31,6 +31,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
+import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 
 //sweetalert
 import swal from 'sweetalert'
@@ -96,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100vw',
         position: 'absolute',
         zIndex: 1,
-        bottom: '20vh',
+        bottom: '15vh',
         background: 'white',
         textAlign: 'center',
     },
@@ -445,6 +446,7 @@ const GroupSetting = () => {
 
 
             <div className={classes.root}>
+                
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" className={classes.title}>
                         <TextField
@@ -464,8 +466,11 @@ const GroupSetting = () => {
                                 //↑ this ↑ has to be inside InputProps !
                             }}
                         />
+                        <PersonAddOutlinedIcon onClick={() => { SetEnableContacts(true) }} />
                     </Typography>
+                    
                 </Grid>
+                
             </div>
 
 
@@ -511,12 +516,13 @@ const GroupSetting = () => {
 
 
             <div className={classes.footer}>
-                <Fab
+                {/* <Fab
                     className={classes.PlusBtn}
                     color="primary"
                     aria-label="add">
-                    <AddIcon onClick={() => { SetEnableContacts(true) }} />
-                </Fab>
+                    <PersonAddOutlinedIcon onClick={() => { SetEnableContacts(true) }} />
+                </Fab> */}
+                
                 {
                     loggedInUserId === adminUser.UserID ?
                         <Button
