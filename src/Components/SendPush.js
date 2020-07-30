@@ -9,7 +9,7 @@ if (true) {
 }
 
 export const SendPushAddToGroup = (token, AdminName, GroupName) => {
-  console.log('token', token, 'Admin', AdminName, 'Group', GroupName)
+  // console.log('token', token, 'Admin', AdminName, 'Group', GroupName)
   let msg = {
     to: token,
     title: 'הוספת לקבוצה',
@@ -266,7 +266,6 @@ export const SendPushRemovedByAdmin = (admin, userTo, GroupRef) => {
           UserFrom: admin.UserID,
           UserTo: userTo.UserID,
           Title: `${admin.UserName} הסיר אותך מהקבוצה ${GroupRef.GroupName}`,
-          GroupID: GroupRef.GroupID,
           TypeNot: 'RemovedByAdmin',
           DataObject: ""
         }
@@ -371,11 +370,11 @@ export const ChangeGroupNamePush = async (userFrom, usersTo, oldGroupName, newGr
         }
       });
   }
-  let ArrUserToID =[];
+  let ArrUserToID = [];
   usersTo.forEach(element => {
     ArrUserToID.push(element.UserID)
   });
-    
+
   console.log(ArrUserToID)
 
   let n = {
@@ -429,13 +428,13 @@ export const ChangeListNamePush = async (userFrom, usersTo, oldListName, newList
         }
       });
   }
-  let ArrUserToID =[];
+  let ArrUserToID = [];
   usersTo.forEach(element => {
     ArrUserToID.push(element.UserID)
   });
-    
-  
-  
+
+
+
   let n = {
     UserFrom: userFrom.UserID,
     UsersTo: ArrUserToID, // int[]
