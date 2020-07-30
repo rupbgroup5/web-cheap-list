@@ -268,7 +268,6 @@ function AGroup() {
     <span>
       {groupDetails && 
       <div className="container">
-        {console.log(groupDetails)}
         <div className="header"  >
           <TextField
             id="outlined-basic"

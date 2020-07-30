@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import {withRouter} from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import {withRouter,useParams} from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,6 +19,7 @@ import { UserIDContext } from '../Contexts/UserIDContext'
 import { IsLocalContext } from '../Contexts/IsLocalContext';
 import { NotificationsContext } from '../Contexts/NotificationsContext';
 import { ListObjContext } from '../Contexts/ListDetailsContext'
+import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 
 
 
@@ -34,42 +35,64 @@ import { ListObjContext } from '../Contexts/ListDetailsContext'
   const { pageTitle } = useContext(PageTitleContext);
   const { userID, SetUserID } = useContext(UserIDContext)
   const { isLocal } = useContext(IsLocalContext);
-  const {badge, Setbadge, SetNotifications } = useContext(NotificationsContext)
+  const {badge, Setbadge, notifications, SetNotifications } = useContext(NotificationsContext)
   const { listObj, SetListObj } = useContext(ListObjContext)
+  const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
+  
+  const [data, SetData] = useState([])
 
-
+  
   useEffect(() => {
-    if (pageTitle === 'סל קניות') {
-      if (!listObj) {
+      if (!userID) {
+        console.log('loacl', JSON.parse(localStorage.getItem('UserID')))
+        SetUserID(JSON.parse(localStorage.getItem('UserID')))
+        SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
         SetListObj(JSON.parse(localStorage.getItem('listObj')))
       }
-      let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}/${listObj.ListID}`
-      if (isLocal) {
-        apiNotifications = `http://localhost:56794/api/Notifications/${userID}/${listObj.ListID}`
-      }
-      (async function fetchMyAPI() {
-      try {
-        const res = await fetch(apiNotifications, {
-          method: 'GET',
-          headers: new Headers({
-            'Content-Type': 'application/json; charset=UTF-8',
-          }),
-        })
-        let data = await res.json();
-        if (true) {
-          SetNotifications(data); 
-          let tempBagde = data.filter(item => item.HasRead === false)
-           Setbadge(tempBagde.length)
+      if (userID) {
+        console.log('userID', userID)
+        let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}`
+        if (isLocal) {
+          apiNotifications = `http://localhost:56794/api/Notifications/${userID}`
         }
-        
-      } catch (error) {
-        console.log(error)
-      }
-      }())
-    }
+      
+        let tempNot;
+        if (pageTitle === 'הקבוצות שלי') {       
+        (async function fetchMyAPI() {
+        try {
+          console.log('fetch')   
+          const res = await fetch(apiNotifications, {
+            method: 'GET',
+            headers: new Headers({
+              'Content-Type': 'application/json; charset=UTF-8',
+            }),
+          })
+           let tempData = await res.json();
+           SetData(tempData)
+           console.log(data)
+            tempNot = tempData.filter(x => x.GroupID === 0 && x.ListID === 0)
+           console.log('tempNot', tempNot)
+          SetNotifications(tempNot)
+          Setbadge(tempNot.length)
+          
+        } catch (error) {
+          console.log(error)
+        }
+        }())}else if(pageTitle === 'רשימות הקבוצה'){
+           tempNot = data.filter(x => x.GroupID === groupDetails.GroupID && x.ListID === 0 )
+         
+          SetNotifications(tempNot)
+          Setbadge(tempNot.length)
+        } else{
+             tempNot = data.filter(x => x.ListID === listObj.ListID )
+            SetNotifications(tempNot)
+            let tempBagde = tempNot.filter(item => item.HasRead === false)
+            Setbadge(tempBagde.length)
+          }
+        }
+      
 
-
-  }, [pageTitle]);
+  }, [pageTitle, userID]);
 
 
   const handleClose = () => {
@@ -125,7 +148,7 @@ import { ListObjContext } from '../Contexts/ListDetailsContext'
 
       </div>
 
-      {pageTitle === 'סל קניות' && <span className="nav-not" >
+      {(pageTitle === 'סל קניות' || notifications.length !== 0) && <span className="nav-not" >
         <IconButton
           onClick={() => history.push('/Notifications')}
           color="inherit"

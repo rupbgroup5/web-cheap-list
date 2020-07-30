@@ -114,7 +114,7 @@ const Notifications = (props) => {
         } catch (error) {
             console.log(error)
         }
-        history.push('/AList')
+        history.goBack();
         setOpen(false);
     };
 

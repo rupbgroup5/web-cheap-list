@@ -440,7 +440,7 @@ export const ChangeListNamePush = async (userFrom, usersTo, oldListName, newList
     UserFrom: userFrom.UserID,
     UsersTo: ArrUserToID, // int[]
     Title: `שם הרשימה של ${oldListName}`,
-    Body: `${userFrom.UserName} החליף את שם הקבוצה ל "${newListName}"`,
+    Body: `${userFrom.UserName} החליף את שם הרשימה ל "${newListName}"`,
     GroupID: groupID,
     TypeNot: 'ChangeListName',
   }

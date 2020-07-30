@@ -72,10 +72,10 @@ function HomePage() {
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
   
-  userIDfromRN = 12
+  userIDfromRN = 1
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 12
+    userIDfromRN = 1
   }
 
   useEffect(() => {
@@ -92,7 +92,6 @@ function HomePage() {
       SetGroups(data);
       SetPageTitle('הקבוצות שלי');
     }());
-    SetPageTitle('הקבוצות שלי');
   }, [userIDfromRN,apiAppGroups,SetPageTitle]);
 
   const AddNewGroup = async (participiants) => {
