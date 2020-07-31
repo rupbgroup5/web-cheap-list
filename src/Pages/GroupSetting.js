@@ -8,7 +8,11 @@ import AuthenticateContact from '../Components/AuthenticateContact'
 
 //context API
 import { IsLocalContext } from '../Contexts/IsLocalContext'
-import { GroupDetailsContext } from "../Contexts/GroupDetailsContext";
+import { GroupDetailsContext } from "../Contexts/GroupDetailsContext"
+import { UserIDContext } from "../Contexts/UserIDContext"
+
+
+
 //material-ui
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
@@ -29,8 +33,6 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import Button from '@material-ui/core/Button'
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined'
 import InputAdornment from '@material-ui/core/InputAdornment'
-import Fab from '@material-ui/core/Fab'
-import AddIcon from '@material-ui/icons/Add'
 import PersonAddOutlinedIcon from '@material-ui/icons/PersonAddOutlined';
 
 //sweetalert
@@ -120,15 +122,20 @@ const GroupSetting = () => {
     //Context API:
     const { isLocal } = useContext(IsLocalContext);
     const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
+    const { userID, SetUserID } = useContext(UserIDContext);
+
     useEffect(() => {
         (() => {
             if (!groupDetails) {
                 SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')));
             }
+            if (!userID) {
+                SetUserID(JSON.parse(localStorage.getItem('UserID')));
+            }
         })();
-    }, [groupDetails]);
+    }, []);
 
-    const loggedInUserId = JSON.parse(localStorage.getItem('UserID'));
+    // const loggedInUserId = userID;
 
 
     let adminUser = {
@@ -277,7 +284,7 @@ const GroupSetting = () => {
     const HandleNotification4exitFromGroup = () => {
 
         let loggedInUser = {
-            UserID: loggedInUserId,
+            UserID: userID,
             UserName: ""
         }
 
@@ -287,7 +294,7 @@ const GroupSetting = () => {
             GroupName: groupDetails.GroupName
         };
         groupDetails.Participiants.forEach(p => {
-            if (p.UserID === loggedInUserId) {
+            if (p.UserID === userID) {
                 loggedInUser.UserName = p.UserName;
             }
         });
@@ -304,7 +311,7 @@ const GroupSetting = () => {
         })
             .then((userResponse) => {
                 if (userResponse) {
-                    fetch(api4removeUserInGroup(loggedInUserId, groupDetails.GroupID), {
+                    fetch(api4removeUserInGroup(userID, groupDetails.GroupID), {
                         method: 'PUT',
                         headers: new Headers({
                             'Content-type': 'application/json; charset=UTF-8'
@@ -316,7 +323,7 @@ const GroupSetting = () => {
                                 swal('יצאת הקבוצה')
                                     .then(() => {
                                         HandleNotification4exitFromGroup();
-                                        history.push(`/HomePage/${loggedInUserId}`);
+                                        history.push(`/HomePage/${userID}`);
                                     });
                             },
                             (error) => {
@@ -369,7 +376,7 @@ const GroupSetting = () => {
                                 HandleNotification4DeleteGroup();
                                 swal('הקבוצה נמחקה')
                                     .then(() => {
-                                        history.push(`/HomePage/${loggedInUserId}`);
+                                        history.push(`/HomePage/${userID}`);
                                     });
                             },
                             (error) => {
@@ -492,7 +499,7 @@ const GroupSetting = () => {
                         {
                             groupDetails.Participiants.map((p) => {
                                 return <ListItem key={p.UserID}>
-                                    {!p.IsAdmin && loggedInUserId === adminUser.UserID ?
+                                    {!p.IsAdmin && userID === adminUser.UserID ?
                                         //show the DeleteIcon only if logged in user is admin and side with one he is not admin himself 
                                         <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
                                             <DeleteIcon />
@@ -518,7 +525,7 @@ const GroupSetting = () => {
                     enableContacts &&
                     <div className={classes.myContactsList}>
                         <Contacts
-                            userID={loggedInUserId}
+                            userID={userID}
                             groupName={groupDetails.GroupName}
                             close={handleCloseListContact}
 
@@ -529,15 +536,8 @@ const GroupSetting = () => {
 
 
                 <div className={classes.footer}>
-                    {/* <Fab
-                    className={classes.PlusBtn}
-                    color="primary"
-                    aria-label="add">
-                    <PersonAddOutlinedIcon onClick={() => { SetEnableContacts(true) }} />
-                </Fab> */}
-
                     {
-                        loggedInUserId === adminUser.UserID ?
+                        userID === adminUser.UserID ?
                             <Button
                                 style={{ backgroundColor: 'red' }}
                                 variant="contained"

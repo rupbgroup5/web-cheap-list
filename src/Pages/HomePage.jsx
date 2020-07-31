@@ -72,14 +72,9 @@ function HomePage() {
   const history = useHistory();
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
-<<<<<<< HEAD
-  const [tempGroupName,SetTempGroupName] = useState();
-  
-  userIDfromRN = 1;
-=======
   const [tempGroupName, SetTempGroupName] = useState();
 
->>>>>>> b0dfd4c253463503fd421be30dc51427dbcf44de
+  
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 1
