@@ -11,8 +11,6 @@ import { IsLocalContext } from '../Contexts/IsLocalContext'
 import { GroupDetailsContext } from "../Contexts/GroupDetailsContext"
 import { UserIDContext } from "../Contexts/UserIDContext"
 
-
-
 //material-ui
 import { makeStyles } from '@material-ui/core/styles'
 import Dialog from '@material-ui/core/Dialog'
