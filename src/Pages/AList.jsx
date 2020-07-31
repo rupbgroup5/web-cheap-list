@@ -148,7 +148,7 @@ function AList() {
                     SetProductCart(result)
                     localStorage.setItem('listObj', JSON.stringify(listObj));
                     if (isAdmin && result.length !== 0) {
-                        document.body.style.backgroundSize = '20vh'
+                        document.body.style.backgroundSize = '15vh'
                     }
                     if (result.length !== 0 && !isAdmin) {
                         document.body.style.backgroundSize = '30vh'
@@ -207,12 +207,16 @@ function AList() {
                                         userFrom = groupDetails.Participiants[i]
                                         continue;
                                       }
-                                      if (groupDetails.Participiants[i].ExpoToken !== "") {
+                                      let notValidExpo = false;
+                                      notValidExpo = groupDetails.Participiants[i].ExpoToken === null || groupDetails.Participiants[i].ExpoToken === "";
+                                      if (!notValidExpo) {
                                         ArrUserTo.push(groupDetails.Participiants[i])
-                                      } 
+                                      }
                                     }
-                                    console.log(listObj.GroupID)
-                                    ChangeListNamePush(userFrom,ArrUserTo,oldListName,listObj.ListName,listObj.GroupID)
+                                   if (ArrUserTo.length !== 0 ) {
+                                    ChangeListNamePush(userFrom,ArrUserTo,oldListName,tempName,listObj.GroupID)
+                                   }
+                                   
                                 },
                                 (error) => {
                                     console.log(error)
@@ -256,7 +260,6 @@ function AList() {
     }
 
     const handleClickLimit = async () => {
-        console.log('tempLimit', tempLimit)
         try {
             const res = await fetch(apiAppList + "limit/" + tempLimit + '/' + listObj.ListID, {
                 method: 'PUT',
@@ -412,7 +415,8 @@ function AList() {
 
 
     return (
-        <span id="orel" >
+        <span>
+            {console.log(isAdmin)}
             {listObj &&
                 <div className="container" >
                     <div className="header">
@@ -466,6 +470,7 @@ function AList() {
                         />
 
                         <br />
+                        
                         {isAdmin && <span>
                             <TextField
                                 id='MuiInputBase-input'
@@ -473,10 +478,16 @@ function AList() {
                                 placeholder="הגדר מגבלה חדשה"
                                 helperText={`מגבלה נוכחית: ₪${limit}`}
                                 style={{ width: 150, marginRight: 20 }}
-                                onFocus={() => { SetDisableSave(false) }}
+                                onFocus={() => { 
+                                    SetDisableSave(false);
+                                    document.body.style.backgroundSize = 0
+                                 }}
                                 onInput={handleLimit}
                                 inputRef={limitInput}
-                                onBlur={() => { tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false) }}
+                                onBlur={() => { 
+                                    tempLimit === '' ? SetDisableSave(true) : SetDisableSave(false);
+                                    document.body.style.backgroundSize = '15vh'
+                                 }}
                             />
                             <Button
                                 color='primary'

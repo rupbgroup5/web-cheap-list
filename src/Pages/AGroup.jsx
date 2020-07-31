@@ -96,15 +96,19 @@ function AGroup() {
     document.body.style.backgroundSize = '50vh';;
     (async function fetchMyAPI() {
       if (!groupDetails) {
-        SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
-        SetIsAdmin(JSON.parse(localStorage.getItem('isAdmin')))
+        SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))    
       }
       if (groupDetails) {
         for (let i = 0; i < groupDetails.Participiants.length; i++) {
+          
           if (groupDetails.Participiants[i].UserID === groupDetails.UserID) {
             if (groupDetails.Participiants[i].IsAdmin) {
-              SetIsAdmin(true)
-            } else { SetIsAdmin(false) }
+              SetIsAdmin(true);
+              localStorage.setItem('isAdmin', JSON.stringify(true));
+            }else {
+              SetIsAdmin(false);
+              localStorage.setItem('isAdmin', JSON.stringify(false));
+            }
           }
         }
         try {
@@ -117,8 +121,7 @@ function AGroup() {
           })
           let data = await res.json();
           SetLists(data)
-          localStorage.setItem('groupDetails', JSON.stringify(groupDetails));
-          localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+          localStorage.setItem('groupDetails', JSON.stringify(groupDetails));        
         } catch (error) {
           console.log(error)
         }
@@ -247,12 +250,15 @@ function AGroup() {
                       userFrom = groupDetails.Participiants[i]
                       continue;
                     }
-                    if (groupDetails.Participiants[i].ExpoToken !== "") {
+                    let notValidExpo = false;
+                    notValidExpo = groupDetails.Participiants[i].ExpoToken === null || groupDetails.Participiants[i].ExpoToken === "";
+                    if (!notValidExpo) {
                       ArrUserTo.push(groupDetails.Participiants[i])
                     }
+                  }if (ArrUserTo.length !== 0) {
+                    ChangeGroupNamePush(userFrom, ArrUserTo, oldGroupName, tempName)
                   }
-                  console.log(ArrUserTo)
-                  ChangeGroupNamePush(userFrom, ArrUserTo, oldGroupName, groupDetails.GroupName)
+                  
                 },
                 (error) => {
                   console.log(error)

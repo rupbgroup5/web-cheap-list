@@ -4,7 +4,7 @@ import swal from 'sweetalert'
 
 
 let apiNotifications = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/"
-if (false) {
+if (true) {
   apiNotifications = "http://localhost:56794/api/Notifications/"
 }
 
@@ -15,7 +15,6 @@ export const SendPushAddToGroup = (token, AdminName, GroupName) => {
     title: 'הוספת לקבוצה',
     body: `${AdminName} הוסיף אותך ל${GroupName}`,
     badge: 1,
-    data: { "name": "yogev" },
   }
   fetch('http://cors-anywhere.herokuapp.com/https://exp.host/--/api/v2/push/send', {
     method: 'POST',
@@ -28,7 +27,7 @@ export const SendPushAddToGroup = (token, AdminName, GroupName) => {
     .then(response => response.json(),)
     .then(json => {
       if (json.data.status === "ok") {
-        console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+        console.log(`returned from server ${JSON.stringify(json.data.status)}`);
       } else {
         alert('err json');
       }
@@ -55,7 +54,7 @@ export const SendPushAskForProduct = (userFrom, userTo, group, list, p) => {
     .then(response => response.json(),)
     .then(json => {
       if (json.data.status === "ok") {
-        console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+        console.log(`returned from server ${JSON.stringify(json.data.status)}`);
 
         let n = {
           UserFrom: userFrom.UserID,
@@ -109,7 +108,7 @@ export const ApproveRequest = (userFrom, userTo, group, list, p) => {
     .then(response => response.json(),)
     .then(json => {
       if (json.data.status === "ok") {
-        console.log(`returned from server\njson.data= ${(json.data)}`);
+        console.log(`returned from server ${JSON.stringify(json.data.status)}`);
 
         let n = {
           UserFrom: userFrom.UserID,
@@ -212,7 +211,7 @@ export const SendPushIDeletedMySelf = (userFrom, admin, GroupRef) => {
     .then(response => response.json(),)
     .then(json => {
       if (json.data.status === "ok") {
-        console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+        console.log(`returned from server ${JSON.stringify(json.data.status)}`);
         let n = {
           UserFrom: userFrom.UserID,
           UserTo: admin.UserID,
@@ -261,7 +260,7 @@ export const SendPushRemovedByAdmin = (admin, userTo, GroupRef) => {
     .then(response => response.json(),)
     .then(json => {
       if (json.data.status === "ok") {
-        console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+        console.log(`returned from server ${JSON.stringify(json.data.status)}`);
         let n = {
           UserFrom: admin.UserID,
           UserTo: userTo.UserID,
@@ -311,7 +310,7 @@ export const AsyncSendPush_GroupDeletedByAdmin = async (admin, exposOfUsers2, id
       .then(response => response.json(),)
       .then(json => {
         if (json.data.status === "ok") {
-          console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+          console.log(`returned from server ${JSON.stringify(json.data.status)}`);
         } else {
           alert('err json');
         }
@@ -364,7 +363,7 @@ export const ChangeGroupNamePush = async (userFrom, usersTo, oldGroupName, newGr
       .then(response => response.json(),)
       .then(json => {
         if (json.data.status === "ok") {
-          console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+          console.log(`returned from server ${JSON.stringify(json.data.status)}`);
         } else {
           alert('err json');
         }
@@ -422,7 +421,7 @@ export const ChangeListNamePush = async (userFrom, usersTo, oldListName, newList
       .then(response => response.json(),)
       .then(json => {
         if (json.data.status === "ok") {
-          console.log(`returned from server\njson.data= ${JSON.stringify(msg.data)}`);
+          console.log(`returned from server ${JSON.stringify(json.data.status)}`);
         } else {
           alert('err json');
         }

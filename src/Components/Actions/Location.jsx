@@ -94,7 +94,7 @@ export default function Location(props) {
       }
     }
     )();
-  }, [api]);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -173,15 +173,17 @@ export default function Location(props) {
 
     let l = {};
     let OK = true;
+    if (listObj.KM_radius === 0 ) {
+      listObj.KM_radius = 5
+    }
 
-    if (listObj.TypeLocation === 'currentLocation') {
+    if (listObj.TypeLocation === 'currentLocation' || listObj.TypeLocation === null  ) {
       l = {
-        TypeLocation: listObj.TypeLocation,
+        TypeLocation:'currentLocation',
         ListID: listObj.ListID,
         Latitude: coords.lat,
         Longitude: coords.lng,
         CityName: 'הזן עיר לחיפוש',
-        CityID: listObj.CityID,
         KM_radius: listObj.KM_radius
       }
     } else {
@@ -199,6 +201,7 @@ export default function Location(props) {
         KM_radius: 10
       }
     }
+    SetListObj({...listObj,...l})
     if (OK) {
       console.log('ok',l)
     try {
@@ -210,6 +213,7 @@ export default function Location(props) {
         body: JSON.stringify(l)
       })
       let result = await res.json();
+      
       console.log(result)
       setOpen(false);
       props.CloseDialog()
