@@ -11,7 +11,7 @@ import {
 } from '@sandstreamdev/react-swipeable-list'
 import '@sandstreamdev/react-swipeable-list/dist/styles.css'
 import swal from 'sweetalert'
-import { withRouter, useParams, useHistory } from 'react-router-dom' 
+import { withRouter, useParams, useHistory } from 'react-router-dom'
 
 
 //Styles
@@ -53,9 +53,11 @@ function HomePage() {
 
   //Context Api:
   const { SetGroupDetails } = useContext(GroupDetailsContext);
-  const {isLocal} = useContext(IsLocalContext);
+  const { isLocal } = useContext(IsLocalContext);
   const { SetUserID } = useContext(UserIDContext)
   const { SetPageTitle } = useContext(PageTitleContext);
+
+
 
 
 
@@ -70,29 +72,33 @@ function HomePage() {
   const history = useHistory();
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
-  const [tempGroupName,SetTempGroupName] = useState();
-  
-  userIDfromRN = 1
+  const [tempGroupName, SetTempGroupName] = useState();
+
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 1
   }
 
   useEffect(() => {
-    document.body.style.backgroundSize = '50vh' ;;
-      localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
-    (async function fetchMyAPI() {
-      const res = await fetch(apiAppGroups + userIDfromRN, {
-        method: 'GET',
-        headers: new Headers({
-          'Content-Type': 'application/json; charset=UTF-8',
-        }),
-      })
-      let data = await res.json();
-      SetGroups(data);
-      SetPageTitle('הקבוצות שלי');
-    }());
-  }, [userIDfromRN,apiAppGroups,SetPageTitle]);
+    document.body.style.backgroundSize = '50vh';;
+    localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
+    try {
+      (async function fetchMyAPI() {
+        const res = await fetch(apiAppGroups + userIDfromRN, {
+          method: 'GET',
+          headers: new Headers({
+            'Content-Type': 'application/json; charset=UTF-8',
+          }),
+        })
+        let data = await res.json();
+        SetGroups(data);
+        SetPageTitle('הקבוצות שלי');
+        SetUserID(userIDfromRN);
+      }());
+    } catch (error) {
+      console.log(error)
+    }
+  }, []);
 
   const AddNewGroup = async (participiants) => {
     let participiantsArr = []
@@ -111,10 +117,10 @@ function HomePage() {
       let notValidExpo = false;
       notValidExpo = participiantsArr[i].ExpoToken === null || participiantsArr[i].ExpoToken === "";
       if (!notValidExpo) {
-        SendPushAddToGroup(participiantsArr[i].ExpoToken,groups[0].UserName, tempGroupName)
+        SendPushAddToGroup(participiantsArr[i].ExpoToken, groups[0].UserName, tempGroupName)
       }
     }
-  
+
     fetch(apiAppGroups, {
       method: 'POST',
       headers: new Headers({
@@ -125,7 +131,7 @@ function HomePage() {
       .then(
         (result) => {
           console.log('The ', result, ' was successfully added!')
-        SetGroups([...groups, {
+          SetGroups([...groups, {
             ...result
           }])
         },
@@ -182,29 +188,28 @@ function HomePage() {
   });
 
   const GetIntoGroup = (index) => {
-    SetUserID(userIDfromRN)
     SetGroupDetails(groups[index]);
     history.push(`/AGroups`);
 
   }
 
   const GetParticipiants = (groups) => {
-     let str = groups.Participiants[0].UserName;
-      for (let i = 1; i < groups.Participiants.length; i++) {
-        str += ', ' + groups.Participiants[i].UserName
-      }
-      return str;
+    let str = groups.Participiants[0].UserName;
+    for (let i = 1; i < groups.Participiants.length; i++) {
+      str += ', ' + groups.Participiants[i].UserName
     }
-    
-    const GetNameGroup = (groupName)=> {
-       SetTempGroupName(groupName);    
-       SetEnable(true);
-    }   
+    return str;
+  }
 
-    const handleCloseListContact = (participiants) => {
-      SetEnable(false);
-      AddNewGroup(participiants);
-    }
+  const GetNameGroup = (groupName) => {
+    SetTempGroupName(groupName);
+    SetEnable(true);
+  }
+
+  const handleCloseListContact = (participiants) => {
+    SetEnable(false);
+    AddNewGroup(participiants);
+  }
 
   return (
 
@@ -213,29 +218,29 @@ function HomePage() {
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>
-            <span key={index} onClick={()=>GetIntoGroup(index)} >
+            <span key={index} onClick={() => GetIntoGroup(index)} >
               <SwipeableList className={classes.root} threshold={0.25}  >
-                <SwipeableListItem style={{background:'black'}}
+                <SwipeableListItem style={{ background: 'black' }}
                   swipeRight={SwipeRightContent(g.GroupID, index)}
                   onSwipeProgress={handleSwipeProgress}
                 >
                   <ListItemAvatar style={{ marginRight: '5px' }}  >
                     <Badge badgeContent={g.Badge} color="secondary"  >
-                      <Avatar  />
+                      <Avatar />
                     </Badge>
                   </ListItemAvatar>
-                  <ListItem name={g.GroupName} description={GetParticipiants(g)}  />
+                  <ListItem name={g.GroupName} description={GetParticipiants(g)} />
                 </SwipeableListItem>
               </SwipeableList>
 
             </span>
           )
-        }  
-        <br/>
-        {enable && <Contacts userID={userIDfromRN} groupName={tempGroupName} close={handleCloseListContact} style={{textAlign:'center'}}/>}
+        }
+        <br />
+        {enable && <Contacts userID={userIDfromRN} groupName={tempGroupName} close={handleCloseListContact} style={{ textAlign: 'center' }} />}
       </div>
       <div className="footer">
-        <FormDialog getData={GetNameGroup}  headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
+        <FormDialog getData={GetNameGroup} headLine={'יצירת קבוצה'} label={'שם הקבוצה'} />
       </div>
     </div>
 

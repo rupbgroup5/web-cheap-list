@@ -59,7 +59,7 @@ function App() {
                       <Switch>
                         <Route exact path="/" component={HomePage} /> {/**makes the HomePage homepage even when the url clean */}
                         <Route path="/HomePage/:userIDfromRN" component={HomePage} />
-                        <Route path="/AGroups" component={AGroup} /> {/** /:groupID/:groupName/:userID */}
+                        <Route path="/AGroups" component={AGroup} /> 
                         <Route path="/GroupSetting" component={GroupSetting} />
                         <Route path="/AList" component={AList} />
                         <Route path="/SuperMarketList" component={SuperMarketList} />
