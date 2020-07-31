@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 function HomePage() {
 
   //Context Api:
-  const { SetGroupDetails } = useContext(GroupDetailsContext);
+  const { groupDeatils,SetGroupDetails } = useContext(GroupDetailsContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetUserID } = useContext(UserIDContext)
   const { SetPageTitle } = useContext(PageTitleContext);
@@ -63,7 +63,7 @@ function HomePage() {
 
   let { userIDfromRN } = useParams();
   if (userIDfromRN === undefined) {
-    userIDfromRN = JSON.parse(localStorage.getItem('UserID'))
+    userIDfromRN = JSON.parse(localStorage.getItem('UserID'))  
   }
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
@@ -72,8 +72,7 @@ function HomePage() {
   const history = useHistory();
   var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
-  const [tempGroupName, SetTempGroupName] = useState();
-
+  const [tempGroupName,SetTempGroupName] = useState();
   
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
@@ -82,7 +81,7 @@ function HomePage() {
 
   useEffect(() => {
     document.body.style.backgroundSize = '50vh';;
-    localStorage.setItem('UserID', JSON.stringify(userIDfromRN));
+    
     try {
       (async function fetchMyAPI() {
         const res = await fetch(apiAppGroups + userIDfromRN, {
@@ -94,7 +93,8 @@ function HomePage() {
         let data = await res.json();
         SetGroups(data);
         SetPageTitle('הקבוצות שלי');
-        SetUserID(userIDfromRN);
+        SetUserID(Number(userIDfromRN));
+        localStorage.setItem('UserID', JSON.stringify(Number(userIDfromRN)))
       }());
     } catch (error) {
       console.log(error)
@@ -113,6 +113,7 @@ function HomePage() {
       UserID: userIDfromRN,
       Participiants: participiantsArr,
     };
+
 
     for (let i = 0; i < participiantsArr.length; i++) {
       let notValidExpo = false;
@@ -193,6 +194,7 @@ function HomePage() {
     history.push(`/AGroups`);
 
   }
+  
 
   const GetParticipiants = (groups) => {
     let str = groups.Participiants[0].UserName;

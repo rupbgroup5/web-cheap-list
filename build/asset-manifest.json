@@ -1,26 +1,26 @@
 {
   "files": {
     "main.css": "/bgroup5/FinalProject/frontEnd/static/css/main.c9582255.chunk.css",
-    "main.js": "/bgroup5/FinalProject/frontEnd/static/js/main.d58437e5.chunk.js",
-    "main.js.map": "/bgroup5/FinalProject/frontEnd/static/js/main.d58437e5.chunk.js.map",
+    "main.js": "/bgroup5/FinalProject/frontEnd/static/js/main.a500fb21.chunk.js",
+    "main.js.map": "/bgroup5/FinalProject/frontEnd/static/js/main.a500fb21.chunk.js.map",
     "runtime-main.js": "/bgroup5/FinalProject/frontEnd/static/js/runtime-main.34730710.js",
     "runtime-main.js.map": "/bgroup5/FinalProject/frontEnd/static/js/runtime-main.34730710.js.map",
     "static/css/2.89c2deac.chunk.css": "/bgroup5/FinalProject/frontEnd/static/css/2.89c2deac.chunk.css",
-    "static/js/2.6b2ead00.chunk.js": "/bgroup5/FinalProject/frontEnd/static/js/2.6b2ead00.chunk.js",
-    "static/js/2.6b2ead00.chunk.js.map": "/bgroup5/FinalProject/frontEnd/static/js/2.6b2ead00.chunk.js.map",
+    "static/js/2.1dd08642.chunk.js": "/bgroup5/FinalProject/frontEnd/static/js/2.1dd08642.chunk.js",
+    "static/js/2.1dd08642.chunk.js.map": "/bgroup5/FinalProject/frontEnd/static/js/2.1dd08642.chunk.js.map",
     "index.html": "/bgroup5/FinalProject/frontEnd/index.html",
-    "precache-manifest.d0af7d71403c8f25dbfee7539f281659.js": "/bgroup5/FinalProject/frontEnd/precache-manifest.d0af7d71403c8f25dbfee7539f281659.js",
+    "precache-manifest.f9113e3a6d311ab92eb5fef6ff66a59d.js": "/bgroup5/FinalProject/frontEnd/precache-manifest.f9113e3a6d311ab92eb5fef6ff66a59d.js",
     "service-worker.js": "/bgroup5/FinalProject/frontEnd/service-worker.js",
     "static/css/2.89c2deac.chunk.css.map": "/bgroup5/FinalProject/frontEnd/static/css/2.89c2deac.chunk.css.map",
     "static/css/main.c9582255.chunk.css.map": "/bgroup5/FinalProject/frontEnd/static/css/main.c9582255.chunk.css.map",
-    "static/js/2.6b2ead00.chunk.js.LICENSE.txt": "/bgroup5/FinalProject/frontEnd/static/js/2.6b2ead00.chunk.js.LICENSE.txt",
+    "static/js/2.1dd08642.chunk.js.LICENSE.txt": "/bgroup5/FinalProject/frontEnd/static/js/2.1dd08642.chunk.js.LICENSE.txt",
     "static/media/App.css": "/bgroup5/FinalProject/frontEnd/static/media/Logo.84fbe1d0.png"
   },
   "entrypoints": [
     "static/js/runtime-main.34730710.js",
     "static/css/2.89c2deac.chunk.css",
-    "static/js/2.6b2ead00.chunk.js",
+    "static/js/2.1dd08642.chunk.js",
     "static/css/main.c9582255.chunk.css",
-    "static/js/main.d58437e5.chunk.js"
+    "static/js/main.a500fb21.chunk.js"
   ]
 }

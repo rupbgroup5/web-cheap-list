@@ -49,7 +49,6 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
         SetListObj(JSON.parse(localStorage.getItem('listObj')))
       }
       if (userID) {
-        console.log('userID', userID)
         let apiNotifications = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/Notifications/${userID}`
         if (isLocal) {
           apiNotifications = `http://localhost:56794/api/Notifications/${userID}`
@@ -58,8 +57,7 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
         let tempNot;
         if (pageTitle === 'הקבוצות שלי') {       
         (async function fetchMyAPI() {
-        try {
-          console.log('fetch')   
+        try {  
           const res = await fetch(apiNotifications, {
             method: 'GET',
             headers: new Headers({
@@ -104,9 +102,11 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 
   const ReturnToHomePage = () => {
     if (userID === undefined) {
-      SetUserID(JSON.parse(localStorage.getItem('UserID')))
-    }
-    history.push(`/HomePage/${userID}`);
+      let id = JSON.parse(localStorage.getItem('UserID'))
+      console.log(id)
+      SetUserID(id)
+      history.push(`/HomePage/${id}`);
+    }else history.push(`/HomePage/${userID}`);
   }
 
   return (
