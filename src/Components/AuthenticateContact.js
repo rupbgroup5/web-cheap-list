@@ -26,7 +26,7 @@ const AuthenticateContact = async (user, requsetSenderName) => {
     let member = await res.json();
 
     if (member.UserID === 0) {
-        console.log('id =0')
+        console.log('id = 0')
         const { value: email } = await Swal.fire({
             title: `${user.Name} אינו רשום באפליקציה`,
             text: 'הקלד מייל כדי לשלוח לו הזמנה',

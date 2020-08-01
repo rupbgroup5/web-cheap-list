@@ -386,9 +386,23 @@ const GroupSetting = () => {
     }
 
     const AddParticipants2Group = async (participants) => {
+
+        let loggedInUser = {
+            UserID: userID,
+            UserName: ""
+        }
+
+        groupDetails.Participiants.forEach(p => {
+            if (p.UserID === userID) {
+                loggedInUser.UserName = p.UserName;
+            }
+        });
+
         let justAddedParticipants = [];
+
+
         for (let i = 0; i < participants.length; i++) {
-            let newParticipant = await AuthenticateContact(participants[i].PhoneNumber);
+            let newParticipant = await AuthenticateContact(participants[i], loggedInUser.UserName);
             justAddedParticipants.push(newParticipant);
         }
 
@@ -449,121 +463,125 @@ const GroupSetting = () => {
 
 
     return (
-        groupDetails ?
-            <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-                <AppBar className={classes.appBar}>
-                    <Toolbar>
-                        <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                            <CloseIcon />
-                        </IconButton>
-                        <Typography variant="h6" className={classes.title}>
-                            הגדרות
-                    </Typography>
-                    </Toolbar>
-                </AppBar>
+        <div>
+
+            {/* groupDetails ?
+             <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
+                 <AppBar className={classes.appBar}>
+                     <Toolbar>
+                         <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                             <CloseIcon />
+                         </IconButton>
+                         <Typography variant="h6" className={classes.title}>
+                             הגדרות
+                     </Typography>
+                     </Toolbar>
+                 </AppBar> */}
 
 
-                <div className={classes.root}>
+            <div className={classes.root}>
 
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="h6" className={classes.title}>
-                            <TextField
-                                id="outlined-basic"
-                                variant="standard"
-                                onInput={editGroupName}
-                                placeholder={groupDetails.GroupName}
-                                onBlur={ConfirmationEditGroupName}
-                                inputRef={textInput}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <EditOutlinedIcon />
-                                        </InputAdornment>
-                                    ),
-                                    className: classes.myTxtFeild
-                                    //↑ this ↑ has to be inside InputProps !
-                                }}
-                            />
-                            <PersonAddOutlinedIcon onClick={() => { SetEnableContacts(true) }} />
-                        </Typography>
-
-                    </Grid>
-
-                </div>
-
-
-                <div className={classes.ParticipiantsDiv}>
-                    <List dense={true}>
-                        {
-                            groupDetails.Participiants.map((p) => {
-                                return <ListItem key={p.UserID}>
-                                    {!p.IsAdmin && userID === adminUser.UserID ?
-                                        //show the DeleteIcon only if logged in user is admin and side with one he is not admin himself 
-                                        <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                        : ""
-                                    }
-                                    <ListItemText
-                                        primary={p.UserName}
-                                        secondary={p.IsAdmin ?
-                                            <span className={classes.secondaryTxt}>מנהל</span>
-                                            : ''}
-                                        className={classes.listItemText}
-                                    />
-                                    <ListItemAvatar>
-                                        <Avatar />
-                                    </ListItemAvatar>
-                                </ListItem>
-                            })
-                        }
-                    </List>
-                </div>
-                {
-                    enableContacts &&
-                    <div className={classes.myContactsList}>
-                        <Contacts
-                            userID={userID}
-                            groupName={groupDetails.GroupName}
-                            close={handleCloseListContact}
-
+                <Grid item xs={12} md={6}>
+                    <Typography variant="h6" className={classes.title}>
+                        <TextField
+                            id="outlined-basic"
+                            variant="standard"
+                            onInput={editGroupName}
+                            placeholder={groupDetails.GroupName}
+                            onBlur={ConfirmationEditGroupName}
+                            inputRef={textInput}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <EditOutlinedIcon />
+                                    </InputAdornment>
+                                ),
+                                className: classes.myTxtFeild
+                                //↑ this ↑ has to be inside InputProps !
+                            }}
                         />
-                    </div>
-                }
+                        <PersonAddOutlinedIcon onClick={() => { SetEnableContacts(true) }} />
+                    </Typography>
+
+                </Grid>
+
+            </div>
 
 
-
-                <div className={classes.footer}>
+            <div className={classes.ParticipiantsDiv}>
+                <List dense={true}>
                     {
-                        userID === adminUser.UserID ?
-                            <Button
-                                style={{ backgroundColor: 'red' }}
-                                variant="contained"
-                                className={classes.myButton}
-                                startIcon={<DeleteIcon />}
-                                onClick={() => { DeleteGroup(); }}
-                            >
-                                מחק את הקבוצה
-                </Button>
-                            :
-                            <Button
-                                style={{ backgroundColor: 'red' }}
-                                variant="contained"
-                                className={classes.myButton}
-                                startIcon={<DeleteIcon />}
-                                onClick={() => { ExitFromThisGroup() }}
-                            >
-                                צא מהקבוצה
-            </Button>
+                        groupDetails.Participiants.map((p) => {
+                            return <ListItem key={p.UserID}>
+                                {!p.IsAdmin && userID === adminUser.UserID ?
+                                    //show the DeleteIcon only if logged in user is admin and side with one he is not admin himself 
+                                    <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                    : ""
+                                }
+                                <ListItemText
+                                    primary={p.UserName}
+                                    secondary={p.IsAdmin ?
+                                        <span className={classes.secondaryTxt}>מנהל</span>
+                                        : ''}
+                                    className={classes.listItemText}
+                                />
+                                <ListItemAvatar>
+                                    <Avatar />
+                                </ListItemAvatar>
+                            </ListItem>
+                        })
                     }
+                </List>
+            </div>
+            {
+                enableContacts &&
+                <div className={classes.myContactsList}>
+                    <Contacts
+                        userID={userID}
+                        groupName={groupDetails.GroupName}
+                        close={handleCloseListContact}
+
+                    />
                 </div>
+            }
 
 
 
-            </Dialog>
+            <div className={classes.footer}>
+                {
+                    userID === adminUser.UserID ?
+                        <Button
+                            style={{ backgroundColor: 'red' }}
+                            variant="contained"
+                            className={classes.myButton}
+                            startIcon={<DeleteIcon />}
+                            onClick={() => { DeleteGroup(); }}
+                        >
+                            מחק את הקבוצה
+                </Button>
+                        :
+                        <Button
+                            style={{ backgroundColor: 'red' }}
+                            variant="contained"
+                            className={classes.myButton}
+                            startIcon={<DeleteIcon />}
+                            onClick={() => { ExitFromThisGroup() }}
+                        >
+                            צא מהקבוצה
+            </Button>
+                }
+            </div>
 
-            :
-            <span></span>
+
+            {/* 
+             </Dialog>
+
+             :
+             <span></span> */}
+        </div>
+
     );
 }
 

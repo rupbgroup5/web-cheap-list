@@ -76,7 +76,7 @@ function HomePage() {
 
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 1
+    userIDfromRN = 12
   }
 
   useEffect(() => {
