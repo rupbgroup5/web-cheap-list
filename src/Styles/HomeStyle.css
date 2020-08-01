@@ -48,6 +48,13 @@
     text-align: right;
     direction: rtl;
 }
-
-
+#title-class{
+    font-size: 150px;
+}
+#swal2-title{
+  font-size: 1.25em;
+}
+.swal2-input{
+    direction: rtl;
+}
 

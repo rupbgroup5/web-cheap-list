@@ -137,6 +137,7 @@ function AList() {
             }
             if (groupDetails) {
                 ActivateStateListObj()
+                document.body.style.backgroundSize = '30vh'
                 try {
                     const res = await fetch(apiAppProduct + listObj.ListID, {
                         method: 'GET',
@@ -148,11 +149,8 @@ function AList() {
                     SetProductCart(result)
                     localStorage.setItem('listObj', JSON.stringify(listObj));
                     if (isAdmin && result.length !== 0) {
-                        document.body.style.backgroundSize = '15vh'
-                    }
-                    if (result.length !== 0 && !isAdmin) {
-                        document.body.style.backgroundSize = '30vh'
-                    }
+                        document.body.style.backgroundSize = '13vh'
+                    } 
                 } catch (error) {
                     console.log(error)
                 }
@@ -164,7 +162,16 @@ function AList() {
 
     const ActivateStateListObj = () => {
         SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
-        SetLimit(listObj.LimitPrice ? listObj.LimitPrice : 500 )
+        if (listObj.LimitPrice) {
+            SetLimit(listObj.LimitPrice)
+        }else{
+            SetLimit( 500 )
+            SetListObj({
+                ...listObj,
+                LimitPrice: 500
+            })
+        }
+        
     }
 
     const editListName = (e) => {
@@ -311,6 +318,7 @@ function AList() {
                 });
         } else {
             Swal.fire({
+                id:'swal2-title',
                 width: '20rem',
                 title: '?כמה פריטים ברצונך למחוק',
                 input: 'number',
@@ -330,7 +338,7 @@ function AList() {
                         console.log('here', value.value)
                         swal({
                             title: "מחיקת פריט",
-                            text: `האם למחוק את כל היחידות של ?${productCart[index].product_description}`,
+                            text: `?האם למחוק את כל היחידות של ${productCart[index].product_description}`,
                             buttons: ['בטל', 'מחק'],
                             dangerMode: true,
                         })
@@ -359,7 +367,7 @@ function AList() {
                     } else {
                         swal({
                             title: "מחיקת פריט",
-                            text: `האם למחוק ${value.value} 'יח ?${productCart[index].product_description}`,
+                            text: `?האם למחוק ${value.value} 'יח ${productCart[index].product_description}`,
                             buttons: ['בטל', 'מחק'],
                             dangerMode: true,
                         })
@@ -417,7 +425,6 @@ function AList() {
 
     return (
         <span>
-            {console.log(isAdmin)}
             {listObj &&
                 <div className="container" >
                     <div className="header">

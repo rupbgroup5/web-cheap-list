@@ -10,6 +10,7 @@ import AuthenticateContact from '../Components/AuthenticateContact'
 import { IsLocalContext } from '../Contexts/IsLocalContext'
 import { GroupDetailsContext } from "../Contexts/GroupDetailsContext"
 import { UserIDContext } from "../Contexts/UserIDContext"
+import { PageTitleContext } from '../Contexts/PageTitleContext'
 
 //material-ui
 import { makeStyles } from '@material-ui/core/styles'
@@ -56,12 +57,17 @@ const useStyles = makeStyles((theme) => ({
     ,
     title: {
         flex: 1,
-        fontSize: '8vh',
+        //fontSize: '8vh',
         fontFamily: 'Amatic SC',
     },
     root: {
-        maxWidth: 752,
-        textAlign: 'center',
+        // maxWidth: 752,
+        // textAlign: 'center',
+        display: 'flex',
+        maxWidth: '60%',
+        alignItems: 'center',
+        margin: '4vh',
+        marginRight: '12vh'
     },
     ParticipiantsDiv: {
         backgroundColor: theme.palette.background.paper,
@@ -100,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
     footer: {
         width: '100vw',
         height: '20vh',
-        marginTop: '5vh',
+        marginTop: '15vh',
     },
 
 }));
@@ -121,6 +127,7 @@ const GroupSetting = () => {
     const { isLocal } = useContext(IsLocalContext);
     const { groupDetails, SetGroupDetails } = useContext(GroupDetailsContext);
     const { userID, SetUserID } = useContext(UserIDContext);
+    const { SetPageTitle } = useContext(PageTitleContext);
 
     useEffect(() => {
         (() => {
@@ -130,6 +137,8 @@ const GroupSetting = () => {
             if (!userID) {
                 SetUserID(JSON.parse(localStorage.getItem('UserID')));
             }
+            SetPageTitle('פרטי הקבוצה')
+            document.body.style.backgroundSize = '0'
         })();
     }, []);
 
@@ -463,56 +472,39 @@ const GroupSetting = () => {
 
 
     return (
-        <div>
-
-            {/* groupDetails ?
-             <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}  >
-                 <AppBar className={classes.appBar}>
-                     <Toolbar>
-                         <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-                             <CloseIcon />
-                         </IconButton>
-                         <Typography variant="h6" className={classes.title}>
-                             הגדרות
-                     </Typography>
-                     </Toolbar>
-                 </AppBar> */}
-
-
+        <span>
+      { groupDetails &&  <div>
             <div className={classes.root}>
+                <TextField
+                    id="outlined-basic"
+                    variant="standard"
+                    onInput={editGroupName}
+                    placeholder={groupDetails.GroupName}
+                    onBlur={ConfirmationEditGroupName}
+                    inputRef={textInput}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position='start'>
+                                <EditOutlinedIcon />
 
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h6" className={classes.title}>
-                        <TextField
-                            id="outlined-basic"
-                            variant="standard"
-                            onInput={editGroupName}
-                            placeholder={groupDetails.GroupName}
-                            onBlur={ConfirmationEditGroupName}
-                            inputRef={textInput}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <EditOutlinedIcon />
-                                    </InputAdornment>
-                                ),
-                                className: classes.myTxtFeild
-                                //↑ this ↑ has to be inside InputProps !
-                            }}
-                        />
-                        <PersonAddOutlinedIcon onClick={() => { SetEnableContacts(true) }} />
-                    </Typography>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                &nbsp; &nbsp;
+                <IconButton>
+                <PersonAddOutlinedIcon  onClick={() => { SetEnableContacts(true) }}/>
+                </IconButton>
 
-                </Grid>
 
             </div>
 
 
             <div className={classes.ParticipiantsDiv}>
-                <List dense={true}>
+                <List dense={true} dir='ltr'>
                     {
                         groupDetails.Participiants.map((p) => {
-                            return <ListItem key={p.UserID}>
+                            return <ListItem key={p.UserID} alignItems="flex-start">
                                 {!p.IsAdmin && userID === adminUser.UserID ?
                                     //show the DeleteIcon only if logged in user is admin and side with one he is not admin himself 
                                     <IconButton aria-label="delete" onClick={() => { removeUserfromGroup(p.UserID, p.UserName) }}>
@@ -549,7 +541,7 @@ const GroupSetting = () => {
 
 
 
-            <div className={classes.footer}>
+           {!enableContacts && <div className={classes.footer}>
                 {
                     userID === adminUser.UserID ?
                         <Button
@@ -572,15 +564,9 @@ const GroupSetting = () => {
                             צא מהקבוצה
             </Button>
                 }
-            </div>
-
-
-            {/* 
-             </Dialog>
-
-             :
-             <span></span> */}
-        </div>
+            </div>}
+        </div>}
+        </span>
 
     );
 }

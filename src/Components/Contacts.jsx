@@ -5,6 +5,9 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
 
+
+import swal from 'sweetalert'
+
 export default function Contacts(props) {
   const [contacts, SetContacts] = useState([])
   const fixedOptions = [];
@@ -32,7 +35,7 @@ export default function Contacts(props) {
     if (members.length !== 0) {
       props.close(members)
     }
-    else { alert('לא בחרת משתתפים עדיין') }
+    else { swal('לא בחרת משתתפים עדיין') }
 
   }
 

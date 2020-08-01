@@ -40,7 +40,8 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flex: 1,
     fontFamily: "'Heebo', sans-serif",
-    fontSize: '3.5vh'
+    fontSize: '3.5vh',
+    textAlign:'center'
   },
   button: {
     margin: theme.spacing(1),
@@ -271,7 +272,12 @@ export default function SearchProduct(props) {
       let resStoreID = await fetch(query, { method: 'GET' })
       let resultStoreID = await resStoreID.json();
       console.log('resultStoreId', resultStoreID)
-
+      console.log('ds', resultStoreID.error_type)
+      if (resultStoreID.error_type === "NO_DATA") {
+        SetLoading(false);
+        SetProduct('לא נמצאו סופרים הנמצאים באזור החיפוש')
+      }
+    
       //get productBarcode
       data.GetProductsByName.product_name = tempProduct;
       query = queryString.stringifyUrl({ url: superGetAPI, query: data.GetProductsByName })

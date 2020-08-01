@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flex: 1,
     fontFamily:"'Heebo', sans-serif",
-    fontSize: '3.5vh'
+    fontSize: '3.5vh',
+    textAlign:'center'
 
   }
 }));

@@ -69,7 +69,8 @@ function App() {
                         <Route path="/NotTaken" component={NotTaken} />
                         <Route path="/CCErrorMessage" component={CCErrorMessage} />
                         <Route path ="/Notifications"  component={Notifications}/>
-                        <Route path ="/UserProfile" component={UserProfile}/>
+                        {/* <Route path ="/UserProfile" component={UserProfile}/> */}
+                        <Route path ="/UserProfile/:userIDfromRN" component={UserProfile}/>
                       </Switch>
                     </ProductsCartContextProvider>
                   </ListDetailsContextProvider>

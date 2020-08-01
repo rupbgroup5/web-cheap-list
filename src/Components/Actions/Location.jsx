@@ -39,7 +39,8 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginLeft: theme.spacing(2),
     flex: 1,
-    fontFamily:"'Heebo', sans-serif"
+    fontFamily:"'Heebo', sans-serif",
+    textAlign:'center'
   },
   FormControl: {
     alignItems: 'center',

@@ -9,7 +9,7 @@ const AuthenticateContact = async (user, requsetSenderName) => {
     //const  { isLocal } = useContext(IsLocalContext); //not working, probably because breaking the Rules of Hooks.
     let apiAppUser = 'http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/'
 
-    if (true) {
+    if (false) {
         apiAppUser = 'http://localhost:56794/api/AppUsers/'
     }
     let newUser = {

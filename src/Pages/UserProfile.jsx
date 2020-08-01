@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { withRouter, useHistory } from 'react-router-dom'
+import { withRouter, useHistory,useParams } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import { Accordion, Button } from '@material-ui/core';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -16,11 +16,13 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import MailIcon from '@material-ui/icons/Mail';
 
+
 import swal from 'sweetalert'
 
 //ContextApi
 import { UserIDContext } from '../Contexts/UserIDContext'
 import { IsLocalContext } from '../Contexts/IsLocalContext'
+import { PageTitleContext } from "../Contexts/PageTitleContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -52,11 +54,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function UserProfile() {
+
+   
     const classes = useStyles();
     const history = useHistory();
     //ContextApi
     const { userID, SetUserID } = useContext(UserIDContext)
     const { isLocal } = useContext(IsLocalContext);
+    const { SetPageTitle } = useContext(PageTitleContext);
 
     const [user, SetUser] = useState()
     const [expanded, setExpanded] = useState(false);
@@ -68,6 +73,10 @@ function UserProfile() {
         UserPassWord: '',
         UserPassWordVali: ''
     })
+    let { userIDfromRN  } = useParams();
+    if (userIDfromRN === undefined) {
+        userIDfromRN = userID
+    }
 
 
     let apiAppUser = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/`
@@ -78,7 +87,7 @@ function UserProfile() {
     useEffect(() => {
         try {
             (async function fetchMyAPI() {
-                const res = await fetch(apiAppUser + `GetUser/${userID}`, {
+                const res = await fetch(apiAppUser + `GetUser/${userIDfromRN}`, {
                     method: 'GET',
                     headers: new Headers({
                         'Content-Type': 'application/json; charset=UTF-8',
@@ -86,11 +95,13 @@ function UserProfile() {
                 })
                 let data = await res.json();
                 SetUser(data)
+                SetUserID(userIDfromRN)
+                SetPageTitle('עריכת פרופיל')
             }());
         } catch (error) {
             console.log(error)
         }
-    }, []);
+    }, [userIDfromRN]);
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);

@@ -94,9 +94,7 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
     setAnchorEl(null);
   };
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+
 
   const ReturnToHomePage = () => {
     if (userID === undefined) {
@@ -112,30 +110,27 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
       <span className="nav-Logo">
         <img src={Logo} alt="" onClick={ReturnToHomePage} />
       </span>
-      <span className="nav-title" style={{paddingRight: 'הקבוצות שלי' === pageTitle ? 30 : 0  }}>{pageTitle}</span>
-      <span className="nav-goBack">
+      <span className="nav-title"  style={{paddingLeft: 'הקבוצות שלי' === pageTitle ? 30 : 30}} >{pageTitle}</span>
+   {pageTitle !== 'הקבוצות שלי' && <span className="nav-goBack">
       <IconButton
        onClick={()=> {pageTitle === 'הקבוצות שלי' ? ReturnToHomePage() : history.goBack()}}
       color="inherit"
       >
           <ArrowForwardIosIcon/>
         </IconButton>
-      </span>
-      <span className="nav-Profile">
+      </span>}
+    {pageTitle === 'הקבוצות שלי' &&  <span className="nav-Profile">
         <IconButton
           aria-label="account of current user"
           aria-haspopup="true"
-          onClick={()=>history.push("/UserProfile")}
+          onClick={()=>history.push(`/UserProfile/${userID}`)}
           color="inherit"
         >
           <AccountCircle />
         </IconButton>
-   
-
-
-      </span>
-
-      {(pageTitle === 'סל קניות' || notifications.length !== 0) && <span className="nav-not" >
+      </span>}
+      {/* (pageTitle === 'סל קניות' || notifications.length !== 0) */}
+      {(pageTitle === 'סל קניות' || notifications.length !== 0)  && <span className="nav-not" >
         <IconButton
           onClick={() => history.push('/Notifications')}
           color="inherit"

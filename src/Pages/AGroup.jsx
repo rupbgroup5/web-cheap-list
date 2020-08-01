@@ -8,7 +8,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { Badge, IconButton, TextField } from '@material-ui/core'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import List from '@material-ui/core/List';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { FiEdit } from 'react-icons/fi';
 
 
 import {
@@ -54,6 +54,13 @@ const useStyles = makeStyles(theme => ({
   '& .MuiBadge-root': {
     marginRight: theme.spacing(4),
   },
+  header: {
+    alignItems: 'center',
+    paddingRight: 30,
+    flexDirection: 'row',
+    placeContent: 'center',
+    display:'flex'
+  }
 
 }));
 
@@ -275,11 +282,7 @@ function AGroup() {
     <span>
       {groupDetails &&
         <div className="container">
-          <div className="header" style={{
-            alignItems: 'center',
-            paddingRight: 30,
-            flexDirection: 'row'
-          }} >
+          <div className={classes.header} >
             <TextField
               id="outlined-basic"
               variant="outlined"
@@ -288,7 +291,9 @@ function AGroup() {
               onBlur={ConfirmationEditGroupName}
               inputRef={textInput}
             />
-            <InfoOutlinedIcon onClick={() => history.push('/GroupSetting')} style={{ paddingRight: '15px' }} />
+            {isAdmin && <IconButton>
+              <FiEdit onClick={() => history.push('/GroupSetting')} style={{ paddingRight: '15px' }} />
+              </IconButton>}
           </div>
           <div className="Maincontent">
             {

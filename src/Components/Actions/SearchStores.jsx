@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flex: 1,
     fontFamily:"'Heebo', sans-serif",
-    fontSize: '3.5vh'
+    fontSize: '3.5vh',
+    textAlign:'center'
   }
 }));
 
@@ -95,6 +96,7 @@ export default function SearchStores(props) {
         }
         let resStoreID = await fetch(query, { method: 'GET' })
         let resultStoreID = await resStoreID.json()
+        
         console.log(resultStoreID)
 
         let tempArrayStore = []

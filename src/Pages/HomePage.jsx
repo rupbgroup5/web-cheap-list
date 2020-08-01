@@ -54,34 +54,61 @@ function HomePage() {
   //Context Api:
   const { groupDeatils, SetGroupDetails } = useContext(GroupDetailsContext);
   const { isLocal } = useContext(IsLocalContext);
-  const { SetUserID } = useContext(UserIDContext)
+  const { userID,SetUserID,userName,SetUserName } = useContext(UserIDContext)
   const { SetPageTitle } = useContext(PageTitleContext);
-
 
 
 
 
   let { userIDfromRN } = useParams();
   if (userIDfromRN === undefined) {
-    userIDfromRN = JSON.parse(localStorage.getItem('UserID'))
+    userIDfromRN = userID
   }
+  
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
   let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
+  let apiAppUser = `http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/GetUser/${userIDfromRN}`
   const [enable, SetEnable] = useState(false);
   const [tempGroupName, SetTempGroupName] = useState();
-
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 12
+    apiAppUser = `http://localhost:56794/api/AppUsers/GetUser/${userIDfromRN}`
+    userIDfromRN = 1
   }
 
   useEffect(() => {
+    console.log(userName)
+    if (!userName) {
+      console.log(userName)
+      try {
+        (async function fetchMyAPI() {
+          const res = await fetch(apiAppUser, {
+            method: 'GET',
+            headers: new Headers({
+              'Content-Type': 'application/json; charset=UTF-8',
+            }),
+          })
+          let data = await res.json();
+          console.log(data)
+          SetUserName(data.UserName)
+         
+  
+        }());
+      } catch (error) {
+        console.log(error)
+      }
+    }
+   
+  }, []);
+
+
+  useEffect(() => {
     
-    document.body.style.backgroundSize = '50vh';;
+    document.body.style.backgroundSize = '50vh';
 
     try {
       (async function fetchMyAPI() {
@@ -108,7 +135,7 @@ function HomePage() {
 
 
     for (let i = 0; i < participiants.length; i++) {
-      let newParticipiant = await AuthenticateContact(participiants[i], groups[0].UserName)
+      let newParticipiant = await AuthenticateContact(participiants[i], userName)
       console.log(newParticipiant)
        participiantsArr.push(newParticipiant)
       console.log(participiantsArr)
@@ -119,7 +146,7 @@ function HomePage() {
       console.log(participiantsArr)
       notValidExpo = participiantsArr[i].ExpoToken === null || participiantsArr[i].ExpoToken === "";
       if (!notValidExpo) {
-        SendPushAddToGroup(participiantsArr[i].ExpoToken, groups[0].UserName, tempGroupName)
+        SendPushAddToGroup(participiantsArr[i].ExpoToken, userName, tempGroupName)
       }
     }
 
@@ -170,6 +197,7 @@ function HomePage() {
                 (result) => {
                   groups.splice(index, 1)
                   SetGroups([...groups])
+                  SetUserName(userName)
                   console.log('The ', result, ' was successfully deleted!')
                   swal("הקבוצה נמחקה ")
                 },
@@ -223,7 +251,7 @@ function HomePage() {
   return (
 
     <div className="container">
-      {groups[0] && <div className="header"> <b>שלום {groups[0].UserName} </b> </div>}
+      {userName && <div className="header"> <b>שלום {userName} </b> </div>}
       <div className="Maincontent"  >
         {
           groups.map((g, index) =>

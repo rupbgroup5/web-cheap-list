@@ -108,8 +108,6 @@ const Notifications = (props) => {
                 }),
                 body: JSON.stringify(notifications)
             })
-            let tempNotifiactions = notifications.filter(item  => item.HasRead === 0 || item.TypeNot === 'AskProduct' )
-            SetNotifications(tempNotifiactions)
             Setbadge(0);
         } catch (error) {
             console.log(error)
@@ -120,7 +118,7 @@ const Notifications = (props) => {
 
     const ApproveProducat = (p, index) => {  Add2DB(p, index) }
 
-    const DeclineProducat = (p, index) => {
+    const DeclineProducat = async (p, index) => {
         notifications[index].TypeNot = '';
         let tempUserTo = notifications[index].UserFrom
         let userFrom = {
@@ -130,7 +128,11 @@ const Notifications = (props) => {
 
         let userTo = groupDetails.Participiants.find(userTo => userTo.UserID === tempUserTo);
         swal('הבקשה סורבה')
-        DeclineRequest(userFrom, userTo, groupDetails, listObj, p)
+         DeclineRequest(userFrom, userTo, groupDetails, listObj, p)
+        let tempNotifiactions = notifications.filter(item  => item.HasRead === 0 || item.TypeNot === 'AskProduct' )
+            console.log(tempNotifiactions)
+            SetNotifications(tempNotifiactions)
+        
        
     }
 

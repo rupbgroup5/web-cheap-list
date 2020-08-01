@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
     gridList: {
         width: '100%',
-      },
+    },
 }));
 
 const defaultMapOptions = {
@@ -67,7 +67,7 @@ function GoogleMaps(props) {
     const classes = useStyles();
 
     //ContextApi 
-    const { userID } = useContext(UserIDContext);
+    const { userID, SetUserID } = useContext(UserIDContext);
     const { isLocal } = useContext(IsLocalContext);
     const { listObj } = useContext(ListObjContext);
 
@@ -77,6 +77,7 @@ function GoogleMaps(props) {
     const [animation, SetAnimation] = useState(null);
     const [isClicked, SetIsClicked] = useState(false)
     const [coords, SetCoords] = useState({})
+    const [stores,SetStores] = useState(props.Stores)
 
     const center = {
         lat: JSON.parse(listObj.Latitude),
@@ -84,34 +85,40 @@ function GoogleMaps(props) {
     };
     let api = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/"
     if (isLocal) {
-      api = "http://localhost:56794/api/"
-  
+        api = "http://localhost:56794/api/"
+
     }
-  
-    
+
+
 
 
 
     useEffect(() => {
-        (async () => {
-          try {
-            const resUser = await fetch(`${api}AppUsers/GetUser/${userID}`, {
-              method: 'GET',
-              headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-              }),
-            })
-            let resGetUser = await resUser.json();
-            SetCoords({
-              lat: resGetUser.Latitude,
-              lng: resGetUser.Longitude
-            })
-          } catch (error) {
-            console.log(error)
-          }
+        if (!userID) {
+            SetUserID(JSON.parse(localStorage.getItem('UserID')))
         }
-        )();
-      }, [api,userID]);
+        if (userID) {
+            (async () => {
+                try {
+                    const resUser = await fetch(`${api}AppUsers/GetUser/${userID}`, {
+                        method: 'GET',
+                        headers: new Headers({
+                            'Content-Type': 'application/json; charset=UTF-8',
+                        }),
+                    })
+                    let resGetUser = await resUser.json();
+                    SetCoords({
+                        lat: resGetUser.Latitude,
+                        lng: resGetUser.Longitude
+                    })
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+            )();
+        }
+
+    }, [api, userID]);
 
 
 
@@ -135,7 +142,7 @@ function GoogleMaps(props) {
 
     }
 
-    const CalculateDistance = (destinion) => {
+    const CalculateDistance = (destinion,index) => {
         const lat2 = JSON.parse(destinion.Deatils.store_gps_lat)
         const lon2 = JSON.parse(destinion.Deatils.store_gps_lng)
         const R = 6371e3; // metres
@@ -150,13 +157,17 @@ function GoogleMaps(props) {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const d = R * c; // in metres
         const km = Number(d / 1000).toFixed(2);
+        stores[index] = {
+            ...stores[index],
+            distance: km
+        }
         return km;
 
     }
 
 
 
-    const PrintOutOfStock = (s) =>{
+    const PrintOutOfStock = (s) => {
 
         let str = `** מוצרים שאינם במלאי:  ${s.OutOfStock[0]}`
         for (let i = 1; i < s.OutOfStock.length; i++) {
@@ -165,85 +176,104 @@ function GoogleMaps(props) {
         return str
     }
 
+    const SortByDistance =  () => {
+        stores.sort((a, b) => a.distance > b.distance ? 1 : -1)
+       SetStores([...stores]) 
+    }
+    const SortByPrice = () => {
+       stores.sort((a, b) => a.TotalPrice > b.TotalPrice ? 1 : -1)
+       SetStores([...stores])
+    }
+
 
     return (
-        <div>
-            {console.log(userID)}
-            <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_KEY} id="a">
-                <GoogleMap
-                    mapContainerStyle={style.containerStyle}
-                    center={center}
-                    zoom={10}
-                    options={defaultMapOptions}>
+        <span>
+            {userID && <div>
+                <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_KEY} id="a">
+                    <GoogleMap
+                        mapContainerStyle={style.containerStyle}
+                        center={center}
+                        zoom={10}
+                        options={defaultMapOptions}>
 
-                    {props.Stores.map((s, index) =>
-
-
-                        <Marker key={index} position={{ lat: JSON.parse(s.Deatils.store_gps_lat), lng: JSON.parse(s.Deatils.store_gps_lng) }}
-                            animation={2}
-                            onClick={() => { HandleInfoOpen(s) }}
-                        />
-
-                    )}
-
-                    {isOpen &&
-                        <Marker position={{ lat: JSON.parse(selectedStore.Deatils.store_gps_lat), lng: JSON.parse(selectedStore.Deatils.store_gps_lng) }}  >
-                            <InfoWindow onCloseClick={HandleInfoClose} >
-                                <div dir='rtl' style={{ marginLeft:20}}>
-                                    <div><b>{selectedStore.Deatils.sub_chain_name}</b></div>
-                                    <div> רח' {selectedStore.Deatils.store_address}  </div>
-                                    <div>{selectedStore.Deatils.city_name}, {selectedStore.Deatils.store_zip_code}</div>
-                                </div>
-                            </InfoWindow>
-                        </Marker>}
-
-                    {isClicked &&
-                        <Marker position={{ lat: JSON.parse(clickStore.Deatils.store_gps_lat), lng: JSON.parse(clickStore.Deatils.store_gps_lng) }}
-                            animation={animation}
-                            onClick={() => { HandleInfoOpen(clickStore) }}
-                        />
-
-                    }
+                        {props.Stores.map((s, index) =>
 
 
-                </GoogleMap>
-            </LoadScript>
-            <GridList cellHeight={300} className={classes.gridList}  cols={0.00001} dir='rtl' spacing={10} >
-            <List className={classes.root} dir='rtl' >
-                {props.Stores.map((s, index) =>
-                   <div>
-                        <ListItem alignItems="flex-start" style={{ textAlign: 'right' }}>
-                            <ListItemText dir='rtl'
-                                primary={s.Deatils.sub_chain_name + ', ' + s.Deatils.city_name}
-                                secondary={
-                                    <React.Fragment>
-                                        <Typography
-                                            component="span"
-                                            variant="body2"
-                                            className={classes.inline}
-                                            color="textPrimary"
-                                            >
-                                            המחיר הינו: ₪{s.TotalPrice} <br/> במרחק של   {CalculateDistance(s)} ק"מ 
-                                            {s.OutOfStock.length !== 0 ? <span style={{fontSize:'x-small'}}><br/>{PrintOutOfStock(s)}</span> : '' }
-                                        </Typography>
-                                        <br/>
-                                        <Button color='primary' onClick={() => HandleClickStore(s)}>הראה לי על המפה</Button>
-                                    </React.Fragment>
-                                }
-                                />
+                            <Marker key={index} position={{ lat: JSON.parse(s.Deatils.store_gps_lat), lng: JSON.parse(s.Deatils.store_gps_lng) }}
+                                animation={2}
+                                onClick={() => { HandleInfoOpen(s) }}
+                            />
 
-                        </ListItem>
-                        <Divider variant="inset" component="li" />
-                                </div>
-                   
+                        )}
 
-                )}
-                 </List>
-            </GridList>
+                        {isOpen &&
+                            <Marker position={{ lat: JSON.parse(selectedStore.Deatils.store_gps_lat), lng: JSON.parse(selectedStore.Deatils.store_gps_lng) }}  >
+                                <InfoWindow onCloseClick={HandleInfoClose} >
+                                    <div dir='rtl' style={{ marginLeft: 20 }}>
+                                        <div><b>{selectedStore.Deatils.sub_chain_name}</b></div>
+                                        <div> רח' {selectedStore.Deatils.store_address}  </div>
+                                        <div>{selectedStore.Deatils.city_name}, {selectedStore.Deatils.store_zip_code}</div>
+                                    </div>
+                                </InfoWindow>
+                            </Marker>}
+
+                        {isClicked &&
+                            <Marker position={{ lat: JSON.parse(clickStore.Deatils.store_gps_lat), lng: JSON.parse(clickStore.Deatils.store_gps_lng) }}
+                                animation={animation}
+                                onClick={() => { HandleInfoOpen(clickStore) }}
+                            />
+
+                        }
 
 
+                    </GoogleMap>
+                </LoadScript>
+                
+              <div dir='rtl' >
+                    <Button onClick={SortByDistance}>מיין לפי מרחק</Button>
+            &nbsp; &nbsp;
+            <Button onClick={SortByPrice}>מיין לפי מחיר</Button>
+                </div>
+                
+                <GridList cellHeight={300} className={classes.gridList} cols={0.00001} dir='rtl' spacing={10} >
+                    <List className={classes.root} dir='rtl' >
+                        {stores.map((s, index) =>
+                            <div key={index} >
+                                <ListItem alignItems="flex-start" style={{ textAlign: 'right' }}>
+                                    <ListItemText dir='rtl'
+                                        primary={s.Deatils.sub_chain_name + ', ' + s.Deatils.city_name}
+                                        secondary={
+                                            <React.Fragment>
+                                                <Typography
+                                                    component="span"
+                                                    variant="body2"
+                                                    className={classes.inline}
+                                                    color="textPrimary"
+                                                >
+                                                    המחיר הינו: ₪{s.TotalPrice} <br /> במרחק של   {CalculateDistance(s,index)} ק"מ
+                                            {s.OutOfStock.length !== 0 ? <span style={{ fontSize: 'x-small' }}><br />{PrintOutOfStock(s)}</span> : ''}
+                                                </Typography>
+                                                <br />
+                                                <Button color='primary' onClick={() => HandleClickStore(s)}>הראה לי על המפה</Button>
+                                            </React.Fragment>
+                                        }
+                                    />
+                                   
+                                </ListItem>
+                                <Divider variant="inset" component="li" />
+                            </div>
+                            
 
-        </div>
+
+                        )}
+                         {props.Stores.length === 0 && <div dir='rtl'>לא נמצאו סופרים בסביבתך</div>}
+                    </List>
+                </GridList>
+
+                                    {console.log(props.Stores)}
+            </div>}
+          
+        </span>
     )
 }
 
