@@ -15,20 +15,29 @@
 }
 
 .nav-Profile{
-    float: right;
-    margin: 4px 0;
+    float: left;
+    margin: 3px 0;
+    padding: 0;
 }
 .nav-title{
     display: inline-flex;
-    margin: 11px;
+    margin: 10px;
     font-size: x-large;
     font-family: 'Heebo', sans-serif;
     
 }
 .nav-not{
     float: right;
-    margin: 4px 0;
+    margin: 3px 0;
+    padding: 0;
+
 }   
+.nav-goBack{
+    float: right;
+    margin: 3px 0;
+    padding: 0;
+
+}
 
 .ring{
     transform-origin: 50% 1rem;

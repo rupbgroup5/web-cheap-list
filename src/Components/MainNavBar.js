@@ -4,7 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Badge from '@material-ui/core/Badge';
 import NotificationsNoneOutlinedIcon from '@material-ui/icons/NotificationsNoneOutlined';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 import { useHistory } from 'react-router-dom';
 
@@ -109,21 +109,23 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
 
   return (
     <nav className="nav">
-      <div className="nav-Logo">
+      <span className="nav-Logo">
         <img src={Logo} alt="" onClick={ReturnToHomePage} />
-      </div>
-      <span className="nav-title" style={{ paddingLeft : 50 }}>{pageTitle}</span>
-      <div className="nav-Profile">
+      </span>
+      <span className="nav-title" style={{paddingRight: 'הקבוצות שלי' === pageTitle ? 30 : 0  }}>{pageTitle}</span>
+      <span className="nav-goBack">
       <IconButton
-       onClick={()=> history.goBack()}
+       onClick={()=> {pageTitle === 'הקבוצות שלי' ? ReturnToHomePage() : history.goBack()}}
       color="inherit"
       >
-          <ArrowForwardIcon/>
+          <ArrowForwardIosIcon/>
         </IconButton>
+      </span>
+      <span className="nav-Profile">
         <IconButton
           aria-label="account of current user"
           aria-haspopup="true"
-          onClick={()=>{pageTitle === 'הקבוצות שלי' ? ReturnToHomePage() : history.goBack()}}
+          onClick={()=>history.push("/UserProfile")}
           color="inherit"
         >
           <AccountCircle />
@@ -131,7 +133,7 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
    
 
 
-      </div>
+      </span>
 
       {(pageTitle === 'סל קניות' || notifications.length !== 0) && <span className="nav-not" >
         <IconButton

@@ -76,10 +76,11 @@ function HomePage() {
 
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
-    userIDfromRN = 1
+    userIDfromRN = 12
   }
 
   useEffect(() => {
+    
     document.body.style.backgroundSize = '50vh';;
 
     try {
@@ -109,7 +110,7 @@ function HomePage() {
     for (let i = 0; i < participiants.length; i++) {
       let newParticipiant = await AuthenticateContact(participiants[i], groups[0].UserName)
       console.log(newParticipiant)
-      await participiantsArr.push(newParticipiant)
+       participiantsArr.push(newParticipiant)
       console.log(participiantsArr)
     }
 

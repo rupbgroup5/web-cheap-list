@@ -44,12 +44,17 @@ export default function FormDialog(props) {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{props.headLine}</DialogTitle>
         <DialogContent>
-          <TextField onChange={e => setValue(e.target.value)}
+          <TextField dir='rtl'
+          onChange={e => setValue(e.target.value)}
             autoFocus
             margin="dense"
-            id="name"
+            id="name" 
             label={props.label}
             type="text"
+            InputLabelProps={{style:{
+              left: "auto",
+              webkitTransformOriginX: "right"
+            }}}
             fullWidth
           />
         </DialogContent>

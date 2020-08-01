@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Chip from '@material-ui/core/Chip';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import Button from '@material-ui/core/Button';
 
 export default function Contacts(props) {
   const [contacts, SetContacts] = useState([])
@@ -12,6 +13,7 @@ export default function Contacts(props) {
 
   useEffect(() => {
     (async function fetchMyAPI() {
+      document.body.style.backgroundSize = 0
       const res = await fetch(`http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppUsers/GetUserContacts/${props.userID}`, {
         method: 'GET',
         headers: new Headers({
@@ -36,8 +38,8 @@ export default function Contacts(props) {
 
   return (
     <span>
-      <h5>בחר אנשי קשר לקבוצת {props.groupName}</h5>
-      <Autocomplete
+      <h5 style={{color:'cornflowerblue'}} >בחר אנשי קשר לקבוצת "{props.groupName}"</h5>
+      <Autocomplete dir='rtl'
       noOptionsText='אין תוצאות'
         multiple
         id="fixed-tags-demo"
@@ -48,6 +50,7 @@ export default function Contacts(props) {
             ...newValue.filter((option) => fixedOptions.indexOf(option) === -1),
           ]);
         }}
+        
         options={contacts}
         getOptionLabel={(option) => option.Name}
         renderTags={(tagValue, getTagProps) =>
@@ -62,10 +65,11 @@ export default function Contacts(props) {
 
         style={{ width: '100%' }}
         renderInput={(params) => (
-          <TextField  {...params} label="אנשי קשר" variant="outlined" placeholder="חפש" />
+          <TextField  {...params} label="אנשי קשר" variant="outlined" placeholder="חפש"/>
         )}
       />
-      <button onClick={CloseContacts}>הוסף אנשי קשר </button>
+      <br/>
+      <Button style={{color:'cornflowerblue'}} onClick={CloseContacts}>הוסף אנשי קשר </Button>
     </span>
   );
 }

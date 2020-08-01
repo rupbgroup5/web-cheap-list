@@ -24,6 +24,7 @@
 }
 
 #outlined-basic{
+
     text-align: center;
     font-family: 'Rubik', sans-serif;
 }
@@ -42,6 +43,10 @@
 }
 #name{
     font-family: 'Assistant', sans-serif;
+}
+.MuiTypography-h6{
+    text-align: right;
+    direction: rtl;
 }
 
 

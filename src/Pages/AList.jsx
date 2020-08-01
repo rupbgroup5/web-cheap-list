@@ -164,7 +164,7 @@ function AList() {
 
     const ActivateStateListObj = () => {
         SetimplementLimit(((listObj.ListEstimatedPrice / listObj.LimitPrice) * 100).toFixed(0))
-        SetLimit(listObj.LimitPrice)
+        SetLimit(listObj.LimitPrice ? listObj.LimitPrice : 500 )
     }
 
     const editListName = (e) => {
