@@ -2,10 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import {withRouter,useParams} from 'react-router-dom'
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import Badge from '@material-ui/core/Badge';
 import NotificationsNoneOutlinedIcon from '@material-ui/icons/NotificationsNoneOutlined';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { useHistory } from 'react-router-dom';
 
@@ -113,35 +112,23 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
       <div className="nav-Logo">
         <img src={Logo} alt="" onClick={ReturnToHomePage} />
       </div>
-      <span className="nav-title" style={{ paddingLeft: 'סל קניות' === pageTitle ? 50 : 15 }}>{pageTitle}</span>
+      <span className="nav-title" style={{ paddingLeft : 50 }}>{pageTitle}</span>
       <div className="nav-Profile">
+      <IconButton
+       onClick={()=> history.goBack()}
+      color="inherit"
+      >
+          <ArrowForwardIcon/>
+        </IconButton>
         <IconButton
           aria-label="account of current user"
-          aria-controls="menu-appbar"
           aria-haspopup="true"
-          onClick={()=> history.push("/UserProfile")}
+          onClick={()=>{pageTitle === 'הקבוצות שלי' ? ReturnToHomePage() : history.goBack()}}
           color="inherit"
         >
           <AccountCircle />
         </IconButton>
-        {/* <Menu
-          id="menu-appbar"
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          open={open}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={handleClose}>פרופיל</MenuItem>
-          <MenuItem onClick={handleClose}>הגדרות</MenuItem>
-        </Menu> */}
+   
 
 
       </div>

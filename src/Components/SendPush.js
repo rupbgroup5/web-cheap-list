@@ -26,6 +26,7 @@ export const SendPushAddToGroup = (token, AdminName, GroupName) => {
   })
     .then(response => response.json(),)
     .then(json => {
+      console.log(json)
       if (json.data.status === "ok") {
         console.log(`returned from server ${JSON.stringify(json.data.status)}`);
       } else {

@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 function HomePage() {
 
   //Context Api:
-  const { groupDeatils,SetGroupDetails } = useContext(GroupDetailsContext);
+  const { groupDeatils, SetGroupDetails } = useContext(GroupDetailsContext);
   const { isLocal } = useContext(IsLocalContext);
   const { SetUserID } = useContext(UserIDContext)
   const { SetPageTitle } = useContext(PageTitleContext);
@@ -63,7 +63,7 @@ function HomePage() {
 
   let { userIDfromRN } = useParams();
   if (userIDfromRN === undefined) {
-    userIDfromRN = JSON.parse(localStorage.getItem('UserID'))  
+    userIDfromRN = JSON.parse(localStorage.getItem('UserID'))
   }
   const classes = useStyles();
   const [groups, SetGroups] = useState([]);
@@ -72,8 +72,8 @@ function HomePage() {
   const history = useHistory();
   let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
-  const [tempGroupName,SetTempGroupName] = useState();
-  
+  const [tempGroupName, SetTempGroupName] = useState();
+
   if (isLocal) {
     apiAppGroups = "http://localhost:56794/api/AppGroups/"
     userIDfromRN = 1
@@ -81,7 +81,7 @@ function HomePage() {
 
   useEffect(() => {
     document.body.style.backgroundSize = '50vh';;
-    
+
     try {
       (async function fetchMyAPI() {
         const res = await fetch(apiAppGroups + userIDfromRN, {
@@ -102,28 +102,33 @@ function HomePage() {
   }, []);
 
   const AddNewGroup = async (participiants) => {
-    let participiantsArr = []
-    for (let i = 0; i < participiants.length; i++) {
-      let newParticipiant = await AuthenticateContact(participiants[i].PhoneNumber)
-      await participiantsArr.push(newParticipiant)
-    }
-    console.log('participiantsArr', participiantsArr)
-    let newGroup = {
-      GroupName: tempGroupName,
-      UserID: userIDfromRN,
-      Participiants: participiantsArr,
-    };
 
+    let participiantsArr = [];
+
+
+    for (let i = 0; i < participiants.length; i++) {
+      let newParticipiant = await AuthenticateContact(participiants[i], groups[0].UserName)
+      console.log(newParticipiant)
+      await participiantsArr.push(newParticipiant)
+      console.log(participiantsArr)
+    }
 
     for (let i = 0; i < participiantsArr.length; i++) {
       let notValidExpo = false;
+      console.log(participiantsArr)
       notValidExpo = participiantsArr[i].ExpoToken === null || participiantsArr[i].ExpoToken === "";
       if (!notValidExpo) {
         SendPushAddToGroup(participiantsArr[i].ExpoToken, groups[0].UserName, tempGroupName)
       }
     }
 
-    fetch(apiAppGroups, {
+    let newGroup = {
+      GroupName: tempGroupName,
+      UserID: userIDfromRN,
+      Participiants: participiantsArr,
+    };
+
+    await fetch(apiAppGroups, {
       method: 'POST',
       headers: new Headers({
         'Content-type': 'application/json; charset=UTF-8'
@@ -194,7 +199,7 @@ function HomePage() {
     history.push(`/AGroups`);
 
   }
-  
+
 
   const GetParticipiants = (groups) => {
     let str = groups.Participiants[0].UserName;
@@ -219,7 +224,7 @@ function HomePage() {
     <div className="container">
       {groups[0] && <div className="header"> <b>שלום {groups[0].UserName} </b> </div>}
       <div className="Maincontent"  >
-        {        
+        {
           groups.map((g, index) =>
             <span key={index} onClick={() => GetIntoGroup(index)} >
               <SwipeableList className={classes.root} threshold={0.25}  >
