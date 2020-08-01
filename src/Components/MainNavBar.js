@@ -44,7 +44,6 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
   
   useEffect(() => {
       if (!groupDetails) {
-        //SetUserID(JSON.parse(localStorage.getItem('UserID')))
         SetGroupDetails(JSON.parse(localStorage.getItem('groupDetails')))
         SetListObj(JSON.parse(localStorage.getItem('listObj')))
       }
@@ -120,12 +119,12 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
           aria-label="account of current user"
           aria-controls="menu-appbar"
           aria-haspopup="true"
-          onClick={handleMenu}
+          onClick={()=> history.push("/UserProfile")}
           color="inherit"
         >
           <AccountCircle />
         </IconButton>
-        <Menu
+        {/* <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
           anchorOrigin={{
@@ -142,7 +141,7 @@ import { GroupDetailsContext } from '../Contexts/GroupDetailsContext'
         >
           <MenuItem onClick={handleClose}>פרופיל</MenuItem>
           <MenuItem onClick={handleClose}>הגדרות</MenuItem>
-        </Menu>
+        </Menu> */}
 
 
       </div>

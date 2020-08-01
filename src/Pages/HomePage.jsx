@@ -70,7 +70,7 @@ function HomePage() {
   const [, triggerComplexItemAction] = useState();
   const [swipeProgress, handleSwipeProgress] = useState();
   const history = useHistory();
-  var apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
+  let apiAppGroups = "http://proj.ruppin.ac.il/bgroup5/FinalProject/backEnd/api/AppGroups/"
   const [enable, SetEnable] = useState(false);
   const [tempGroupName,SetTempGroupName] = useState();
   
@@ -217,9 +217,9 @@ function HomePage() {
   return (
 
     <div className="container">
-      <div className="header"></div>
+      {groups[0] && <div className="header"> <b>שלום {groups[0].UserName} </b> </div>}
       <div className="Maincontent"  >
-        {
+        {        
           groups.map((g, index) =>
             <span key={index} onClick={() => GetIntoGroup(index)} >
               <SwipeableList className={classes.root} threshold={0.25}  >

@@ -214,6 +214,7 @@ function AList() {
                                       }
                                     }
                                    if (ArrUserTo.length !== 0 ) {
+                                       console.log('tempName', tempName)
                                     ChangeListNamePush(userFrom,ArrUserTo,oldListName,tempName,listObj.GroupID)
                                    }
                                    

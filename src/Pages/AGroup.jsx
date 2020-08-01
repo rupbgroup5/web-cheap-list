@@ -282,7 +282,6 @@ function AGroup() {
           }} >
             <TextField
               id="outlined-basic"
-
               variant="outlined"
               onInput={editGroupName}
               placeholder={groupDetails && groupDetails.GroupName}

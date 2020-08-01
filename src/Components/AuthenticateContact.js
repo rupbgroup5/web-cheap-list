@@ -22,6 +22,7 @@ const AuthenticateContact = async (PhoneNumber) => {
     let member = await res.json();
 
     if (member.UserID === 0) {
+        alert('something');
         const newUser = {
             UserName: PhoneNumber,//The defulat userName is the PhoneNumber until the user will change his name
             PhoneNumber: PhoneNumber

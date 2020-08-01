@@ -18,6 +18,7 @@ import SuperMarketList from './Components/Actions/SuperMarketList'
 import MyCart from './Pages/MyCart.jsx'
 import NotTaken from './Pages/NotTaken'
 import GroupSetting from './Pages/GroupSetting'
+import UserProfile from './Pages/UserProfile'
 
 
 //Contexts Providers:
@@ -30,6 +31,7 @@ import PageTitleContextProvider from './Contexts/PageTitleContext'
 import SMmoduleContextProvider from './Contexts/SMmoduleContext';
 import IsAdminContextProvider from './Contexts/IsAdminContext'
 import NotificationsContextProvider from './Contexts/NotificationsContext'
+
 
 
 
@@ -66,7 +68,8 @@ function App() {
                         <Route path="/MyCart" component={MyCart} />
                         <Route path="/NotTaken" component={NotTaken} />
                         <Route path="/CCErrorMessage" component={CCErrorMessage} />
-                        <Route path ="/Notifications"  component = {Notifications}/>
+                        <Route path ="/Notifications"  component={Notifications}/>
+                        <Route path ="/UserProfile" component={UserProfile}/>
                       </Switch>
                     </ProductsCartContextProvider>
                   </ListDetailsContextProvider>
